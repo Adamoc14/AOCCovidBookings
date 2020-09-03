@@ -27,11 +27,11 @@ const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     let completed = false;
     timeSlots.push(newRoundedTime)
     if(!completed){
-        if (timeSlots.length === end) {
+        if (timeSlots.includes("18:0")) {
             completed = true
             return [...timeSlots]
         } 
-        if (Number(newRoundedTime.split(":")[1]) + 10 === 60) {
+        if (Number(newRoundedTime.split(":")[1]) + 10 >= 60) {
             const hours = Number(newRoundedTime.split(":")[0]) + 1,
             minutes = "00";
             if (Array.isArray(makeTimeslots(`${hours}:${Number(minutes)}`, end, timeSlots))) return timeSlots
@@ -44,15 +44,34 @@ const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     return timeSlots
 }
 
-const getTimeslots = (days, monthSelected) => {
+const getDaySelected = (days, monthSelected) => {
     days.map(day => {
-        $(day).click((e)=> {
-            days.filter(day => day !== e.target && day.dataset.day !== "Sunday" ).map(day => day.style.background="blue")
+        $(day).click(e=> {
+            days.filter(day => day !== e.target && day.dataset.day !== "Sunday" ).map(day => $(day).css('background','blue'))
             e.target.style.background = "green"
             let time_now = new Date(),
             newRoundedTime = roundMinutes(time_now);
             let timeSlots = makeTimeslots(newRoundedTime , 10 , [])
-            document.querySelector('.time_slot_container').innerHTML = timeSlots
+            displayTimeslots(timeSlots)
+            getTimeslotContainers()
+        })
+    })
+}
+
+const displayTimeslots = timeSlots => {
+    let timeSlotContainer = document.querySelector('.time_slot_container')
+    timeSlots = timeSlots.map(timeSlot => 
+        `<div class="timeslot">${timeSlot}</div>`
+    ).join("")
+    timeSlotContainer.innerHTML = timeSlots
+}
+
+const getTimeslotContainers = () => {
+    const timeslotPills = [...document.querySelectorAll('.timeslot')]
+    timeslotPills.map(timeSlot => {
+        $(timeSlot).click(e => {
+            timeslotPills.filter(timeSlot => timeSlot!== e.target).map(timeSlot => timeSlot.style.background = "aliceblue")
+            e.target.style.background = "yellow"
         })
     })
 }
@@ -70,7 +89,7 @@ const fillDays = months => {
             fillInCircleDays(numberOfDays, firstDay, monthSelected)
             let days = getDays()
             displayDayClosed(days)
-            getTimeslots(days, monthSelected)
+            getDaySelected(days, monthSelected)
         })
     })
 }

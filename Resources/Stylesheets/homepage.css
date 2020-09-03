@@ -34,7 +34,7 @@
 }
 
 .day:hover{
-    background: green;
+    background: green !important;
 }
 
 .calendar_container_m{
@@ -77,11 +77,36 @@
     display: grid;
     place-items: center;
     grid-template-columns: auto auto auto auto auto auto auto;
-    /* width: 49vw; */
     margin: 1em 0em;
     text-align: center;
     grid-gap: 1em;
 }
 .dayOfWeek {
     font-size: 1.5vw;
+}
+
+.time_slot_container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    text-align: center;
+    margin: 2em 0em;
+    grid-gap: 1em;
+}
+
+.timeslot {
+    background: aliceblue;
+    padding: 1em;
+    border-radius: 50px;
+}
+
+.timeslot:hover{
+    background: yellow;
+}
+
+#create_appointment_btn {
+    padding: .5em;
+    width: 40vw;
+    margin: 0 auto;
+    display: grid;
+    background: coral;
 }
