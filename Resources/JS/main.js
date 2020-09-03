@@ -1,23 +1,95 @@
-// Variable Declarations and Function Definitions
-const url = "/Client/Views/"
+// Global Variable Declarations and Function Definitions
+const url = "/Client/Views/",
+    appointment_Details = {}
 
-const homeInit = () => {
+const dealWithMonths = () => {
     const months = [...document.querySelectorAll('.month')];
-    clickMonth(months)
-}
-
-const clickMonth = months => {
     months.map(month => {
         $(month).click(e => {
-            months.filter(month => month !== e.target).map(month => month.style.background = "aliceblue")
-            e.target.style.background = "yellow"
-            let monthSelected = getMonthSelected(e.target.dataset.month)
-            fillInCalendar(monthSelected.MonthSelectedNo,monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay)
-            let days = getDays()
+            // Get month Selected Info , adds it to appointment details
+            let monthSelected = clickMonth(months , e.target);
+            appointment_Details["Month"] = monthSelected.Name
+
+            // Display Calendar and Days That are closed
+            let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay)
             displayDayClosed(days)
-            getDaySelected(days, monthSelected)
+
+            //Once the daysContainer is filled with the daysCircles, now we can access the days
+            dealWithDays(days)
         })
     })
+    
+}
+
+const clickMonth = (months , target) => {
+        // Styles the month selected and ones that aren't accordingly
+        months.filter(month => month !== target).map(month => month.style.background = "aliceblue")
+        target.style.background = "yellow"
+
+        // Get month Selected Info and returns info
+        let monthSelected = getMonthSelected(target.dataset.month)
+        return monthSelected
+}
+
+
+const dealWithDays = days => {
+    days.map(day => {
+        $(day).click(e => {
+            // Get day Selected Info, adds it to appointment details
+            let daySelected = clickDay(days, e.target)
+            appointment_Details["DayName"] = daySelected.day
+            appointment_Details["DayDate"] = daySelected.date
+            
+            // Deal with times now
+            dealWithTimes()
+        })
+    })
+}
+
+const clickDay = (days, target) => {
+    // Styles the month selected and ones that aren't accordingly
+    days.filter(day => day !== target && day.dataset.day !== "Sunday").map(day => $(day).css('background', 'blue'))
+    target.style.background = "green"
+
+    // Get day Selected Info and returns info
+    let daySelected = getDaySelected(target)
+    return daySelected
+}
+
+const dealWithTimes = () => {
+    /**
+     * Get time now, round it to the nearest 10 make timeslots and return the timeslot Containers
+     */
+    let time_now = new Date(),
+        newRoundedTime = roundMinutes(time_now),
+        timeSlots = makeTimeslots(newRoundedTime, 10, []),
+        timeSlotContainers = displayTimeslots(timeSlots);
+    timeSlotContainers.map(timeSlot => {
+        $(timeSlot).click(e => {
+             // Get time Selected Info, adds it to appointment details
+            let timeSelected = clickTime(timeSlotContainers, e.target)
+            appointment_Details["Time"] = timeSelected
+
+            // Deal with appointment details 
+            dealWithAppointmentDetails()
+        })
+    })
+}
+
+
+const clickTime = (timeSlotContainers , target) => {
+    // Styles the time selected and ones that aren't accordingly
+    timeSlotContainers.filter(timeSlot => timeSlot !== target).map(timeSlot => timeSlot.style.background = "aliceblue")
+    target.style.background = "yellow"
+
+    // Get time Selected Info and returns info
+    // let timeSelected = getTimeSelected(target)
+    let timeSelected = target.innerHTML
+    return timeSelected
+}
+
+const dealWithAppointmentDetails = () => {
+    console.log(appointment_Details)
 }
 
 const getMonthSelected = monthNo => {
@@ -26,19 +98,36 @@ const getMonthSelected = monthNo => {
         "WeekDayNumOfFirstDay": getWeekDayNum(new Date().getFullYear(), Number(monthNo), 1),
         "WeekDayNameOfFirstDay": nameOfDay(getWeekDayNum(new Date().getFullYear(), Number(monthNo), 1)),
         "NumOfDays": getNumOfDays(1, getLastDayNum(new Date().getFullYear(), Number(monthNo))),
-        "MonthSelectedNo": monthNo
+        "Name": nameOfMonth(Number(monthNo)),
+        "Number": monthNo
     }
     return monthSelected
 }
+
+const getDaySelected = target => {
+    let daySelected = {
+        "date": target.innerHTML,
+        "day": target.dataset.day
+    }
+    return daySelected
+}
+
+// const getTimeSelected = target => {
+//     let timeSelected = {
+
+//     }
+//     return timeSelected
+// }
 
 
 
 
 const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     let completed = false;
+    // if(Number(newRoundedTime.split(":")[0]) > 18) return
     timeSlots.push(newRoundedTime)
     if(!completed){
-        if (timeSlots.includes("18:0")) {
+        if (timeSlots.includes("21:0")) {
             completed = true
             return [...timeSlots]
         } 
@@ -55,19 +144,7 @@ const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     return timeSlots
 }
 
-const getDaySelected = (days, monthSelected) => {
-    days.map(day => {
-        $(day).click(e => {
-            days.filter(day => day !== e.target && day.dataset.day !== "Sunday" ).map(day => $(day).css('background','blue'))
-            e.target.style.background = "green"
-            let time_now = new Date(),
-            newRoundedTime = roundMinutes(time_now);
-            let timeSlots = makeTimeslots(newRoundedTime , 10 , [])
-            displayTimeslots(timeSlots)
-            getTimeslotContainers()
-        })
-    })
-}
+
 
 const displayTimeslots = timeSlots => {
     let timeSlotContainer = document.querySelector('.time_slot_container')
@@ -75,20 +152,13 @@ const displayTimeslots = timeSlots => {
         `<div class="timeslot">${timeSlot}</div>`
     ).join("")
     timeSlotContainer.innerHTML = timeSlots
+    let timeSlotContainers = getTimeslotContainers()
+    return timeSlotContainers
 }
 
 const getTimeslotContainers = () => {
-    const timeslotPills = [...document.querySelectorAll('.timeslot')]
-    timeslotPills.map(timeSlot => {
-        $(timeSlot).click(e => {
-            timeslotPills.filter(timeSlot => timeSlot!== e.target).map(timeSlot => timeSlot.style.background = "aliceblue")
-            e.target.style.background = "yellow"
-        })
-    })
+    return timeslotPills = [...document.querySelectorAll('.timeslot')]
 }
-
-
-
 
 
 const displayDayClosed = days => {
@@ -98,7 +168,7 @@ const displayDayClosed = days => {
     })
 }
 
-const fillInCalendar = (monthSelected, numberOfDays, firstDay) => {
+const fillInCalendar = (monthSelectedNum, numberOfDays, firstDay) => {
     let calendarContainer = document.querySelector('.calendar_container'),
         daysOfWeek = `
             <h3 class= "dayOfWeek">Monday</h3>
@@ -113,12 +183,14 @@ const fillInCalendar = (monthSelected, numberOfDays, firstDay) => {
     if(firstDay !== "Monday")
         margin = `<div class="margin"></div>`
     numberOfDays = numberOfDays.map(day => {
-        let dayOfWeek = getWeekDayNum(new Date().getFullYear(), monthSelected, day)
+        let dayOfWeek = getWeekDayNum(new Date().getFullYear(), monthSelectedNum, day)
         dayOfWeek = nameOfDay(dayOfWeek);
         return `<div class="day" data-day= "${dayOfWeek}">${day}</div>`
     }).join("")
     calendarContainer.innerHTML= daysOfWeek + margin + numberOfDays
     getSpan(firstDay)
+    let dayContainers = getDayContainers()
+    return dayContainers
 }
 
 
@@ -131,8 +203,13 @@ const getWeekDayNum = (year, month, day) => {
     return new Date(year, month, day).getDay()
 }
 
-const getDays = () => {
+const getDayContainers = () => {
     return days = [...document.querySelectorAll('.day')];
+}
+
+const nameOfMonth = month => {
+    const months = ["January" , "February" , "March" , "April" ,"May", "June", "July" , "August", "Spetember", "October","November" , "December"]
+    return months[month]
 }
 
 const nameOfDay = firstDay => {
@@ -181,6 +258,7 @@ const roundMinutes = (time_now) => {
 $(document).ready(() => {
     switch (window.location.pathname) {
         case `${url}index.html`:
-            homeInit()
+            dealWithMonths()
+            
     }
 })
