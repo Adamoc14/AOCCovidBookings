@@ -1,0 +1,87 @@
+.create_appointment_form {
+    padding: 2em 2em;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+}
+
+.months_container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    width: 66vw;
+    margin: 1em auto;
+    text-align: center;
+    grid-gap: 1em;
+}
+
+.month {
+    background: aliceblue;
+    padding: 1em;
+}
+
+.month:hover{
+    background: yellow;
+}
+
+.day {
+    background: blue;
+    width: 5vw;
+    height: 5vw;
+    display: grid;
+    color: #fff;
+    border-radius: 50%;
+    place-items: center;
+}
+
+.day:hover{
+    background: green;
+}
+
+.calendar_container_m{
+    margin-top: 2em;
+}
+
+.keyContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.keyState {
+    margin: 0em 1em;
+    display: flex;
+    align-items: center;
+}
+
+.circleState {
+    width: 1.5vw;
+    height: 1.5vw;
+    border-radius: 50%;
+    margin-right: .5em;
+}
+
+.closedState {
+    background: orange;
+}
+.fullState {
+    background: red;
+}
+.availableState {
+    background: blue;
+}
+
+.keyState h5 {
+    font-size: 1.7vw;
+}
+
+.calendar_container{
+    display: grid;
+    place-items: center;
+    grid-template-columns: auto auto auto auto auto auto auto;
+    /* width: 49vw; */
+    margin: 1em 0em;
+    text-align: center;
+    grid-gap: 1em;
+}
+.dayOfWeek {
+    font-size: 1.5vw;
+}
