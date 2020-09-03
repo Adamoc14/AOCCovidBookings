@@ -1,27 +1,38 @@
+// Variable Declarations and Function Definitions
 const url = "/Client/Views/"
-    
-
-const getNoOfDaysInMonth = (year ,  month) => {
-    return  new Date(year , month + 1 , 0).getDate()
-}
-
-const getDay = (year , month, day) => {
-    return new Date(year, month , day).getDay()
-}
 
 const homeInit = () => {
     const months = [...document.querySelectorAll('.month')];
-    fillDays(months)
+    clickMonth(months)
 }
 
-const roundMinutes = (time_now) => {
-    const roundDownTo = roundTo => x => Math.floor(x / roundTo) * roundTo;
-    const roundUpTo = roundTo => x => Math.ceil(x / roundTo) * roundTo;
-    const roundUpTo5Minutes = roundUpTo(1000 * 60 * 10);
-
-    const ms = roundUpTo5Minutes(time_now)
-    return `${new Date(ms).getHours()}:${new Date(ms).getMinutes()}`
+const clickMonth = months => {
+    months.map(month => {
+        $(month).click(e => {
+            months.filter(month => month !== e.target).map(month => month.style.background = "aliceblue")
+            e.target.style.background = "yellow"
+            let monthSelected = getMonthSelected(e.target.dataset.month)
+            fillInCalendar(monthSelected.MonthSelectedNo,monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay)
+            let days = getDays()
+            displayDayClosed(days)
+            getDaySelected(days, monthSelected)
+        })
+    })
 }
+
+const getMonthSelected = monthNo => {
+    let monthSelected = {
+        "LastDayNum": getLastDayNum(new Date().getFullYear(), Number(monthNo)),
+        "WeekDayNumOfFirstDay": getWeekDayNum(new Date().getFullYear(), Number(monthNo), 1),
+        "WeekDayNameOfFirstDay": nameOfDay(getWeekDayNum(new Date().getFullYear(), Number(monthNo), 1)),
+        "NumOfDays": getNumOfDays(1, getLastDayNum(new Date().getFullYear(), Number(monthNo))),
+        "MonthSelectedNo": monthNo
+    }
+    return monthSelected
+}
+
+
+
 
 const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     let completed = false;
@@ -46,7 +57,7 @@ const makeTimeslots = (newRoundedTime, end , timeSlots) => {
 
 const getDaySelected = (days, monthSelected) => {
     days.map(day => {
-        $(day).click(e=> {
+        $(day).click(e => {
             days.filter(day => day !== e.target && day.dataset.day !== "Sunday" ).map(day => $(day).css('background','blue'))
             e.target.style.background = "green"
             let time_now = new Date(),
@@ -76,22 +87,48 @@ const getTimeslotContainers = () => {
     })
 }
 
-const fillDays = months => {
-    months.map(month => {
-        $(month).click(e => {
-            months.filter(month => month !== e.target).map(month => month.style.background = "aliceblue")
-            e.target.style.background = "yellow"
-            let numberOfDays = getNoOfDaysInMonth(new Date().getFullYear(), Number(e.target.dataset.month)),
-                firstDay = getDay(new Date().getFullYear(), Number(e.target.dataset.month) , 1),
-                monthSelected = Number(e.target.dataset.month);
-            numberOfDays = range(1, numberOfDays)
-            firstDay = nameOfDay(firstDay)
-            fillInCircleDays(numberOfDays, firstDay, monthSelected)
-            let days = getDays()
-            displayDayClosed(days)
-            getDaySelected(days, monthSelected)
-        })
+
+
+
+
+const displayDayClosed = days => {
+    days.filter(day => day.dataset.day === "Sunday").map(day => {
+        day.style.background = "orange" 
+        day.classList.add('disabled')
     })
+}
+
+const fillInCalendar = (monthSelected, numberOfDays, firstDay) => {
+    let calendarContainer = document.querySelector('.calendar_container'),
+        daysOfWeek = `
+            <h3 class= "dayOfWeek">Monday</h3>
+            <h3 class= "dayOfWeek">Tuesday</h3>
+            <h3 class= "dayOfWeek">Wednesday</h3>
+            <h3 class= "dayOfWeek">Thursday</h3>
+            <h3 class= "dayOfWeek">Friday</h3>
+            <h3 class= "dayOfWeek">Saturday</h3>
+            <h3 class= "dayOfWeek">Sunday</h3>
+        `,
+        margin = ``;
+    if(firstDay !== "Monday")
+        margin = `<div class="margin"></div>`
+    numberOfDays = numberOfDays.map(day => {
+        let dayOfWeek = getWeekDayNum(new Date().getFullYear(), monthSelected, day)
+        dayOfWeek = nameOfDay(dayOfWeek);
+        return `<div class="day" data-day= "${dayOfWeek}">${day}</div>`
+    }).join("")
+    calendarContainer.innerHTML= daysOfWeek + margin + numberOfDays
+    getSpan(firstDay)
+}
+
+
+// Helper Functions
+const getLastDayNum = (year, month) => {
+    return new Date(year, month + 1, 0).getDate()
+}
+
+const getWeekDayNum = (year, month, day) => {
+    return new Date(year, month, day).getDay()
 }
 
 const getDays = () => {
@@ -112,53 +149,34 @@ const nameOfDay = firstDay => {
 }
 
 
-const range = (start, end) => {
-    if (start === end) return [start];
-    return [start, ...range(start + 1, end)];
+const getNumOfDays = (startDay, endDay) => {
+    if (startDay === endDay) return [startDay];
+    return [startDay, ...getNumOfDays(startDay + 1, endDay)];
 }
 
 const getSpan = firstDay => {
     const margin = document.querySelector('.margin'),
-    days = {
-        "Tuesday": "span 1",
-        "Wednesday": "span 2",
-        "Thursday": "span 3",
-        "Friday": "span 4",
-        "Saturday": "span 5",
-        "Sunday": "span 6"
-    };
+        days = {
+            "Tuesday": "span 1",
+            "Wednesday": "span 2",
+            "Thursday": "span 3",
+            "Friday": "span 4",
+            "Saturday": "span 5",
+            "Sunday": "span 6"
+        };
     $(margin).css('grid-column', days[firstDay])
 }
 
-const displayDayClosed = days => {
-    days.filter(day => day.dataset.day === "Sunday").map(day => {
-        day.style.background = "orange" 
-        day.classList.add('disabled')
-    })
+const roundMinutes = (time_now) => {
+    const roundDownTo = roundTo => x => Math.floor(x / roundTo) * roundTo;
+    const roundUpTo = roundTo => x => Math.ceil(x / roundTo) * roundTo;
+    const roundUpTo5Minutes = roundUpTo(1000 * 60 * 10);
+
+    const ms = roundUpTo5Minutes(time_now)
+    return `${new Date(ms).getHours()}:${new Date(ms).getMinutes()}`
 }
 
-const fillInCircleDays = (numberOfDays, firstDay, monthSelected) => {
-    let circleContainer = document.querySelector('.calendar_container'),
-        daysOfWeek = `
-            <h3 class= "dayOfWeek">Monday</h3>
-            <h3 class= "dayOfWeek">Tuesday</h3>
-            <h3 class= "dayOfWeek">Wednesday</h3>
-            <h3 class= "dayOfWeek">Thursday</h3>
-            <h3 class= "dayOfWeek">Friday</h3>
-            <h3 class= "dayOfWeek">Saturday</h3>
-            <h3 class= "dayOfWeek">Sunday</h3>
-        `,
-        margin = ``;
-    if(firstDay !== "Monday")
-        margin = `<div class="margin"></div>`
-    numberOfDays = numberOfDays.map(day => {
-        let dayOfWeek = getDay(new Date().getFullYear(), monthSelected, day)
-        dayOfWeek = nameOfDay(dayOfWeek);
-        return `<div class="day" data-day= "${dayOfWeek}">${day}</div>`
-    }).join("")
-    circleContainer.innerHTML= daysOfWeek + margin + numberOfDays
-    getSpan(firstDay)
-}
+// Initialization Methods
 
 $(document).ready(() => {
     switch (window.location.pathname) {
