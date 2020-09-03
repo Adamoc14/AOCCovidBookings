@@ -83,7 +83,6 @@ const clickTime = (timeSlotContainers , target) => {
     target.style.background = "yellow"
 
     // Get time Selected Info and returns info
-    // let timeSelected = getTimeSelected(target)
     let timeSelected = target.innerHTML
     return timeSelected
 }
@@ -111,16 +110,6 @@ const getDaySelected = target => {
     }
     return daySelected
 }
-
-// const getTimeSelected = target => {
-//     let timeSelected = {
-
-//     }
-//     return timeSelected
-// }
-
-
-
 
 const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     let completed = false;
