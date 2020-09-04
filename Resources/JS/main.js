@@ -2,6 +2,13 @@
 const url = "/Client/Views/",
     appointment_Details = {}
 
+const getData = async() => {
+    const url = "http://localhost:8000/";
+    let res = await axios.get(url),
+        { data } = res
+    console.log(data)
+}
+
 const dealWithMonths = () => {
     const months = [...document.querySelectorAll('.month')];
     months.map(month => {
@@ -116,7 +123,7 @@ const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     // if(Number(newRoundedTime.split(":")[0]) > 18) return
     timeSlots.push(newRoundedTime)
     if(!completed){
-        if (timeSlots.includes("21:0")) {
+        if (timeSlots.includes("18:0")) {
             completed = true
             return [...timeSlots]
         } 
@@ -247,6 +254,7 @@ const roundMinutes = (time_now) => {
 $(document).ready(() => {
     switch (window.location.pathname) {
         case `${url}index.html`:
+            getData()
             dealWithMonths()
             
     }
