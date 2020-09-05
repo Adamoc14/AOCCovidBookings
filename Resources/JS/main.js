@@ -4,9 +4,29 @@ const url = "/Client/Views/",
 
 const getData = async() => {
     const url = "http://localhost:8000/";
-    let res = await axios.get(url),
+    let res = await axios.get(`${url}api/v1/appointments`),
         { data } = res
     console.log(data)
+}
+
+const dealWithFormSubmit = () => {
+    const submit_btn = document.querySelector('#create_appointment_btn')
+    $(submit_btn).click(e => {
+        e.preventDefault()
+        let formData = getFormData()
+        appointment_Details["firstName"] = formData.get('firstName')
+        appointment_Details["Surname"] = formData.get('Surname')
+        appointment_Details["Mobile"] = formData.get('Mobile')
+        appointment_Details["DOB"] = formData.get('DOB')
+        debugger
+    })
+} 
+
+const getFormData = () => {
+    const form = document.querySelector('form'),
+    formData = new FormData(form)
+    return formData
+
 }
 
 const dealWithMonths = () => {
@@ -241,7 +261,7 @@ const getSpan = firstDay => {
 }
 
 const roundMinutes = (time_now) => {
-    const roundDownTo = roundTo => x => Math.floor(x / roundTo) * roundTo;
+    // const roundDownTo = roundTo => x => Math.floor(x / roundTo) * roundTo;
     const roundUpTo = roundTo => x => Math.ceil(x / roundTo) * roundTo;
     const roundUpTo5Minutes = roundUpTo(1000 * 60 * 10);
 
@@ -255,6 +275,7 @@ $(document).ready(() => {
     switch (window.location.pathname) {
         case `${url}index.html`:
             getData()
+            dealWithFormSubmit()
             dealWithMonths()
             
     }
