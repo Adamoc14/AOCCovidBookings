@@ -58,7 +58,7 @@ const displayPPSInput = () =>{
 const dealWithFormSubmit = () => {
     const submit_btn = document.querySelector('#create_appointment_btn')
     const form = document.querySelector('form')
-    $(submit_btn).click(e => {
+    $(form).submit(e => {
         e.preventDefault()
         // console.log("form is submitted")
         if(appointment_Details["firstName"] !== undefined) return
