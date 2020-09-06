@@ -79,7 +79,6 @@ const dealWithFormSubmit = () => {
         whichDestination(formData.get('card_decision') , formData)
 
         makeAppointment()
-        window.location.href = 'userView.html'
     })
 } 
 
@@ -87,6 +86,7 @@ const makeAppointment = async() => {
     try {
         let appointment = await makeRequest()
         console.log(appointment)
+        window.location.href = 'userView.html'
         return appointment
     } catch (error) {
         console.log(error)
