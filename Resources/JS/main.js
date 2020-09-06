@@ -365,6 +365,12 @@ const roundMinutes = (time_now) => {
 
 $(document).ready(() => {
     switch (true) {
+        case window.location.pathname.includes("/"):
+            getData()
+            displayPastMonths()
+            displayPPSInput()
+            dealWithFormSubmit()
+            dealWithMonths()  
         case window.location.pathname.includes("index.html"):
             getData()
             displayPastMonths()
