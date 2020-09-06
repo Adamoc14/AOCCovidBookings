@@ -57,9 +57,9 @@ const displayPPSInput = () =>{
 }
 
 const dealWithFormSubmit = () => {
-    // const submit_btn = document.querySelector('#create_appointment_btn')
+    const submit_btn = document.querySelector('#create_appointment_btn')
     const form = document.querySelector('form')
-    $(form).submit(e => {
+    $(submit_btn).submit(e => {
         e.preventDefault()
         // console.log("form is submitted")
         let formData = getFormData(form)
@@ -71,12 +71,12 @@ const dealWithFormSubmit = () => {
         whichCard(formData.get('card_decision') , formData)
         whichDestination(formData.get('card_decision') , formData)
         makeAppointment()
+        // window.location.href = "/"
     })
 } 
 
 const makeAppointment = async() => {
     const appointment = await axios.post(`${url}api/v1/appointments`, appointment_Details)
-    window.location.href = `index.html`
     console.log(appointment)
 }
 
