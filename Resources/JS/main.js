@@ -32,19 +32,27 @@ const displayPastDays = (months,startMonth) => {
 
 
 const displayPPSInput = () =>{
-    const radio_btns = [...document.getElementsByName('card_decision')]
-    radio_btns.map(radio_btn => {
-        $(radio_btn).click(e => {
-            if (e.currentTarget.classList.contains("PPS_Number")) document.querySelector('.pps_number_input_container').classList.toggle("display")
-            else document.querySelector('.pps_number_input_container').classList.remove("display")
-        })
-    }) 
+    $(document.querySelector('.PPS_Number')).get(0).onclick = () => {
+        document.querySelector('.pps_number_input_container').classList.add("display")
+    }
+    $(document.querySelector('.Medical_Card')).get(0).onclick = () => {
+        document.querySelector('.pps_number_input_container').classList.remove("display")
+    }
+    // const radio_btns = [...document.getElementsByName('card_decision')]
+    // radio_btns.map(radio_btn => {
+    //     $(radio_btn).click(e => {
+    //         if (e.currentTarget.classList.contains("PPS_Number")) 
+    //             document.querySelector('.pps_number_input_container').classList.toggle("display")
+    //         else 
+    //             document.querySelector('.pps_number_input_container').classList.remove("display")
+    //     })
+    // }) 
 }
 
 const dealWithFormSubmit = () => {
-    // const submit_btn = document.querySelector('#create_appointment_btn')
-    const form = document.querySelector('form')
-    $(form).submit(e => {
+    const submit_btn = document.querySelector('#create_appointment_btn')
+    // const form = document.querySelector('form')
+    $(submit_btn).click(e => {
         e.preventDefault()
         // console.log("form is submitted")
         let formData = getFormData(form)
