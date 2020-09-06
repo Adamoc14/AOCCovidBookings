@@ -60,11 +60,10 @@
 }
 
 .day {
-    background: blue;
+    background: aliceblue;
     width: 5vw;
     height: 5vw;
     display: grid;
-    color: #fff;
     border-radius: 50%;
     place-items: center;
     cursor: pointer;
@@ -72,9 +71,11 @@
 
 .day:hover{
     background: green !important;
+    color: #fff !important;
 }
 
-.calendar_container_m{
+.calendar_container_m , 
+.time_slot_container_m{
     margin-top: 2em;
 }
 
@@ -103,7 +104,12 @@
     background: red;
 }
 .availableState {
-    background: blue;
+    background: aliceblue;
+    border: 1px solid rgb(0,0,0,.2);
+}
+
+.selectedState{
+    background: green;
 }
 
 .keyState h5 {
@@ -137,7 +143,8 @@
 }
 
 .timeslot:hover{
-    background: yellow;
+    background: green;
+    color: #fff;
 }
 
 #create_appointment_btn {

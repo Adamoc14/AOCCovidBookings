@@ -2,7 +2,6 @@
 const path = "/",
     appointment_Details = {},
     url = "https://whmc-server.herokuapp.com/";
-    // url = window.location.href === "https://whmc-appointments.netlify.app/" ? "https://whmc-server.herokuapp.com/" : "http://localhost:8000/";
 let appointments_Saved = []
 
 const getData = async() => {
@@ -141,8 +140,12 @@ const dealWithDays = days => {
 
 const clickDay = (days, target) => {
     // Styles the month selected and ones that aren't accordingly
-    days.filter(day => day !== target && day.dataset.day !== "Sunday").map(day => $(day).css('background', 'blue'))
+    days.filter(day => day !== target && day.dataset.day !== "Sunday").map(day => {
+        $(day).css('background', 'aliceblue')
+        $(day).css('color', 'black')
+    })
     target.style.background = "green"
+    target.style.color = "white"
 
     // Get day Selected Info and returns info
     let daySelected = getDaySelected(target)
@@ -164,9 +167,6 @@ const dealWithTimes = () => {
              // Get time Selected Info, adds it to appointment details
             let timeSelected = clickTime(timeSlotContainers, e.target)
             appointment_Details["Time"] = timeSelected
-
-            // Deal with appointment details 
-            dealWithAppointmentDetails()
         })
     })
 }
@@ -174,17 +174,18 @@ const dealWithTimes = () => {
 
 const clickTime = (timeSlotContainers , target) => {
     // Styles the time selected and ones that aren't accordingly
-    timeSlotContainers.filter(timeSlot => timeSlot !== target).map(timeSlot => timeSlot.style.background = "aliceblue")
-    target.style.background = "yellow"
+    timeSlotContainers.filter(timeSlot => timeSlot !== target).map(timeSlot => {
+        timeSlot.style.background = "aliceblue"
+        timeSlot.style.color = "black"
+    })
+    target.style.background = "green"
+    target.style.color = "white"
 
     // Get time Selected Info and returns info
     let timeSelected = target.innerHTML
     return timeSelected
 }
 
-const dealWithAppointmentDetails = () => {
-    console.log(appointment_Details)
-}
 
 const getMonthSelected = monthNo => {
     let monthSelected = {
@@ -267,7 +268,10 @@ const checkAgainstAppointments = () => {
 }
 
 const checkTime = (timeNow , timeSlotContainers) => {
-    timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => timeslotContainer.classList.add('disabled'))
+    timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => {
+        timeslotContainer.classList.add('disabled')
+        timeslotContainer.style.background = "orange"
+    })
 }
 
 const getTimeslotContainers = () => {
