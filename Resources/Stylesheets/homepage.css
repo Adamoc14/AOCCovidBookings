@@ -5,28 +5,35 @@
     place-items: center;
 }
 
+h3{
+    margin:2em 0em;
+}
+
 .container {
     margin: 1.3em 0em;
 }
 
 .card_decision_container ,
-.pps_number_input_container {
+.pps_number_input_container ,
+.destination_decision_container {
     margin: 2em 0em;
 }
 
 .card_decision_container, 
 .medical_card_container, 
-.PPS_number_container{
+.PPS_number_container ,
+.destination_decision_container,
+.surgery_container,
+.drive_through_container{
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.card_container{
+.card_container , 
+.decision_container{
     margin: 0em 1em;
-    width: 23vw;
     display: flex;
-    justify-content: space-around;
 }
 
 .label_radio{
@@ -153,9 +160,9 @@
     width: 40vw;
     margin: 0 auto;
     display: grid;
+    border-radius: 26px;
     background: #1BA1E2;
     box-shadow: 25px 4px 29px rgba(0, 0, 0, 0.25);
-    border-radius: 7px;
     border: none;
 }
 

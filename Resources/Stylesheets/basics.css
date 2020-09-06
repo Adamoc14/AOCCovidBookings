@@ -36,6 +36,9 @@ textarea {
     border: none;
     border: 1px solid #eee;
 }
+input[type=radio]{
+    margin: 0em 1em;
+}
 textarea{
     border: none;
     resize: none;
@@ -161,6 +164,8 @@ footer {
   pointer-events: none;
   opacity: 0.7;
 }
+
+
 
 
 /* Mobile Phone Styling */

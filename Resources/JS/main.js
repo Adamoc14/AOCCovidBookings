@@ -273,11 +273,13 @@ const checkAgainstAppointments = () => {
 }
 
 const checkTime = (timeNow , timeSlotContainers) => {
-    timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => {
-        timeslotContainer.classList.add('disabled')
-        timeslotContainer.style.background = "orange"
-        timeslotContainer.style.color = "black";
-    })
+    if(new Date().getDate()  === Number(appointment_Details["DayDate"])) {
+        timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => {
+            timeslotContainer.classList.add('disabled')
+            timeslotContainer.style.background = "orange"
+            timeslotContainer.style.color = "black";
+        })
+    }
 }
 
 const getTimeslotContainers = () => {
