@@ -152,5 +152,13 @@
     width: 40vw;
     margin: 0 auto;
     display: grid;
-    background: coral;
+    background: #ED9A4F;
+    box-shadow: 25px 4px 29px rgba(0, 0, 0, 0.25);
+    border-radius: 7px;
+    border: none;
+}
+
+#create_appointment_btn:hover {
+    background: green;
+    color: white;
 }
