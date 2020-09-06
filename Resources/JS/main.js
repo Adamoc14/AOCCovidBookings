@@ -14,7 +14,7 @@ const displayPastMonths = () => {
     const monthToday = new Date().getMonth()
     const months = [...document.querySelectorAll('.month')]
     months.filter(month => month.dataset.month < monthToday).map(month => month.classList.add('disabled'))
-    document.querySelector(`.month[data-month="${monthToday}"]`).style.background = "yellow"
+    document.querySelector(`.month[data-month="${monthToday}"]`).style.background = "green"
     displayPastDays(months , document.querySelector(`.month[data-month="${monthToday}"]`))
 }
 
@@ -115,8 +115,12 @@ const dealWithMonths = () => {
 
 const clickMonth = (months , target) => {
         // Styles the month selected and ones that aren't accordingly
-        months.filter(month => month !== target).map(month => month.style.background = "aliceblue")
-        target.style.background = "yellow"
+        months.filter(month => month !== target).map(month => {
+            month.style.background = "aliceblue"
+            month.style.color = "black"
+        })
+        target.style.background = "green"
+        target.style.color = "#fff"
 
         // Get month Selected Info and returns info
         let monthSelected = getMonthSelected(target.dataset.month)
@@ -272,7 +276,7 @@ const checkTime = (timeNow , timeSlotContainers) => {
     timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => {
         timeslotContainer.classList.add('disabled')
         timeslotContainer.style.background = "orange"
-        // timeslotContainer.style.color = "white";
+        timeslotContainer.style.color = "black";
     })
 }
 

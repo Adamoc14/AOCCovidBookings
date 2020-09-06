@@ -56,7 +56,8 @@
 }
 
 .month:hover{
-    background: yellow !important;
+    background: green !important;
+    color: #fff !important;
 }
 
 .day {
