@@ -1,7 +1,7 @@
 // Global Variable Declarations and Function Definitions
 const path = "/",
     appointment_Details = {},
-    url = "https://whmc-server.herokuapp.com/" || "http://localhost:8000/";
+    url = window.location.href === "https://whmc-appointments.netlify.app/" ? "https://whmc-server.herokuapp.com/" : "http://localhost:8000/";
 let appointments_Saved = []
 
 const getData = async() => {
