@@ -42,11 +42,13 @@ const displayPPSInput = () =>{
 }
 
 const dealWithFormSubmit = () => {
-    const submit_btn = document.querySelector('#create_appointment_btn')
-    $(submit_btn).click(e => {
+    // const submit_btn = document.querySelector('#create_appointment_btn')
+    const form = document.querySelector('form')
+    $(form).submit(e => {
         e.preventDefault()
+        // console.log("form is submitted")
+        let formData = getFormData(form)
 
-        let formData = getFormData()
         appointment_Details["firstName"] = formData.get('firstName')
         appointment_Details["Surname"] = formData.get('Surname')
         appointment_Details["Mobile"] = formData.get('Mobile')
@@ -54,12 +56,13 @@ const dealWithFormSubmit = () => {
         whichCard(formData.get('card_decision') , formData)
 
         const createdAppointment =  makeAppointment()
-        console.log(createdAppointment)
+        // console.log(createdAppointment)
     })
 } 
 
 const makeAppointment = async() => {
     const appointment = await axios.post(`${url}api/v1/appointments`, appointment_Details)
+    window.location.href = `${path}`
     console.log(appointment)
     return appointment
 }
@@ -74,9 +77,8 @@ const whichCard = (value , formData) => {
     }
 }
 
-const getFormData = () => {
-    const form = document.querySelector('form'),
-    formData = new FormData(form)
+const getFormData = form => {
+    let formData = new FormData(form)
     return formData
 }
 
@@ -144,10 +146,10 @@ const dealWithTimes = () => {
      */
     // let time_now = new Date(),
         // newRoundedTime = roundMinutes(time_now),
-    // let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10),
-    let timeSlots = makeTimeslots(moment().startOf('day'), [] , 10),
+    let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10),
+    // let timeSlots = makeTimeslots(moment().startOf('day'), [] , 10),
         // timeSlotsOnTheFly = makeTimeslotsOnFly(newRoundedTime, 10, []),
-        timeSlotContainers = displayTimeslots(timeSlots, appointment_Details["Month"], appointment_Details["DayDate"], appointment_Details["DayName"]);
+        timeSlotContainers = displayTimeslots(timeSlots);
     timeSlotContainers.map(timeSlot => {
         $(timeSlot).click(e => {
              // Get time Selected Info, adds it to appointment details
@@ -233,10 +235,10 @@ const makeTimeslots = (startTime, timeSlots , interval) => {
 
 
 
-const displayTimeslots = (timeSlots , month , daydate, dayname) => {
+const displayTimeslots = timeSlots => {
     let timeSlotContainer = document.querySelector('.time_slot_container')
     timeSlots = timeSlots.map(timeSlot => 
-        `<div class="timeslot" data-month="${month}" data-date="${daydate}" data-day="${dayname}" data-time="${timeSlot}">${timeSlot}</div>`
+        `<div class="timeslot" data-time="${timeSlot}">${timeSlot}</div>`
     ).join("")
     timeSlotContainer.innerHTML = timeSlots
     let timeSlotContainers = getTimeslotContainers()
@@ -247,7 +249,6 @@ const displayTimeslots = (timeSlots , month , daydate, dayname) => {
 
 const checkAgainstAppointments = () => {
     appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length === 2)
-    debugger
     appointments_Saved
             .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
             .map(appointment_s => {
