@@ -1,5 +1,5 @@
 // Global Variable Declarations and Function Definitions
-const path = "/Client/Views/",
+const path = "/Client/",
     appointment_Details = {},
     url = "http://localhost:8000/";
 let appointments_Saved = []
