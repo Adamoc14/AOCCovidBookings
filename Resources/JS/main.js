@@ -38,6 +38,13 @@ const displayPPSInput = () =>{
     $(document.querySelector('.Medical_Card')).get(0).onclick = () => {
         document.querySelector('.pps_number_input_container').classList.remove("display")
     }
+    $(document.querySelector('.Drive_Through')).get(0).onclick = () => {
+        document.querySelector('.car_reg_container').classList.add("display")
+    }
+    $(document.querySelector('.Surgery')).get(0).onclick = () => {
+        document.querySelector('.car_reg_container').classList.remove("display")
+    }
+
     // const radio_btns = [...document.getElementsByName('card_decision')]
     // radio_btns.map(radio_btn => {
     //     $(radio_btn).click(e => {
@@ -62,8 +69,9 @@ const dealWithFormSubmit = () => {
         appointment_Details["Mobile"] = formData.get('Mobile')
         appointment_Details["DOB"] = formData.get('DOB')
         whichCard(formData.get('card_decision') , formData)
+        whichDestination(formData.get('card_decision') , formData)
 
-        const createdAppointment =  makeAppointment()
+        makeAppointment()
         // console.log(createdAppointment)
     })
 } 
@@ -72,7 +80,6 @@ const makeAppointment = async() => {
     const appointment = await axios.post(`${url}api/v1/appointments`, appointment_Details)
     window.location.href = `index.html`
     console.log(appointment)
-    return appointment
 }
 
 const whichCard = (value , formData) => {
@@ -82,6 +89,15 @@ const whichCard = (value , formData) => {
     } else if (value === "PPS_Number"){
         appointment_Details["Medical_Card"] = false
         appointment_Details["PPS_Number"] = formData.get('PPS_Number_Input')
+    }
+}
+const whichDestination = (value , formData) => {
+    if(value === "Surgery"){
+        appointment_Details["Surgery"] = true
+        appointment_Details["Car_Reg"] = false
+    } else if (value === "PPS_Number"){
+        appointment_Details["Surgery"] = false
+        appointment_Details["Car_Reg"] = formData.get('Car_Reg_Input')
     }
 }
 

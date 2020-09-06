@@ -40,7 +40,8 @@ h3{
     margin-bottom: unset;
 }
 
-.pps_number_input_container{
+.pps_number_input_container,
+.car_reg_container{
     display: none;
 }
 
