@@ -60,26 +60,33 @@ const dealWithFormSubmit = () => {
     const form = document.querySelector('form')
     $(form).submit(e => {
         e.preventDefault()
-        // console.log("form is submitted")
-        if(appointment_Details["firstName"] !== undefined) return
-        let formData = getFormData(form)
 
+        /**
+         * Because of await making the call stack perform same thing again
+         * This was making it send two requests and insert two records into the DB
+         * This is a fix for this, 
+         * Look for info or something that should have a value already from the first time
+         */ 
+        if(appointment_Details["firstName"] !== undefined) return
+
+        // Getting the form Data and filling it to appointment_Details
+        let formData = getFormData(form)
         appointment_Details["firstName"] = formData.get('firstName')
         appointment_Details["Surname"] = formData.get('Surname')
         appointment_Details["Mobile"] = formData.get('Mobile')
         appointment_Details["DOB"] = formData.get('DOB')
         whichCard(formData.get('card_decision') , formData)
         whichDestination(formData.get('card_decision') , formData)
-        console.log("about to post appointment")
+
         makeAppointment()
-        console.log("Posted: Appoinment 1 minute ago")
-        // window.location.href = '/userView.html'
+        window.location.href = 'userView.html'
     })
 } 
 
 const makeAppointment = async() => {
     try {
         let appointment = await makeRequest()
+        console.log(appointment)
         return appointment
     } catch (error) {
         console.log(error)
