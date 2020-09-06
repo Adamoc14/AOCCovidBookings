@@ -73,13 +73,18 @@ const dealWithFormSubmit = () => {
         console.log("about to post appointment")
         makeAppointment()
         console.log("Posted: Appoinment 1 minute ago")
-        window.location.href = 'userView.html'
+        
     })
 } 
 
 const makeAppointment = async() => {
-    const appointment = await axios.post(`${url}api/v1/appointments`, appointment_Details)
-    console.log("Posted: Appoinment 30 seconds ago")
+    try {
+        await axios.post(`${url}api/v1/appointments`, appointment_Details)
+        console.log("Posted: Appoinment 30 seconds ago")
+        // window.location.href = '/userView.html'
+    } catch (error) {
+        console.log(error)
+    }    
 }
 
 const whichCard = (value , formData) => {
