@@ -70,9 +70,7 @@ const dealWithFormSubmit = () => {
         appointment_Details["DOB"] = formData.get('DOB')
         whichCard(formData.get('card_decision') , formData)
         whichDestination(formData.get('card_decision') , formData)
-
         makeAppointment()
-        // console.log(createdAppointment)
     })
 } 
 
