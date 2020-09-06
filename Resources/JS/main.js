@@ -70,14 +70,16 @@ const dealWithFormSubmit = () => {
         appointment_Details["DOB"] = formData.get('DOB')
         whichCard(formData.get('card_decision') , formData)
         whichDestination(formData.get('card_decision') , formData)
+        console.log("about to post appointment")
         makeAppointment()
-        // window.location.href = "/"
+        console.log("Posted: Appoinment 1 minute ago")
+        window.location.href = 'userView.html'
     })
 } 
 
 const makeAppointment = async() => {
     const appointment = await axios.post(`${url}api/v1/appointments`, appointment_Details)
-    console.log(appointment)
+    console.log("Posted: Appoinment 30 seconds ago")
 }
 
 const whichCard = (value , formData) => {
