@@ -1,7 +1,7 @@
 // Global Variable Declarations and Function Definitions
 const path = "/",
     appointment_Details = {},
-    url = "http://localhost:8000/";
+    url = "https://whmc-server.herokuapp.com/" || "http://localhost:8000/";
 let appointments_Saved = []
 
 const getData = async() => {
