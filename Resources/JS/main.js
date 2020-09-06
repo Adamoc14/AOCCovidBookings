@@ -50,9 +50,9 @@ const displayPPSInput = () =>{
 }
 
 const dealWithFormSubmit = () => {
-    const submit_btn = document.querySelector('#create_appointment_btn')
-    // const form = document.querySelector('form')
-    $(submit_btn).click(e => {
+    // const submit_btn = document.querySelector('#create_appointment_btn')
+    const form = document.querySelector('form')
+    $(form).submit(e => {
         e.preventDefault()
         // console.log("form is submitted")
         let formData = getFormData(form)
