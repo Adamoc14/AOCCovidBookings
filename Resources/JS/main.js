@@ -264,6 +264,7 @@ const checkAgainstAppointments = () => {
             .map(appointment_s => {
                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
             })
 }
 
@@ -271,6 +272,7 @@ const checkTime = (timeNow , timeSlotContainers) => {
     timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => {
         timeslotContainer.classList.add('disabled')
         timeslotContainer.style.background = "orange"
+        // timeslotContainer.style.color = "white";
     })
 }
 
