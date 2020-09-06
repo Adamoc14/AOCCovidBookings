@@ -61,6 +61,7 @@ const dealWithFormSubmit = () => {
     $(submit_btn).click(e => {
         e.preventDefault()
         // console.log("form is submitted")
+        if(appointment_Details["firstName"] !== undefined) return
         let formData = getFormData(form)
 
         appointment_Details["firstName"] = formData.get('firstName')
