@@ -1,6 +1,5 @@
 // Global Variable Declarations and Function Definitions
-const path = "/",
-    appointment_Details = {},
+const appointment_Details = {},
     url = "https://whmc-server.herokuapp.com/";
 let appointments_Saved = []
 
