@@ -1,5 +1,5 @@
 // Global Variable Declarations and Function Definitions
-const path = "/Client/",
+const path = "/",
     appointment_Details = {},
     url = "http://localhost:8000/";
 let appointments_Saved = []
@@ -62,7 +62,7 @@ const dealWithFormSubmit = () => {
 
 const makeAppointment = async() => {
     const appointment = await axios.post(`${url}api/v1/appointments`, appointment_Details)
-    window.location.href = `${path}`
+    window.location.href = `index.html`
     console.log(appointment)
     return appointment
 }
@@ -364,22 +364,12 @@ const roundMinutes = (time_now) => {
 // Initialization Methods
 
 $(document).ready(() => {
-    switch (window.location.pathname) {
-        case path:
-            console.log(window.location.pathname)
+    switch (true) {
+        case window.location.pathname.includes("index.html"):
             getData()
             displayPastMonths()
             displayPPSInput()
             dealWithFormSubmit()
-            dealWithMonths()
-        case `${path}index.html`:
-            console.log(window.location.pathname)
-            getData()
-            displayPastMonths()
-            displayPPSInput()
-            dealWithFormSubmit()
-            dealWithMonths()
-        
-            
+            dealWithMonths()    
     }
 })
