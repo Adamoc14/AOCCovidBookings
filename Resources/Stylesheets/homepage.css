@@ -5,6 +5,42 @@
     place-items: center;
 }
 
+.container {
+    margin: 1.3em 0em;
+}
+
+.card_decision_container ,
+.pps_number_input_container {
+    margin: 2em 0em;
+}
+
+.card_decision_container, 
+.medical_card_container, 
+.PPS_number_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card_container{
+    margin: 0em 1em;
+    width: 23vw;
+    display: flex;
+    justify-content: space-around;
+}
+
+.label_radio{
+    margin-bottom: unset;
+}
+
+.pps_number_input_container{
+    display: none;
+}
+
+.display{
+    display: block;
+}
+
 .months_container {
     display: grid;
     grid-template-columns: auto auto auto;
@@ -31,6 +67,7 @@
     color: #fff;
     border-radius: 50%;
     place-items: center;
+    cursor: pointer;
 }
 
 .day:hover{

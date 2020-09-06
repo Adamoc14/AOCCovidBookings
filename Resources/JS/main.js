@@ -1,32 +1,83 @@
 // Global Variable Declarations and Function Definitions
-const url = "/Client/Views/",
-    appointment_Details = {}
+const path = "/Client/Views/",
+    appointment_Details = {},
+    url = "http://localhost:8000/";
+let appointments_Saved = []
 
 const getData = async() => {
-    const url = "http://localhost:8000/";
     let res = await axios.get(`${url}api/v1/appointments`),
         { data } = res
-    console.log(data)
+    appointments_Saved = data
+}
+
+const displayPastMonths = () => {
+    const monthToday = new Date().getMonth()
+    const months = [...document.querySelectorAll('.month')]
+    months.filter(month => month.dataset.month < monthToday).map(month => month.classList.add('disabled'))
+    document.querySelector(`.month[data-month="${monthToday}"]`).style.background = "yellow"
+    displayPastDays(months , document.querySelector(`.month[data-month="${monthToday}"]`))
+}
+
+const displayPastDays = (months,startMonth) => {
+    // Get month Selected Info , adds it to appointment details
+    let monthSelected = clickMonth(months, startMonth);
+    appointment_Details["Month"] = monthSelected.Name
+
+    // Display Calendar and Days That are closed
+    let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name),
+        dayStarted = new Date().getDate();
+    displayDaysIrrelevant(days , dayStarted)
+    dealWithDays(days)
+}
+
+
+const displayPPSInput = () =>{
+    const radio_btns = [...document.getElementsByName('card_decision')]
+    radio_btns.map(radio_btn => {
+        $(radio_btn).click(e => {
+            if (e.currentTarget.classList.contains("PPS_Number")) document.querySelector('.pps_number_input_container').classList.toggle("display")
+            else document.querySelector('.pps_number_input_container').classList.remove("display")
+        })
+    }) 
 }
 
 const dealWithFormSubmit = () => {
     const submit_btn = document.querySelector('#create_appointment_btn')
     $(submit_btn).click(e => {
         e.preventDefault()
+
         let formData = getFormData()
         appointment_Details["firstName"] = formData.get('firstName')
         appointment_Details["Surname"] = formData.get('Surname')
         appointment_Details["Mobile"] = formData.get('Mobile')
         appointment_Details["DOB"] = formData.get('DOB')
-        debugger
+        whichCard(formData.get('card_decision') , formData)
+
+        const createdAppointment =  makeAppointment()
+        console.log(createdAppointment)
     })
 } 
+
+const makeAppointment = async() => {
+    const appointment = await axios.post(`${url}api/v1/appointments`, appointment_Details)
+    console.log(appointment)
+    return appointment
+}
+
+const whichCard = (value , formData) => {
+    if(value === "Medical_Card"){
+        appointment_Details["Medical_Card"] = true
+        appointment_Details["PPS_Number"] = false
+    } else if (value === "PPS_Number"){
+        appointment_Details["Medical_Card"] = false
+        appointment_Details["PPS_Number"] = formData.get('PPS_Number_Input')
+    }
+}
 
 const getFormData = () => {
     const form = document.querySelector('form'),
     formData = new FormData(form)
     return formData
-
 }
 
 const dealWithMonths = () => {
@@ -38,8 +89,12 @@ const dealWithMonths = () => {
             appointment_Details["Month"] = monthSelected.Name
 
             // Display Calendar and Days That are closed
-            let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay)
-            displayDayClosed(days)
+            let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name )
+            if (monthSelected.Name === nameOfMonth(new Date().getMonth())){
+                displayDaysIrrelevant(days, new Date().getDate())
+            } else {
+                displayDaysIrrelevant(days)
+            }
 
             //Once the daysContainer is filled with the daysCircles, now we can access the days
             dealWithDays(days)
@@ -87,10 +142,12 @@ const dealWithTimes = () => {
     /**
      * Get time now, round it to the nearest 10 make timeslots and return the timeslot Containers
      */
-    let time_now = new Date(),
-        newRoundedTime = roundMinutes(time_now),
-        timeSlots = makeTimeslots(newRoundedTime, 10, []),
-        timeSlotContainers = displayTimeslots(timeSlots);
+    // let time_now = new Date(),
+        // newRoundedTime = roundMinutes(time_now),
+    // let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10),
+    let timeSlots = makeTimeslots(moment().startOf('day'), [] , 10),
+        // timeSlotsOnTheFly = makeTimeslotsOnFly(newRoundedTime, 10, []),
+        timeSlotContainers = displayTimeslots(timeSlots, appointment_Details["Month"], appointment_Details["DayDate"], appointment_Details["DayName"]);
     timeSlotContainers.map(timeSlot => {
         $(timeSlot).click(e => {
              // Get time Selected Info, adds it to appointment details
@@ -138,7 +195,7 @@ const getDaySelected = target => {
     return daySelected
 }
 
-const makeTimeslots = (newRoundedTime, end , timeSlots) => {
+const makeTimeslotsOnFly = (newRoundedTime, end , timeSlots) => {
     let completed = false;
     // if(Number(newRoundedTime.split(":")[0]) > 18) return
     timeSlots.push(newRoundedTime)
@@ -160,16 +217,47 @@ const makeTimeslots = (newRoundedTime, end , timeSlots) => {
     return timeSlots
 }
 
+const makeTimeslots = (startTime, timeSlots , interval) => {
+    let completed = false
+    timeSlots.push(`${startTime.hours()}:${startTime.minutes()}`)
+    if(!completed){
+        if(startTime.hours() === 18 && startTime.minutes() === 0){
+            completed = true 
+            return [...timeSlots]
+        } else {
+            if (Array.isArray(makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval))) return timeSlots
+            timeSlots.push(makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval ))
+        }
+    }
+}
 
 
-const displayTimeslots = timeSlots => {
+
+const displayTimeslots = (timeSlots , month , daydate, dayname) => {
     let timeSlotContainer = document.querySelector('.time_slot_container')
     timeSlots = timeSlots.map(timeSlot => 
-        `<div class="timeslot">${timeSlot}</div>`
+        `<div class="timeslot" data-month="${month}" data-date="${daydate}" data-day="${dayname}" data-time="${timeSlot}">${timeSlot}</div>`
     ).join("")
     timeSlotContainer.innerHTML = timeSlots
     let timeSlotContainers = getTimeslotContainers()
+    checkAgainstAppointments()
+    checkTime(new Date().getHours() , timeSlotContainers)
     return timeSlotContainers
+}
+
+const checkAgainstAppointments = () => {
+    appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length === 2)
+    debugger
+    appointments_Saved
+            .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
+            .map(appointment_s => {
+                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+            })
+}
+
+const checkTime = (timeNow , timeSlotContainers) => {
+    timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => timeslotContainer.classList.add('disabled'))
 }
 
 const getTimeslotContainers = () => {
@@ -177,14 +265,17 @@ const getTimeslotContainers = () => {
 }
 
 
-const displayDayClosed = days => {
+const displayDaysIrrelevant = (days , dayStarted) => {
+    if(dayStarted !== null) {
+        days.filter(day => day.innerHTML < dayStarted).map(day => day.classList.add('disabled'))
+    }
     days.filter(day => day.dataset.day === "Sunday").map(day => {
         day.style.background = "orange" 
         day.classList.add('disabled')
     })
 }
 
-const fillInCalendar = (monthSelectedNum, numberOfDays, firstDay) => {
+const fillInCalendar = (monthSelectedNum, numberOfDays, firstDay, monthSelectedName) => {
     let calendarContainer = document.querySelector('.calendar_container'),
         daysOfWeek = `
             <h3 class= "dayOfWeek">Monday</h3>
@@ -200,8 +291,8 @@ const fillInCalendar = (monthSelectedNum, numberOfDays, firstDay) => {
         margin = `<div class="margin"></div>`
     numberOfDays = numberOfDays.map(day => {
         let dayOfWeek = getWeekDayNum(new Date().getFullYear(), monthSelectedNum, day)
-        dayOfWeek = nameOfDay(dayOfWeek);
-        return `<div class="day" data-day= "${dayOfWeek}">${day}</div>`
+            dayOfWeek = nameOfDay(dayOfWeek);
+        return `<div class="day" data-day= "${dayOfWeek}" data-month="${monthSelectedName}">${day}</div>`
     }).join("")
     calendarContainer.innerHTML= daysOfWeek + margin + numberOfDays
     getSpan(firstDay)
@@ -224,7 +315,7 @@ const getDayContainers = () => {
 }
 
 const nameOfMonth = month => {
-    const months = ["January" , "February" , "March" , "April" ,"May", "June", "July" , "August", "Spetember", "October","November" , "December"]
+    const months = ["January" , "February" , "March" , "April" ,"May", "June", "July" , "August", "September", "October","November" , "December"]
     return months[month]
 }
 
@@ -273,10 +364,21 @@ const roundMinutes = (time_now) => {
 
 $(document).ready(() => {
     switch (window.location.pathname) {
-        case `${url}index.html`:
+        case path:
+            console.log(window.location.pathname)
             getData()
+            displayPastMonths()
+            displayPPSInput()
             dealWithFormSubmit()
             dealWithMonths()
+        case `${path}index.html`:
+            console.log(window.location.pathname)
+            getData()
+            displayPastMonths()
+            displayPPSInput()
+            dealWithFormSubmit()
+            dealWithMonths()
+        
             
     }
 })

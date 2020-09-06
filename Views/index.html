@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../Resources/Stylesheets/homepage.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
     <script src="../Resources/JS/main.js"></script>
     <title>WHMC Vaccination | Home </title>
 </head>
@@ -29,6 +30,20 @@
                 <div class="mobile_container container">
                     <label for="mobile">Mobile No.</label>
                     <input type="text" name="Mobile" id="mobile" required>
+                </div>
+                <div class="card_decision_container container">
+                    <div class="medical_card_container card_container">
+                        <input type="radio" name="card_decision" id="Medical Card" value="Medical_Card">
+                        <label for="Medical_Card" class="label_radio">I have a Medical Card</label>
+                    </div>
+                    <div class="PPS_number_container card_container">
+                        <input type="radio" name="card_decision" id="PPS_Number" class="PPS_Number" value="PPS_Number">
+                        <label for="PPS_Number" class="label_radio">I have my PPS Number</label>
+                    </div>
+                </div>
+                <div class="pps_number_input_container">
+                    <label for="PPS_Number_Input">PPS Number.</label>
+                    <input type="text" name="PPS_Number_Input" id="PPS_Number_Input">
                 </div>
                 <div class="months_container container">
                     <h1 class="month" data-month="0">January</h1>
