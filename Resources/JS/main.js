@@ -87,11 +87,16 @@ const makeAppointment = async() => {
     try {
         let appointment = await makeRequest()
         console.log(appointment)
-        window.location.href = 'userView.html'
+        displayAppointmentPopup(appointment)
+        // window.location.href = 'userView.html'
         return appointment
     } catch (error) {
         console.log(error)
     }    
+}
+
+const displayAppointmentPopup = appointment => {
+    console.log(appointment)
 }
 
 const makeRequest = () => {
