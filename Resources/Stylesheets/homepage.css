@@ -1,7 +1,7 @@
 .appointment_made_modal{
     width: 100vw;
     position: fixed;
-    /* display: none; */
+    display: none;
     z-index:2;
     min-height: 100vh;
     background: rgb(0,0,0,.6)
