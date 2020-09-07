@@ -78,6 +78,7 @@ const dealWithFormSubmit = () => {
         whichCard(formData.get('card_decision') , formData)
         whichDestination(formData.get('card_decision') , formData)
 
+        // Calls the method to perform the async function to post my data 
         makeAppointment()
     })
 } 
