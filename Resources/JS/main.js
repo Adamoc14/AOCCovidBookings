@@ -86,7 +86,6 @@ const dealWithFormSubmit = () => {
 const makeAppointment = async() => {
     try {
         let appointment = await makeRequest()
-        console.log(appointment)
         displayAppointmentPopup(appointment)
         // window.location.href = 'userView.html'
         return appointment
@@ -96,7 +95,8 @@ const makeAppointment = async() => {
 }
 
 const displayAppointmentPopup = appointment => {
-    console.log(appointment)
+    let { data: appointment_made_details } = appointment
+    console.log(appointment_made_details)
 }
 
 const makeRequest = () => {
