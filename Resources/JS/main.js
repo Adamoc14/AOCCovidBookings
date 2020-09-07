@@ -108,8 +108,8 @@ const fillinModalDetails = appointment_made_details => {
                 <h2>Hi ${appointment_made_details.firstName} ${appointment_made_details.Surname},</h2>
                 <h4>You have successfully made an appointment for</h4>
                 <div class="date_time_container">
-                    <h3>Date: ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayName} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayDate} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Month}</h3>
-                    <h3>Time: ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Time}</h3>
+                    <h3><strong>Date :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayName} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayDate} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Month}</h3>
+                    <h3><strong>Time :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Time}</h3>
                 </div>
                 <a href="userView.html" class="see_all_appointments_btn">See All Appointments</a>
             </div>`
