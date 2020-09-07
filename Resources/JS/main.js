@@ -1,7 +1,8 @@
 // Global Variable Declarations and Function Definitions
 const appointment_Details = {},
     url = "https://whmc-server.herokuapp.com/";
-let appointments_Saved = []
+let appointments_Saved = [],
+    appointment_just_created;
 
 const getData = async() => {
     let res = await axios.get(`${url}api/v1/appointments`),
@@ -95,8 +96,23 @@ const makeAppointment = async() => {
 }
 
 const displayAppointmentPopup = appointment => {
-    let { data: appointment_made_details } = appointment
-    console.log(appointment_made_details)
+    let { data: appointment_made_details } = appointment,
+    modal = fillinModalDetails(appointment_made_details)
+    document.querySelector('.appointment_made_modal').outerHTML = modal;
+    document.querySelector('.appointment_made_modal').style.display = "block"
+    appointment_just_created = appointment_made_details
+}
+
+const fillinModalDetails = appointment_made_details => {
+    return `<div class="appointment_made_modal_content">
+                <h2>Hi ${appointment_made_details.firstName} ${appointment_made_details.Surname},</h2>
+                <h4>You have successfully made an appointment for</h4>
+                <div class="date_time_container">
+                    <h3>Date: ${appointment_made_details.Appointments[Appointments.length - 1].DayName} ${appointment_made_details.Appointments[Appointments.length - 1].DayDate} ${appointment_made_details.Appointments[Appointments.length - 1].Month}</h3>
+                    <h3>Time:${appointment_made_details.Appointments[Appointments.length - 1].Time}</h3>
+                </div>
+                <a href="userView.html" class="see_all_appointments_btn">See All Appointments</a>
+            </div>`
 }
 
 const makeRequest = () => {

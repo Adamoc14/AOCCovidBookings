@@ -1,3 +1,39 @@
+.appointment_made_modal{
+    width: 100vw;
+    position: fixed;
+    /* display: none; */
+    z-index:2;
+    min-height: 100vh;
+    background: rgb(0,0,0,.6)
+}
+.appointment_made_modal_content {
+    position: fixed;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: auto;
+    width: 66vw;
+    margin: 0 auto;
+    transform: translate(25%, 14%);
+    text-align: center;
+    padding: 2em 2em;
+    background: aliceblue;
+    box-shadow: 2px 4px 20px 0px black;
+}
+
+.see_all_appointments_btn {
+    padding: .8em .8em;
+    width: 30vw;
+    background: green;
+    margin: 0 auto;
+    color: white;
+}
+
+.see_all_appointments_btn:hover {
+    background: white;
+    color: black;
+    border: 1px solid #eee;
+}
+
 .create_appointment_form {
     padding: 2em 2em;
     min-height: 100vh;
