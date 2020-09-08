@@ -97,6 +97,7 @@ h3{
 .month {
     background: aliceblue;
     padding: 1em;
+    cursor: pointer;
 }
 
 .month:hover{
@@ -185,6 +186,7 @@ h3{
     background: aliceblue;
     padding: 1em;
     border-radius: 50px;
+    cursor: pointer;
 }
 
 .timeslot:hover{
