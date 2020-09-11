@@ -17,7 +17,7 @@ const userViewInit = () => {
 const displayUserViewButtons = () => {
 const buttonsContainer = document.querySelector('.buttons_container'),
     id = new URLSearchParams(new URL(window.location.href).search).get("id");
-    buttonsContainer.innerText = 
+    buttonsContainer.innerHTML = 
         `<a class="update_btn action_btn" href="edit.html?id=${id}"> Edit</a >
         <div class="delete_btn action_btn">Delete</div>`;   
 }
