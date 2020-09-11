@@ -10,6 +10,13 @@ const getData = async() => {
     appointments_Saved = data
 }
 
+const userViewInit = () => {
+    const buttonsContainer = document.querySelector('.buttons_container')
+    buttonsContainer.innerText = 
+        `<a class="update_btn action_btn" href="edit.html?id=${appointment_just_created["_id"]}"> Edit</a >
+        <div class="delete_btn action_btn">Delete</div>`;
+}
+
 const displayPastMonths = () => {
     const monthToday = new Date().getMonth()
     const months = [...document.querySelectorAll('.month')]
@@ -439,7 +446,7 @@ const roundMinutes = (time_now) => {
 
 $(document).ready(() => {
     switch (true) {
-        case window.location.pathname.includes("/"):
+        case window.location.pathname === "/" || window.location.pathname === "/Client/":
             getData()
             displayPastMonths()
             displayPPSInput()
@@ -450,6 +457,8 @@ $(document).ready(() => {
             displayPastMonths()
             displayPPSInput()
             dealWithFormSubmit()
-            dealWithMonths()    
+            dealWithMonths()   
+        case window.location.pathname.includes("userView.html"):
+            userViewInit()
     }
 })

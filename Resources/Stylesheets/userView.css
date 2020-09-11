@@ -1,0 +1,86 @@
+
+.appointment_display_container_main {
+    padding: 2em 2em;
+}
+
+.appointment_display_container_inner {
+    display: grid;
+    grid-template-columns: auto;
+    min-height: 100vh;
+    background: green;
+    margin-top: 1em;
+}
+
+.appointment_container {
+    background: red;
+    height: 43vh;
+    margin: 1em 0em;
+    display: grid;
+    grid-template-columns: auto;
+}
+
+.first_container,
+.second_container {
+    display: flex;
+    align-items: center;
+}
+
+.user_details_container{
+    margin-right: 10em;
+}
+
+.user_details_container, 
+.buttons_container {
+    margin-left: auto;
+}
+
+.date_square {
+    width: 9vw;
+    height: 18vh;
+    margin: 1em;
+    background: white;
+}
+
+.appointment_details {
+    margin-left: 1em;
+    margin-bottom: 1em;
+}
+
+
+.top_header {
+    display: flex;
+    width: 92vw;
+    align-items: center;
+}
+
+.plus_btn_add {
+    padding: .3em 1em;
+    background: aliceblue;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.buttons_container {
+    display: flex;
+    margin-right: 3em;
+}
+
+.action_btn {
+    margin: 0em .5em;
+    padding: .5em;
+    width: 8vw;
+    text-align: center;
+}
+
+.update_btn{
+    background: pink;
+}
+
+.delete_btn{
+    background: honeydew;
+}
+
+.add_btn{
+    background: indianred
+}
+

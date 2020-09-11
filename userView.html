@@ -3,10 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Resources/Stylesheets/basics.css">
+    <link rel="stylesheet" href="./Resources/Stylesheets/userView.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+    <script src="./Resources/JS/main.js"></script>
     <title>WHMC Vaccination | Appointments</title>
 </head>
 <body>
-    Well done you submitted the form
-    <a href="index.html">Add appointment</a>
+    <div class="wrapper">
+        <div class="appointment_display_container_main">
+            <div class="top_header">
+                <h2>Appointments</h2>
+                <div class="plus_btn_add addAppointmentBtn">
+                    <a href="index.html">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="appointment_display_container_inner">
+                <div class="appointment_container">
+                    <div class="first_container">
+                        <div class="date_square"></div>
+                        <div class="user_details_container">
+                            <div class="name_container">
+                                <h2>Name: Adam O Ceallaigh</h2>
+                            </div>
+                            <div class="dob_container">
+                                <h2>DOB: 12/12/1998</h2>
+                            </div>
+                            <div class="pps_container">
+                                <h2>PPS: 09076754yf</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="second_container">
+                        <div class="appointment_details">
+                            <div class="date_container">
+                                <h2>Date: Monday 6th December</h2>
+                            </div>
+                            <div class="time_container">
+                                <h2>Time: 3:0 pm</h2>
+                            </div>
+                        </div>
+                        <div class="buttons_container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
 </body>
 </html>
