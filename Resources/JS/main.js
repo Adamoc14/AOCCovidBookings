@@ -1,8 +1,7 @@
 // Global Variable Declarations and Function Definitions
 const appointment_Details = {},
     url = "https://whmc-server.herokuapp.com/";
-let appointments_Saved = [],
-    appointment_just_created;
+let appointments_Saved = [];
 
 const getData = async() => {
     let res = await axios.get(`${url}api/v1/appointments`),
@@ -14,12 +13,43 @@ const userViewInit = () => {
     displayUserViewButtons()
 }
 
-const displayUserViewButtons = () => {
-const buttonsContainer = document.querySelector('.buttons_container'),
-    id = new URLSearchParams(new URL(window.location.href).search).get("id");
-    buttonsContainer.innerHTML = 
-        `<a class="update_btn action_btn" href="edit.html?id=${id}"> Edit</a >
-        <div class="delete_btn action_btn">Delete</div>`;   
+const displayUserView = () => {
+const apptContainer = document.querySelector('.buttons_container'),
+    id = new URLSearchParams(new URL(window.location.href).search).get("id"),
+    appointment_just_created = await axios.get(`${url}api/v1/appointments/${id}`);
+    apptContainer.insertAdjacentElement('beforeend',  
+        `<div class="appointment_container">
+            <div class="first_container">
+                <div class="date_square"></div>
+                <div class="user_details_container">
+                    <div class="name_container">
+                        <h2>Name: ${appointment_just_created.firstName} ${appointment_just_created.Surname}</h2>
+                    </div>
+                    <div class="dob_container">
+                        <h2>DOB: ${appointment_just_created.DOB}</h2>
+                    </div>
+                    <div class="pps_container">
+                        <h2>PPS: ${appointment_just_created.PPS_Number}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="second_container">
+                <div class="appointment_details">
+                    <div class="date_container">
+                        <h2>Date: ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].DayName} ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].DayDate} ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].Month}</h2>
+                    </div>
+                    <div class="time_container">
+                        <h2>Time: ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].Time}</h2>
+                    </div>
+                </div>
+                <div class="buttons_container">
+                    <a class="update_btn action_btn" href="edit.html?id=${id}"> Edit</a >
+                    <div class="delete_btn action_btn">Delete</div>
+                </div>
+            </div>
+        </div>
+        `
+    )  
 }
 
 const displayPastMonths = () => {
