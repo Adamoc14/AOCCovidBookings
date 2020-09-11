@@ -487,13 +487,13 @@ $(document).ready(() => {
             displayPPSInput()
             dealWithFormSubmit()
             dealWithMonths()  
-        case window.location.pathname.includes("index.html"):
+        case window.location.pathname.includes("index"):
             getData()
             displayPastMonths()
             displayPPSInput()
             dealWithFormSubmit()
             dealWithMonths()   
-        case window.location.pathname.includes("userView.html"):
+        case window.location.pathname.includes("userView"):
             userViewInit()
     }
 })
