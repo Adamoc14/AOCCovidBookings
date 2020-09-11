@@ -14,7 +14,7 @@ const userViewInit = () => {
 }
 
 const displayUserView = async() => {
-const apptContainer = document.querySelector('.buttons_container'),
+    const apptContainer = document.querySelector('.appointment_display_container_inner'),
     id = new URLSearchParams(new URL(window.location.href).search).get("id"),
     appointment_just_created = await axios.get(`${url}api/v1/appointments/${id}`);
     apptContainer.insertAdjacentElement('beforeend',  
