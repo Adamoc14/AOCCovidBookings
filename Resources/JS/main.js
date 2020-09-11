@@ -10,7 +10,7 @@ const getData = async() => {
 }
 
 const userViewInit = () => {
-    displayUserViewButtons()
+    displayUserView()
 }
 
 const displayUserView = async() => {
