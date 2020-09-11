@@ -11,10 +11,15 @@ const getData = async() => {
 }
 
 const userViewInit = () => {
-    const buttonsContainer = document.querySelector('.buttons_container')
+    displayUserViewButtons()
+}
+
+const displayUserViewButtons = () => {
+const buttonsContainer = document.querySelector('.buttons_container'),
+    id = new URLSearchParams(new URL(window.location.href).search).get("id");
     buttonsContainer.innerText = 
-        `<a class="update_btn action_btn" href="edit.html?id=${appointment_just_created["_id"]}"> Edit</a >
-        <div class="delete_btn action_btn">Delete</div>`;
+        `<a class="update_btn action_btn" href="edit.html?id=${id}"> Edit</a >
+        <div class="delete_btn action_btn">Delete</div>`;   
 }
 
 const displayPastMonths = () => {
@@ -107,7 +112,7 @@ const displayAppointmentPopup = appointment => {
     modal = fillinModalDetails(appointment_made_details)
     document.querySelector('.appointment_made_modal').innerHTML = modal;
     document.querySelector('.appointment_made_modal').style.display = "block"
-    appointment_just_created = appointment_made_details
+    // appointment_just_created = appointment_made_details
 }
 
 const fillinModalDetails = appointment_made_details => {
