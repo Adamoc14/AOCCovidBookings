@@ -493,7 +493,7 @@ $(document).ready(() => {
             displayPPSInput()
             dealWithFormSubmit()
             dealWithMonths()   
-        case window.location.pathname.includes("userView"):
+        case window.location.pathname.includes("userview"):
             userViewInit()
     }
 })
