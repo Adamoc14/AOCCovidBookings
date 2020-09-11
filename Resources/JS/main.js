@@ -13,7 +13,7 @@ const userViewInit = () => {
     displayUserViewButtons()
 }
 
-const displayUserView = () => {
+const displayUserView = async() => {
 const apptContainer = document.querySelector('.buttons_container'),
     id = new URLSearchParams(new URL(window.location.href).search).get("id"),
     appointment_just_created = await axios.get(`${url}api/v1/appointments/${id}`);
