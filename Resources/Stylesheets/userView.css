@@ -7,16 +7,15 @@
     display: grid;
     grid-template-columns: auto;
     min-height: 100vh;
-    background: green;
     margin-top: 1em;
 }
 
 .appointment_container {
-    background: red;
     height: 43vh;
     margin: 1em 0em;
     display: grid;
     grid-template-columns: auto;
+    border: 1px solid #eee;
 }
 
 .first_container,
@@ -39,6 +38,9 @@
     height: 18vh;
     margin: 1em;
     background: white;
+    display: grid;
+    place-items: center;
+    font-size: 3vw;
 }
 
 .appointment_details {
@@ -68,19 +70,19 @@
 .action_btn {
     margin: 0em .5em;
     padding: .5em;
-    width: 8vw;
+    width: 9vw;
     text-align: center;
 }
 
 .update_btn{
-    background: pink;
+    border: 1px solid #eee
 }
 
-.delete_btn{
-    background: honeydew;
+.delete_btn {
+    background: orange;
 }
 
 .add_btn{
-    background: indianred
+    background: indianred;
 }
 

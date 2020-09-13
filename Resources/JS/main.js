@@ -21,7 +21,10 @@ const displayUserView = async() => {
     userDetails.Appointments.map(appt =>  
         `<div class="appointment_container">
             <div class="first_container">
-                <div class="date_square">${appt.DayDate}</div>
+                <div class="date_square">
+                    <h5>${appt.Month}</h5>
+                    ${appt.DayDate}
+                </div>
                 <div class="user_details_container">
                     <div class="name_container">
                         <h2>Name: ${userDetails.firstName} ${userDetails.Surname}</h2>
