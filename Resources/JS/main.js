@@ -49,11 +49,11 @@ const displayUserView = async() => {
             </div>
         </div>
         `
+        
     )
     $(document.querySelector('.delete_btn')).click(e => {
         e.preventDefault();
-        const appointments = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
-        debugger
+        deleteAppointment()
     })
     
 }
@@ -131,6 +131,15 @@ const dealWithFormSubmit = () => {
         makeAppointment()
     })
 } 
+
+const deleteAppointment = async() => {
+    try {
+        const appointments = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
+        debugger
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 const makeAppointment = async() => {
     try {
