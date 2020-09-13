@@ -44,15 +44,16 @@ const displayUserView = async() => {
                 </div>
                 <div class="buttons_container">
                     <a class="update_btn action_btn" href="edit.html?id=${userDetails.Appointments[userDetails.Appointments.length - 1]._id}&${userDetails._id}"> Edit</a >
-                    <div class="delete_btn action_btn" href="${url}api/v1/appointments/${id}?userId=${userDetails._id}">Delete</div>
+                    <div class="delete_btn action_btn">Delete</div>
                 </div>
             </div>
         </div>
         `
     )
-    $(document.querySelector('.update_btn')).click( e => {
+    $(document.querySelector('.delete_btn')).click(e => {
         e.preventDefault();
-        console.log("Working on it")
+        const appointments = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
+        debugger
     })
     
 }
