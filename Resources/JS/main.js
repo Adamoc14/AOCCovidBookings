@@ -105,8 +105,20 @@ const displayPPSInput = () =>{
     // }) 
 }
 
+const dealWithFormUpdate = () => {
+    const formUpdate = document.querySelector('.form_Update'),
+        id = new URLSearchParams(new URL(window.location.href).search).get("id"),
+        {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`);
+    $(formUpdate).submit(e => {
+        e.preventDefault()
+        appointment_Details["userId"] = userDetails._id
+        updateAppointment()
+    })
+}
+
+
+
 const dealWithFormSubmit = () => {
-    const submit_btn = document.querySelector('#create_appointment_btn')
     const form = document.querySelector('form')
     $(form).submit(e => {
         e.preventDefault()
@@ -132,6 +144,15 @@ const dealWithFormSubmit = () => {
         makeAppointment()
     })
 } 
+
+const updateAppointment = async() => {
+    try {
+        const appointments = await axios.put(`${url}api/v1/appointments/${id}`, appointment_Details)
+        window.location = `userView.html?id=${appointments.data._id}`
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 const deleteAppointment = async(id , userDetails) => {
     try {
@@ -511,5 +532,10 @@ $(document).ready(() => {
             dealWithMonths()   
         case window.location.pathname.includes("userview"):
             userViewInit()
+        case window.location.pathname.includes("edit"):
+            displayPastMonths()
+            displayPPSInput()
+            dealWithFormUpdate()
+            dealWithMonths()
     }
 })
