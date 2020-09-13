@@ -16,40 +16,45 @@ const userViewInit = () => {
 const displayUserView = async() => {
     const apptContainer = document.querySelector('.appointment_display_container_inner'),
     id = new URLSearchParams(new URL(window.location.href).search).get("id"),
-    {data: appointment_just_created} = await axios.get(`${url}api/v1/appointments/${id}`);
+    {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`);
     apptContainer.insertAdjacentHTML('beforeend',  
         `<div class="appointment_container">
             <div class="first_container">
                 <div class="date_square"></div>
                 <div class="user_details_container">
                     <div class="name_container">
-                        <h2>Name: ${appointment_just_created.firstName} ${appointment_just_created.Surname}</h2>
+                        <h2>Name: ${userDetails.firstName} ${userDetails.Surname}</h2>
                     </div>
                     <div class="dob_container">
-                        <h2>DOB: ${appointment_just_created.DOB}</h2>
+                        <h2>DOB: ${userDetails.DOB}</h2>
                     </div>
                     <div class="pps_container">
-                        <h2>PPS: ${appointment_just_created.PPS_Number}</h2>
+                        <h2>PPS: ${userDetails.PPS_Number}</h2>
                     </div>
                 </div>
             </div>
             <div class="second_container">
                 <div class="appointment_details">
                     <div class="date_container">
-                        <h2>Date: ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].DayName} ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].DayDate} ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].Month}</h2>
+                        <h2>Date: ${userDetails.Appointments[userDetails.Appointments.length - 1].DayName} ${userDetails.Appointments[userDetails.Appointments.length - 1].DayDate} ${userDetails.Appointments[userDetails.Appointments.length - 1].Month}</h2>
                     </div>
                     <div class="time_container">
-                        <h2>Time: ${appointment_just_created.Appointments[appointment_just_created.Appointments.length - 1].Time}</h2>
+                        <h2>Time: ${userDetails.Appointments[userDetails.Appointments.length - 1].Time}</h2>
                     </div>
                 </div>
                 <div class="buttons_container">
-                    <a class="update_btn action_btn" href="edit.html?id=${id}"> Edit</a >
-                    <div class="delete_btn action_btn">Delete</div>
+                    <a class="update_btn action_btn" href="edit.html?id=${userDetails.Appointments[userDetails.Appointments.length - 1]._id}&${userDetails._id}"> Edit</a >
+                    <div class="delete_btn action_btn" href="${url}api/v1/appointments/${id}?userId=${userDetails._id}">Delete</div>
                 </div>
             </div>
         </div>
         `
-    )  
+    )
+    $(document.querySelector('.update_btn')).click( e => {
+        e.preventDefault();
+        console.log("Working on it")
+    })
+    
 }
 
 const displayPastMonths = () => {
@@ -142,7 +147,7 @@ const displayAppointmentPopup = appointment => {
     modal = fillinModalDetails(appointment_made_details)
     document.querySelector('.appointment_made_modal').innerHTML = modal;
     document.querySelector('.appointment_made_modal').style.display = "block"
-    // appointment_just_created = appointment_made_details
+    // userDetails = appointment_made_details
 }
 
 const fillinModalDetails = appointment_made_details => {
