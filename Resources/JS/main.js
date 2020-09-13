@@ -105,7 +105,7 @@ const displayPPSInput = () =>{
     // }) 
 }
 
-const dealWithFormUpdate = () => {
+const dealWithFormUpdate = async() => {
     const formUpdate = document.querySelector('.form_Update'),
         id = new URLSearchParams(new URL(window.location.href).search).get("id"),
         {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`);
