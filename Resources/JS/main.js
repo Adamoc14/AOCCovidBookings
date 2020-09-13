@@ -136,7 +136,7 @@ const dealWithFormSubmit = () => {
 const deleteAppointment = async(id , userDetails) => {
     try {
         const appointments = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
-        debugger
+        window.location = `userView.html?id=${ appointments._id}`
     } catch (error) {
         console.log(error)
     }
