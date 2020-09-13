@@ -44,7 +44,7 @@ const displayUserView = async() => {
                     </div>
                 </div>
                 <div class="buttons_container">
-                    <a class="update_btn action_btn" href="edit.html?id=${appt._id}&${userDetails._id}"> Edit</a >
+                    <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${userDetails._id}"> Edit</a >
                     <div class="delete_btn action_btn" data-appt="${appt._id}">Delete</div>
                 </div>
             </div>
@@ -107,7 +107,7 @@ const displayPPSInput = () =>{
 
 const dealWithFormUpdate = async() => {
     const formUpdate = document.querySelector('.form_Update'),
-        id = new URLSearchParams(new URL(window.location.href).search).get("id"),
+        id = new URLSearchParams(new URL(window.location.href).search).get("userId"),
         {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`);
     $(formUpdate).submit(e => {
         e.preventDefault()
