@@ -112,7 +112,7 @@ const dealWithFormUpdate = async() => {
     $(formUpdate).submit(e => {
         e.preventDefault()
         appointment_Details["userId"] = userDetails._id
-        updateAppointment()
+        updateAppointment(id)
     })
 }
 
@@ -145,7 +145,7 @@ const dealWithFormSubmit = () => {
     })
 } 
 
-const updateAppointment = async() => {
+const updateAppointment = async (id) => {
     try {
         const appointments = await axios.put(`${url}api/v1/appointments/${id}`, appointment_Details)
         window.location = `userView.html?id=${appointments.data._id}`
