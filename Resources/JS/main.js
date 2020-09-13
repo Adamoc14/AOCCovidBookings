@@ -534,7 +534,6 @@ $(document).ready(() => {
             userViewInit()
         case window.location.pathname.includes("edit"):
             displayPastMonths()
-            displayPPSInput()
             dealWithFormUpdate()
             dealWithMonths()
     }
