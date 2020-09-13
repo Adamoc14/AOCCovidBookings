@@ -53,7 +53,7 @@ const displayUserView = async() => {
     )
     $(document.querySelector('.delete_btn')).click(e => {
         e.preventDefault();
-        deleteAppointment()
+        deleteAppointment(id , userDetails)
     })
     
 }
@@ -132,7 +132,7 @@ const dealWithFormSubmit = () => {
     })
 } 
 
-const deleteAppointment = async() => {
+const deleteAppointment = async(id , userDetails) => {
     try {
         const appointments = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
         debugger
