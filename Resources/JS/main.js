@@ -44,7 +44,7 @@ const displayUserView = async() => {
                     </div>
                 </div>
                 <div class="buttons_container">
-                    <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${userDetails._id}"> Edit</a >
+                    <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${userDetails._id}">Update</a>
                     <div class="delete_btn action_btn" data-appt="${appt._id}">Delete</div>
                 </div>
             </div>
