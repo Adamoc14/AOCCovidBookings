@@ -38,6 +38,7 @@
     height: 18vh;
     margin: 1em;
     background: white;
+    border: 1px solid #eee;
     display: grid;
     place-items: center;
     font-size: 3vw;
