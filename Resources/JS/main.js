@@ -93,26 +93,17 @@ const displayPPSInput = () =>{
     $(document.querySelector('.Surgery')).get(0).onclick = () => {
         document.querySelector('.car_reg_container').classList.remove("display")
     }
-
-    // const radio_btns = [...document.getElementsByName('card_decision')]
-    // radio_btns.map(radio_btn => {
-    //     $(radio_btn).click(e => {
-    //         if (e.currentTarget.classList.contains("PPS_Number")) 
-    //             document.querySelector('.pps_number_input_container').classList.toggle("display")
-    //         else 
-    //             document.querySelector('.pps_number_input_container').classList.remove("display")
-    //     })
-    // }) 
 }
 
 const dealWithFormUpdate = async() => {
     const formUpdate = document.querySelector('.form_Update'),
-        id = new URLSearchParams(new URL(window.location.href).search).get("id"),
-        {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`);
+        user_id = new URLSearchParams(new URL(window.location.href).search).get("userId"),
+        appointment_id = new URLSearchParams(new URL(window.location.href).search).get("id");
+        // { data: userDetails } = await axios.get(`${url}api/v1/appointments/${user_id}`);
     $(formUpdate).submit(e => {
         e.preventDefault()
-        appointment_Details["userId"] = userDetails._id
-        updateAppointment(id)
+        appointment_Details["userId"] = user_id
+        updateAppointment(appointment_id)
     })
 }
 
@@ -145,10 +136,10 @@ const dealWithFormSubmit = () => {
     })
 } 
 
-const updateAppointment = async (id) => {
+const updateAppointment = async (appt_id) => {
     try {
-        const appointments = await axios.put(`${url}api/v1/appointments/${id}`, appointment_Details)
-        window.location = `userView.html?id=${appointments.data._id}`
+        const { data: Users_Appointments } = await axios.put(`${url}api/v1/appointments/${appt_id}`, appointment_Details)
+        window.location = `userView.html?id=${Users_Appointments._id}`
     } catch (error) {
         console.log(error)
     }
@@ -156,8 +147,8 @@ const updateAppointment = async (id) => {
 
 const deleteAppointment = async(id , userDetails) => {
     try {
-        const appointments = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
-        window.location = `userView.html?id=${ appointments.data._id}`
+        const { data: Users_Appointments } = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
+        window.location = `userView.html?id=${ Users_Appointments._id}`
     } catch (error) {
         console.log(error)
     }
