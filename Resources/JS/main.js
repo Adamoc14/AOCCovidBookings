@@ -16,8 +16,9 @@ const userViewInit = () => {
 const displayUserView = async() => {
     const apptContainer = document.querySelector('.appointment_display_container_inner'),
     id = new URLSearchParams(new URL(window.location.href).search).get("id"),
-    {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`);
-    apptContainer.insertAdjacentHTML('beforeend',  
+    {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`),
+    appointmentsData = 
+    userDetails.Appointments.map(appt =>  
         `<div class="appointment_container">
             <div class="first_container">
                 <div class="date_square"></div>
@@ -36,24 +37,24 @@ const displayUserView = async() => {
             <div class="second_container">
                 <div class="appointment_details">
                     <div class="date_container">
-                        <h2>Date: ${userDetails.Appointments[userDetails.Appointments.length - 1].DayName} ${userDetails.Appointments[userDetails.Appointments.length - 1].DayDate} ${userDetails.Appointments[userDetails.Appointments.length - 1].Month}</h2>
+                        <h2>Date: ${appt.DayName} ${appt.DayDate} ${appt.Month}</h2>
                     </div>
                     <div class="time_container">
-                        <h2>Time: ${userDetails.Appointments[userDetails.Appointments.length - 1].Time}</h2>
+                        <h2>Time: ${appt.Time}</h2>
                     </div>
                 </div>
                 <div class="buttons_container">
-                    <a class="update_btn action_btn" href="edit.html?id=${userDetails.Appointments[userDetails.Appointments.length - 1]._id}&${userDetails._id}"> Edit</a >
-                    <div class="delete_btn action_btn">Delete</div>
+                    <a class="update_btn action_btn" href="edit.html?id=${appt._id}&${userDetails._id}"> Edit</a >
+                    <div class="delete_btn action_btn" data-appt="${appt._id}">Delete</div>
                 </div>
             </div>
         </div>
         `
-        
     )
+    apptContainer.insertAdjacentHTML('beforeend',appointmentsData)
     $(document.querySelector('.delete_btn')).click(e => {
         e.preventDefault();
-        deleteAppointment(id , userDetails)
+        deleteAppointment(e.currentTarget.dataset.appt , userDetails)
     })
     
 }
