@@ -180,5 +180,8 @@ footer {
     *{
         font-size: 3vw;
     }
+    body{
+        cursor:pointer;
+    }
 
 }
