@@ -200,7 +200,7 @@ const fillinModalDetails = appointment_made_details => {
                     <h3><strong>Date :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayName} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayDate} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Month}</h3>
                     <h3><strong>Time :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Time}</h3>
                 </div>
-                <a href="userView.html?id=${appointment_made_details._id}" class="see_all_appointments_btn">See Appointments</a>
+                <a href="userView.html?id=${appointment_made_details._id}" class="see_all_appointments_btn">Confirm</a>
                 <a>Cancel</a>
             </div>`
 }
