@@ -377,6 +377,7 @@ const makeTimeslots = (startTime, timeSlots , interval) => {
 
 
 const displayTimeslots = timeSlots => {
+    document.querySelector('.time_slot_container_m').style.display = "block"
     let timeSlotContainer = document.querySelector('.time_slot_container')
     timeSlots = timeSlots.map(timeSlot => 
         `<div class="timeslot" data-time="${timeSlot}">${timeSlot}</div>`
@@ -425,6 +426,7 @@ const displayDaysIrrelevant = (days , dayStarted) => {
 }
 
 const fillInCalendar = (monthSelectedNum, numberOfDays, firstDay, monthSelectedName) => {
+    document.querySelector('.calendar_container_m').style.display = "block"
     let calendarContainer = document.querySelector('.calendar_container'),
         daysOfWeek = `
             <h3 class= "dayOfWeek">Monday</h3>
