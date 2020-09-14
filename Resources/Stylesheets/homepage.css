@@ -241,3 +241,10 @@ h3{
     background: green;
     color: white;
 }
+
+
+@media(max-width:600px){
+    .create_appointment_form {
+        padding: 1em 1em;
+    }
+}
