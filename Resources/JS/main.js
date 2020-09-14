@@ -221,7 +221,7 @@ const whichDestination = (value , formData) => {
     if(value === "Surgery"){
         appointment_Details["Surgery"] = true
         appointment_Details["Car_Reg"] = false
-    } else if (value === "PPS_Number"){
+    } else if (value === "Drive_Through"){
         appointment_Details["Surgery"] = false
         appointment_Details["Car_Reg"] = formData.get('Car_Reg_Input')
     }
