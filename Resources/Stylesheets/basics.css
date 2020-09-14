@@ -28,6 +28,7 @@ img , video{
 }
 
 input[type=text],
+input[type=tel],
 input[type=email],
 input[type=submit],
 textarea { 
@@ -162,8 +163,8 @@ footer {
 }
 
 .disabled{
-  pointer-events: none;
-  opacity: 0.7;
+    pointer-events: none;
+    opacity: 0.7;
 }
 
 

@@ -1,4 +1,5 @@
-.appointment_made_modal{
+.appointment_made_modal,
+.terms_and_c_modal{
     width: 100vw;
     position: fixed;
     display: none;
@@ -6,13 +7,15 @@
     min-height: 100vh;
     background: rgb(0,0,0,.6)
 }
-.appointment_made_modal_content {
+.appointment_made_modal_content, 
+.terms_and_c_modal_content {
     position: fixed;
     z-index: 2;
     display: grid;
     grid-template-columns: auto;
     width: 66vw;
     margin: 0 auto;
+    min-height: 80vh;
     transform: translate(25%, 14%);
     text-align: center;
     padding: 2em 2em;
@@ -72,7 +75,8 @@ h3{
     display: flex;
 }
 
-.label_radio{
+.label_radio,
+.accept_terms_checkbox_label{
     margin-bottom: unset;
 }
 
@@ -194,6 +198,29 @@ h3{
 .timeslot:hover{
     background: green;
     color: #fff;
+}
+
+.terms_container {
+    margin: 2em 0em;
+}
+
+.open_terms_btn {
+    border: 1px solid #eee;
+    padding: .5em;
+    cursor: pointer;
+    width: 22vw;
+    box-shadow: -5px 8px 29px rgba(0, 0, 0, 0.25);
+    border: none;
+}
+
+.accept_btn {
+    display: flex;
+    align-items: center;
+    margin-top: 1.3em;
+}
+
+#accept_terms_checkbox {
+    margin-right: .5em;
 }
 
 #create_appointment_btn, 

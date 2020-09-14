@@ -110,13 +110,26 @@ const dealWithFormUpdate = async() => {
     })
 }
 
+// const validateForm = () => {
+//     const fields = document.querySelector('input'),
+//     requiredFields = {
+//         dobExpression: "",
+//         mobile_no: ""
+//     }
+//     nameInput = fields.filter(field => field.classList.contains("name"),
+//     dobInput = fields.filter(field => field.id === "dob"),
+//     mobile_number = fields.filter(field => field.id === "mobile");
+
+
+    
+// }
+
 
 
 const dealWithFormSubmit = () => {
     const form = document.querySelector('form')
     $(form).submit(e => {
         e.preventDefault()
-
         /**
          * Because of await making the call stack perform same thing again
          * This was making it send two requests and insert two records into the DB
@@ -124,6 +137,9 @@ const dealWithFormSubmit = () => {
          * Look for info or something that should have a value already from the first time
          */ 
         if(appointment_Details["firstName"] !== undefined) return
+
+        // let formValidated = validateForm()
+        // if(!formValidated) return
 
         // Getting the form Data and filling it to appointment_Details
         let formData = getFormData(form)
@@ -451,6 +467,33 @@ const fillInCalendar = (monthSelectedNum, numberOfDays, firstDay, monthSelectedN
     return dayContainers
 }
 
+const dealWithTerms = () => {
+    const terms_btn = document.querySelector('.open_terms_btn')
+    $(terms_btn).click(e => {
+        openModal(e.currentTarget)
+    })
+}
+
+const openModal = (target) => {
+    const modal = fillInTermsModal()
+    document.querySelector('.terms_and_c_modal').innerHTML = modal;
+    document.querySelector('.terms_and_c_modal').style.display = "block" 
+    $(window).click(e => {
+        if (e.target === document.querySelector('.terms_and_c_modal')) closeModal()
+    })  
+}
+
+const closeModal = () => {
+    document.querySelector('.terms_and_c_modal').style.display = "none" 
+}
+
+const fillInTermsModal = () => {
+    return `<div class="terms_and_c_modal_content">
+                <h2>Terms and Conditions Apply</h2>
+                <p>You must be present at the following time, be in full compliance with our measures put in place to protect you and others against COVID-19 </p>
+            </div>`
+}
+
 
 // Helper Functions
 const getLastDayNum = (year, month) => {
@@ -520,18 +563,24 @@ $(document).ready(() => {
             displayPastMonths()
             displayPPSInput()
             dealWithFormSubmit()
-            dealWithMonths()  
+            dealWithMonths() 
+            dealWithTerms()
+            break
         case window.location.pathname.includes("index"):
             getData()
             displayPastMonths()
             displayPPSInput()
             dealWithFormSubmit()
             dealWithMonths()   
+            dealWithTerms()
+            break
         case window.location.pathname.includes("userview"):
             userViewInit()
+            break
         case window.location.pathname.includes("edit"):
             displayPastMonths()
             dealWithFormUpdate()
             dealWithMonths()
+            break
     }
 })

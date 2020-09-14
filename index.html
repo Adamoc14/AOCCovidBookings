@@ -14,23 +14,24 @@
 <body>
     <div class="wrapper">
         <div class="appointment_made_modal"></div>
+        <div class="terms_and_c_modal"></div>
         <div class="create_appointment_form">
             <form action="" method="post">
                 <div class="firstName_container container">
                     <label for="firstName">First Name</label>
-                    <input type="text" name="firstName" id="firstName" required>
+                    <input type="text" name="firstName" id="firstName" class="name" required>
                 </div>
                 <div class="surname_container container">
                     <label for="surname">Surname</label>
-                    <input type="text" name="Surname" id="surname" required>
+                    <input type="text" name="Surname" id="surname" class="name" required>
                 </div>
                 <div class="dob_container container">
                     <label for="dob">Date Of Birth</label>
-                    <input type="text" name="DOB" id="dob" required>
+                    <input type="text" name="DOB" id="dob" placeholder="08/05/1992" pattern="^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$" title="Please enter a dob in the form DD/MM/YYYY" required>
                 </div>
                 <div class="mobile_container container">
                     <label for="mobile">Mobile No.</label>
-                    <input type="text" name="Mobile" id="mobile" required>
+                    <input type="tel" name="Mobile" id="mobile" placeholder="0854552678" pattern="[0-9]{3}[0-9]{3}[0-9]{4}" title="Please enter a valid mobile number in the form ???-???-????" required>
                 </div>
                 <h3>Choose an option from below</h3>
                 <div class="card_decision_container container">
@@ -126,8 +127,11 @@
                     </div>
                 </div>  
                 <div class="terms_container container">
-                    <div class="open_terms_btn">hello</div>
-                    <div class="accept_btn"></div>
+                    <div class="open_terms_btn">Terms and Conditions</div>
+                    <div class="accept_btn">
+                        <input type="checkbox" name="accept_terms" id="accept_terms_checkbox" required>
+                        <label for="accept_terms_checkbox" class="accept_terms_checkbox_label">I Accept the outlined terms and conditions</label>
+                    </div>
                 </div>
                 <input type="submit" value="Create Appointment" id="create_appointment_btn">
             </form>
