@@ -194,7 +194,8 @@ h3{
     color: #fff;
 }
 
-#create_appointment_btn {
+#create_appointment_btn, 
+.update_appointment_btn {
     padding: .5em;
     width: 40vw;
     margin: 0 auto;
@@ -205,7 +206,8 @@ h3{
     border: none;
 }
 
-#create_appointment_btn:hover {
+#create_appointment_btn:hover,
+.update_appointment_btn:hover {
     background: green;
     color: white;
 }
