@@ -212,6 +212,7 @@ h3{
     width: 22vw;
     box-shadow: -5px 8px 29px rgba(0, 0, 0, 0.25);
     border: none;
+    text-align: center;
 }
 
 .accept_btn {
