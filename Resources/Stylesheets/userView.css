@@ -88,3 +88,15 @@
     background: indianred;
 }
 
+@media (max-width: 600px){
+    .appointment_container {
+        height: 21vh;
+    }
+    .date_square {
+        width: 19vw;
+        height: 8vh;
+    }
+    .action_btn{
+        width: 14vw;
+    }
+}
