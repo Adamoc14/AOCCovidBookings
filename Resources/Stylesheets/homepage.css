@@ -245,6 +245,10 @@ h3{
 
 
 @media(max-width:600px){
+    .appointment_made_modal,
+    .terms_and_c_modal{
+        cursor: pointer;
+    }
     .create_appointment_form {
         padding: 1em 1em;
     }
