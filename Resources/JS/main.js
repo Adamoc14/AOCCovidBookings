@@ -481,6 +481,10 @@ const openModal = (target) => {
     $(window).click(e => {
         if (e.target === document.querySelector('.terms_and_c_modal')) closeModal()
     })  
+    //For mobile
+    $(window).on('tap' , e => {
+        if (e.target === document.querySelector('.terms_and_c_modal')) closeModal()
+    })
 }
 
 const closeModal = () => {
