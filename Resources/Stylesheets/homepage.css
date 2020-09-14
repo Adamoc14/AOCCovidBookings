@@ -127,6 +127,7 @@ h3{
 .calendar_container_m , 
 .time_slot_container_m{
     margin-top: 2em;
+    margin-bottom: 2em;
     display: none;
 }
 
