@@ -58,10 +58,10 @@
 
 .plus_btn_add {
     padding: .3em 1em;
-    background: aliceblue;
+    background: #1BA1E2;
     cursor: pointer;
     margin-left: auto;
-    width: 20vw;
+    width: 30vw;
     margin:0 auto;
     text-align:center;
 }
