@@ -26,19 +26,15 @@ a:hover {
 img , video{
     object-fit: cover;
 }
-
-input{
-    -webkit-appearance:none;
-    -moz-appearance:none;
-    appearance: none;
-}
-
 input[type=text],
 input[type=tel],
 input[type=email],
 input[type=submit],
 textarea { 
     width: 100%;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance: none;
     outline:none;
     border: none;
     border: 1px solid #eee;
