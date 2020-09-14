@@ -81,6 +81,7 @@
 
 .delete_btn {
     background: orange;
+    cursor:pointer;
 }
 
 .add_btn{
