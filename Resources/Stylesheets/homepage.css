@@ -248,7 +248,7 @@ h3{
         padding: 1em 1em;
     }
     .months_container{
-        width: unset;
+        width: fit-content;
     }
     .keyState h5{
         font-size: unset;
