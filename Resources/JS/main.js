@@ -148,7 +148,7 @@ const dealWithFormSubmit = () => {
         appointment_Details["Mobile"] = formData.get('Mobile')
         appointment_Details["DOB"] = formData.get('DOB')
         whichCard(formData.get('card_decision') , formData)
-        whichDestination(formData.get('card_decision') , formData)
+        whichDestination(formData.get('destination_decision') , formData)
 
         // Calls the method to perform the async function to post my data 
         makeAppointment()
