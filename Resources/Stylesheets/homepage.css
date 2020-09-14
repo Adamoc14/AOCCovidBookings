@@ -247,4 +247,30 @@ h3{
     .create_appointment_form {
         padding: 1em 1em;
     }
+    .months_container{
+        width: unset;
+    }
+    .keyState h5{
+        font-size: unset;
+    }
+    .dayOfWeek {
+        font-size: 2.5vw;
+    }
+    .day{
+        width:8vw;
+        height:8vw;
+    }
+    .open_terms_btn{
+        width:33vw;
+    }
+    .appointment_made_modal_content, .terms_and_c_modal_content {
+        width: 76vw;
+        margin: 31vh 12vw;
+        min-height: 32vh;
+        transform: unset;
+    }
+    .see_all_appointments_btn{
+        width: 36vw;
+    }
+
 }
