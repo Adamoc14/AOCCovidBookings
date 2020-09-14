@@ -27,6 +27,12 @@ img , video{
     object-fit: cover;
 }
 
+input{
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance: none;
+}
+
 input[type=text],
 input[type=tel],
 input[type=email],
@@ -37,6 +43,7 @@ textarea {
     border: none;
     border: 1px solid #eee;
 }
+
 input[type=radio]{
     margin: 0em 1em;
 }
@@ -166,6 +173,7 @@ footer {
     pointer-events: none;
     opacity: 0.7;
 }
+
 
 
 
