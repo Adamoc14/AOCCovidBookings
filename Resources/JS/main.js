@@ -20,6 +20,8 @@ const displayUserView = async() => {
     appointmentsData = 
     userDetails.Appointments.map(appt =>  
         `<div class="appointment_container">
+            <h3>You're appointment details are below</h3> 
+            <h3>If you require more appointments click the plus button </h3>
             <div class="first_container">
                 <div class="date_square">
                     <h5>${appt.Month}</h5>
@@ -44,7 +46,7 @@ const displayUserView = async() => {
                     </div>
                 </div>
                 <div class="buttons_container">
-                    <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${userDetails._id}">Update</a>
+                    <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${userDetails._id}">Edit</a>
                     <div class="delete_btn action_btn" data-appt="${appt._id}">Cancel</div>
                 </div>
             </div>
