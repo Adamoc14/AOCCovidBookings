@@ -32,9 +32,6 @@ const displayUserView = async() => {
                     <div class="dob_container">
                         <h2>DOB: ${userDetails.DOB}</h2>
                     </div>
-                    <div class="pps_container">
-                        <h2>PPS: ${userDetails.PPS_Number}</h2>
-                    </div>
                 </div>
             </div>
             <div class="second_container">
