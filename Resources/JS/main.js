@@ -404,7 +404,7 @@ const displayTimeslots = timeSlots => {
 }
 
 const checkAgainstAppointments = () => {
-    appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length === 2)
+    appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
     appointments_Saved
             .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
             .map(appointment_s => {
