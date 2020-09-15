@@ -552,14 +552,14 @@ const displayData = appointments => {
         if(appointment.Capacity.length >= 2) {
             return  `  
                 <div class="appointment_details span" data-id="${appointment._id}">
-                    <h3 class="time">${appointment.Time}</h3>
+                    <h3 class="time"><little>${appointment.DayDate}/${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
                     ${getUserDetails(appointment.Capacity)}
                 </div>
                 `
         } else {
             return  `  
                 <div class="appointment_details" data-id="${appointment._id}">
-                    <h3 class="time"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little><br>${appointment.Time}</h3>
+                    <h3 class="time"><little>${appointment.DayDate}/${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
                     ${getUserDetails(appointment.Capacity)}
                 </div>
                 `
