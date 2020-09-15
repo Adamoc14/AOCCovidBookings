@@ -117,8 +117,10 @@ aside {
 }
 .time {
     grid-row: span 2;
-    display: grid;
+    display: flex;
     place-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .download_csv_btn, 
