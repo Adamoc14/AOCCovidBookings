@@ -81,7 +81,7 @@ aside {
 
 .headings{
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     margin-bottom: 1em;
     padding-bottom: .2em;
     border-bottom: 1px solid #eee;
@@ -89,7 +89,7 @@ aside {
 
 .appointment_details {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     margin-bottom: 1em;
     padding-bottom: 1em;
     border-bottom: 1px solid #eee;

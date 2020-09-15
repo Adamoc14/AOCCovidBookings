@@ -496,6 +496,7 @@ const adminLogin = () => {
 const adminInit = () => {
     // type = "Appointments"
     // showData(type)
+    // document.querySelector('.options_container h1:contains("Appointments")').style.background = "#fff";
     setDateTimeLocal(document.querySelector('#date_picker_input'))
     dealWithDateChange(document.querySelector('#date_picker_input'))
     const SelectedDateTime = getDateTime()
@@ -528,7 +529,6 @@ const dealWithDateChange = date_picker => {
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
                     <h4 class="container_sm">Time(inc.Date)</h4>
-                    <h4 class="container_sm">User(s)</h4>
                     <h4 class="container_sm">Name(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
                     <h4 class="container_sm">Car Reg(s)</h4>
@@ -572,12 +572,20 @@ const displayData = appointments => {
         }
     }).join("")
     document.querySelector('.main_container_m').insertAdjacentHTML('beforeend', appointmentsHTML)
+    checkCapacity(appointments)
+}
+
+const checkCapacity = appointments => {
+    appointments.map(appointment => {
+        if(appointment.Capacity.length >= 2){
+            $('.span').css('grid-template-rows', `repeat(${appointment.Capacity.length},1fr)`)
+        }
+    })      
 }
 
 const getUserDetails = userDetails => {
     userDetails = userDetails.map(user => 
-    `   <h4 class="container_sm id">${user._id}</h4>
-        <h4 class="container_sm">${user.firstName}${user.Surname}</h4>
+    `   <h4 class="container_sm">${user.firstName} ${user.Surname}</h4>
         <h4 class="container_sm">${user.DOB}</h4>
         <h4 class="container_sm">${user.Car_Reg}</h4>
         <h4 class="container_sm">${user.PPS_Number}</h4>
@@ -591,7 +599,6 @@ const dealWithSearch = () => {
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
                     <h4 class="container_sm">Time(inc.Date)</h4>
-                    <h4 class="container_sm">User(s)</h4>
                     <h4 class="container_sm">Name(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
                     <h4 class="container_sm">Car Reg(s)</h4>
