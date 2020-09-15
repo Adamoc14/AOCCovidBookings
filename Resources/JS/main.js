@@ -521,7 +521,7 @@ const dealWithDateChange = date_picker => {
     $(date_picker).on('change', e => {
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
-                    <h4 class="container_sm">Time</h4>
+                    <h4 class="container_sm">Time(inc.Date)</h4>
                     <h4 class="container_sm">User(s)</h4>
                     <h4 class="container_sm">Name(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
@@ -584,7 +584,7 @@ const dealWithSearch = () => {
     $(searchInput).on('input change', e => {
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
-                    <h4 class="container_sm">Time</h4>
+                    <h4 class="container_sm">Time(inc.Date)</h4>
                     <h4 class="container_sm">User(s)</h4>
                     <h4 class="container_sm">Name(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
