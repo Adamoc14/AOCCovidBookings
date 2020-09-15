@@ -494,9 +494,9 @@ const adminLogin = () => {
 }
 
 const adminInit = () => {
-    // type = "Appointments"
+    type = "Appointments"
     // showData(type)
-    // document.querySelector('.options_container h1:contains("Appointments")').style.background = "#fff";
+    $(`.options_container h1:contains("${type}")`)[0].style.background = "#fff"
     setDateTimeLocal(document.querySelector('#date_picker_input'))
     dealWithDateChange(document.querySelector('#date_picker_input'))
     const SelectedDateTime = getDateTime()
@@ -531,8 +531,9 @@ const dealWithDateChange = date_picker => {
                     <h4 class="container_sm">Time(inc.Date)</h4>
                     <h4 class="container_sm">Name(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
+                    <h4 class="container_sm">PPS No(s)</h4>
                     <h4 class="container_sm">Car Reg(s)</h4>
-                    <h4 class="container_sm">PPS No(s)</div>
+                    
                 </div>
         `
         const SelectedDateTime = getDateTime()
@@ -587,8 +588,8 @@ const getUserDetails = userDetails => {
     userDetails = userDetails.map(user => 
     `   <h4 class="container_sm">${user.firstName} ${user.Surname}</h4>
         <h4 class="container_sm">${user.DOB}</h4>
-        <h4 class="container_sm">${user.Car_Reg}</h4>
         <h4 class="container_sm">${user.PPS_Number}</h4>
+        <h4 class="container_sm">${user.Car_Reg}</h4>
     `).join("")
     return userDetails
 }
@@ -601,8 +602,8 @@ const dealWithSearch = () => {
                     <h4 class="container_sm">Time(inc.Date)</h4>
                     <h4 class="container_sm">Name(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
+                    <h4 class="container_sm">PPS No(s)</h4>
                     <h4 class="container_sm">Car Reg(s)</h4>
-                    <h4 class="container_sm">PPS No(s)</div>
                 </div>
         `
         let filteredAppointments = checkSearchAgainst(e.target.value)
