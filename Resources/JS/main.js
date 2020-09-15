@@ -494,12 +494,18 @@ const adminLogin = () => {
 }
 
 const adminInit = () => {
+    type = "Appointments"
+    showData(type)
     setDateTimeLocal(document.querySelector('#date_picker_input'))
     dealWithDateChange(document.querySelector('#date_picker_input'))
     const SelectedDateTime = getDateTime()
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
     dealWithSearch()
     // getHTMLFromTable()
+}
+
+const showData = type => {
+    
 }
 
 const filterSavedAppointments = (appointments , dateDetails) => {
