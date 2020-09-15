@@ -494,8 +494,8 @@ const adminLogin = () => {
 }
 
 const adminInit = () => {
-    type = "Appointments"
-    showData(type)
+    // type = "Appointments"
+    // showData(type)
     setDateTimeLocal(document.querySelector('#date_picker_input'))
     dealWithDateChange(document.querySelector('#date_picker_input'))
     const SelectedDateTime = getDateTime()
@@ -504,9 +504,9 @@ const adminInit = () => {
     // getHTMLFromTable()
 }
 
-const showData = type => {
+// const showData = type => {
     
-}
+// }
 
 const filterSavedAppointments = (appointments , dateDetails) => {
     return appointments.filter(appointment => appointment.DayDate === dateDetails.Date && appointment.Month === dateDetails.MonthName)
