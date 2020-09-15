@@ -107,22 +107,6 @@ const dealWithFormUpdate = async() => {
     })
 }
 
-// const validateForm = () => {
-//     const fields = document.querySelector('input'),
-//     requiredFields = {
-//         dobExpression: "",
-//         mobile_no: ""
-//     }
-//     nameInput = fields.filter(field => field.classList.contains("name"),
-//     dobInput = fields.filter(field => field.id === "dob"),
-//     mobile_number = fields.filter(field => field.id === "mobile");
-
-
-    
-// }
-
-
-
 const dealWithFormSubmit = () => {
     const form = document.querySelector('form')
     $(form).submit(e => {
@@ -496,6 +480,134 @@ const fillInTermsModal = () => {
             </div>`
 }
 
+const adminLogin = () => {
+    const loginForm = document.querySelector('.login_form')
+    $(loginForm).submit(e => {
+        let loginDetails = {
+            Username: $('#username_input').val(),
+            Password: $('#password_input').val()
+        }
+        e.preventDefault()
+        if(!isValidLogin(loginDetails)) return
+        window.location = "adminHome.html"
+    })
+}
+
+const adminInit = () => {
+    setDateTimeLocal(document.querySelector('#date_picker_input'))
+    dealWithDateChange(document.querySelector('#date_picker_input'))
+    const SelectedDateTime = getDateTime()
+    displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
+    dealWithSearch()
+    // getHTMLFromTable()
+}
+
+const filterSavedAppointments = (appointments , dateDetails) => {
+    return appointments.filter(appointment => appointment.DayDate === dateDetails.Date && appointment.Month === dateDetails.MonthName)
+}
+
+const getDateTime = () => {
+    const dateDetails = {
+        Year: document.querySelector('#date_picker_input').value.split("-")[0],
+        Month: document.querySelector('#date_picker_input').value.split("-")[1],
+        MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input').value.split("-")[1]) - 1),
+        Date: document.querySelector('#date_picker_input').value.split("-")[2].split("T")[0],
+        Time: document.querySelector('#date_picker_input').value.split("-")[2].split("T")[1]
+    }
+    return dateDetails
+}
+
+const dealWithDateChange = date_picker => {
+    $(date_picker).on('change', e => {
+        document.querySelector('.main_container_m').innerHTML = `
+                <div class="headings">
+                    <h4 class="container_sm">Time</h4>
+                    <h4 class="container_sm">User(s)</h4>
+                    <h4 class="container_sm">Name(s)</h4>
+                    <h4 class="container_sm">DOB(s)</h4>
+                    <h4 class="container_sm">Car Reg(s)</h4>
+                    <h4 class="container_sm">PPS No(s)</div>
+                </div>
+        `
+        const SelectedDateTime = getDateTime()
+        displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
+    })
+}
+
+const setDateTimeLocal = date_picker => {
+    date_picker.value = moment().format(moment.HTML5_FMT.DATETIME_LOCAL).toString()
+}
+
+const getHTMLFromTable = () => {
+    const download_btn = document.querySelector('.download_csv_btn'),
+    table_html = document.querySelector('.main_container_m')
+    $(download_btn).click(e => {
+        console.log(table_html.innerHTML)
+    })
+}
+
+// Need to keep it in the array of appointments_Saved to be passed into this func
+const displayData = appointments => {
+    const appointmentsHTML = appointments.map(appointment => {
+        if(appointment.Capacity.length >= 2) {
+            return  `  
+                <div class="appointment_details span" data-id="${appointment._id}">
+                    <h3 class="time">${appointment.Time}</h3>
+                    ${getUserDetails(appointment.Capacity)}
+                </div>
+                `
+        } else {
+            return  `  
+                <div class="appointment_details" data-id="${appointment._id}">
+                    <h3 class="time"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little><br>${appointment.Time}</h3>
+                    ${getUserDetails(appointment.Capacity)}
+                </div>
+                `
+        }
+    }).join("")
+    document.querySelector('.main_container_m').insertAdjacentHTML('beforeend', appointmentsHTML)
+}
+
+const getUserDetails = userDetails => {
+    userDetails = userDetails.map(user => 
+    `   <h4 class="container_sm id">${user._id}</h4>
+        <h4 class="container_sm">${user.firstName}${user.Surname}</h4>
+        <h4 class="container_sm">${user.DOB}</h4>
+        <h4 class="container_sm">${user.Car_Reg}</h4>
+        <h4 class="container_sm">${user.PPS_Number}</h4>
+    `).join("")
+    return userDetails
+}
+
+const dealWithSearch = () => {
+    const searchInput = document.querySelector('#search_input')
+    $(searchInput).on('input change', e => {
+        document.querySelector('.main_container_m').innerHTML = `
+                <div class="headings">
+                    <h4 class="container_sm">Time</h4>
+                    <h4 class="container_sm">User(s)</h4>
+                    <h4 class="container_sm">Name(s)</h4>
+                    <h4 class="container_sm">DOB(s)</h4>
+                    <h4 class="container_sm">Car Reg(s)</h4>
+                    <h4 class="container_sm">PPS No(s)</div>
+                </div>
+        `
+        let filteredAppointments = checkSearchAgainst(e.target.value)
+        if(filteredAppointments.length === 0) displayData(appointments_Saved)
+        else displayData(filteredAppointments)
+    })
+}
+
+const checkSearchAgainst = searchValue => {
+return appointments_Saved.filter(appointment => appointment.Time.includes(searchValue) || loopUsers(appointment.Capacity , searchValue))
+}
+
+const loopUsers = (users , searchValue) => {
+let matches = []
+    users.map(user => matches.push(user._id.includes(searchValue), user.firstName.includes(searchValue), user.Surname.includes(searchValue) , user.firstName + user.Surname === searchValue, user.DOB.includes(searchValue), user.Car_Reg.includes(searchValue), user.PPS_Number.includes(searchValue)))
+    return matches.includes(true)                   
+}
+
 
 // Helper Functions
 const getLastDayNum = (year, month) => {
@@ -512,6 +624,24 @@ const getDayContainers = () => {
 
 const nameOfMonth = month => {
     const months = ["January" , "February" , "March" , "April" ,"May", "June", "July" , "August", "September", "October","November" , "December"]
+    return months[month]
+}
+
+const numOfmonth = month => {
+    const months = {
+        "December": 0,
+        "January": 1,
+        "February": 2,
+        "March": 3,
+        "April": 4,
+        "May": 5,
+        "June": 6,
+        "July": 7,
+        "August": 8,
+        "September": 9,
+"October": 10,
+"November": 11
+    }
     return months[month]
 }
 
@@ -556,9 +686,11 @@ const roundMinutes = (time_now) => {
     return `${new Date(ms).getHours()}:${new Date(ms).getMinutes()}`
 }
 
+const isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"
+
 // Initialization Methods
 
-$(document).ready(() => {
+$(document).ready(async() => {
     switch (true) {
         case window.location.pathname === "/" || window.location.pathname === "/Client/":
             getData()
@@ -584,5 +716,13 @@ $(document).ready(() => {
             dealWithFormUpdate()
             dealWithMonths()
             break
+        case window.location.pathname.toLowerCase().includes("adminlogin"):
+            adminLogin()
+            break
+        case window.location.pathname.toLowerCase().includes("adminhome"):
+            await getData()
+            adminInit()
+            break               
+        
     }
 })

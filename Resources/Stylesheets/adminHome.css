@@ -1,0 +1,138 @@
+.main_container {
+    display: grid;
+    grid-template-areas:
+        'sideBar topPart topPart topPart topPart'
+        'sideBar filterPart filterPart filterPart filterPart'
+        'sideBar mainContainer mainContainer mainContainer mainContainer'
+        'sideBar mainContainer mainContainer mainContainer mainContainer';
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    min-height: 100vh;
+    position: relative;
+}
+
+.top_part {
+    grid-area: topPart;
+    height: 25vh;
+    position: relative;
+}
+
+aside {
+    grid-area: sideBar;
+    background: orange;
+    display: grid;
+    position: fixed;
+    height: 100vh;
+    width: 20vw;
+    place-items: center;
+}
+
+.options_container {
+    width: 100%;
+}
+
+.options_container h1 {
+    width: 100%;
+    padding: .5em 0em;
+    text-align: center;
+}
+
+.options_container h1:hover {
+    background: white;
+}
+
+.filter_container {
+    grid-area: filterPart;
+    display: flex;
+    height: 15vh;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+}
+
+.button_options {
+    display: flex;
+    width: 17vw;
+    justify-content: space-around;
+    align-items: center;
+    margin-left:20vw;
+}
+
+.main_container_m {
+    grid-area: mainContainer;
+    position: relative;
+}
+
+
+.logout {
+    text-align: end;
+    margin: 1em 1em;
+}
+
+.search_container {
+    display: flex;
+    justify-content: center;
+    margin: 2em 0em;
+}
+
+#search_input {
+    width: 50vw;
+    margin-right: 1em;
+}
+
+.headings{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    margin-bottom: 1em;
+    padding-bottom: .2em;
+    border-bottom: 1px solid #eee;
+}
+
+.appointment_details {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid #eee;
+}
+
+.appointment_details.span{
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.appointment_details h4 , 
+.appointment_details h3, 
+.headings h4{
+    font-size: 1vw;
+}
+.id{
+    font-size: .8vw; 
+}
+
+.container_sm {
+    padding: 1em;
+    display: flex;
+    height: 5vh;
+    align-items: center;
+    justify-content: center;
+}
+.time {
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+}
+
+.download_csv_btn, 
+.print_btn {
+    cursor: pointer;
+}
+
+.download_csv_btn {
+    padding: 0.3em 1em;
+    background: orange;
+    font-size: 1vw;
+}
+.print_btn {
+    padding: 0.3em 1em;
+    font-size: 1vw;
+    border: 1px solid #eee;
+}

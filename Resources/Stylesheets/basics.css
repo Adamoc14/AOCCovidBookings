@@ -30,6 +30,8 @@ input[type=text],
 input[type=tel],
 input[type=email],
 input[type=submit],
+input[type=password],
+input[type=search],
 textarea { 
     width: 100%;
     -webkit-appearance:none;
@@ -61,6 +63,13 @@ figcaption {
 
 h1{
     text-transform: uppercase;
+}
+
+little {
+    font-size: .8vw;
+    font-weight: bolder;
+    color: rgb(0,0,0,1);
+    font-style: italic;
 }
 
 

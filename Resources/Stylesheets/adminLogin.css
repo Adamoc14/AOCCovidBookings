@@ -1,0 +1,21 @@
+.login_section_container {
+    padding: 2em 2em;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.login_section_container h1{
+    flex: 1 1 7vh;
+}
+
+#login_btn {
+    width: 20vw;
+}
+
+.login_form {
+    display: grid;
+    place-items: center;
+    min-height: 50vh;
+    flex: 1 1 50vh;
+}
