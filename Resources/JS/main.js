@@ -497,6 +497,7 @@ const adminInit = () => {
     type = "Appointments"
     // showData(type)
     $(`.options_container h1:contains("${type}")`)[0].style.background = "#fff"
+    dealWithTabs()
     setDateTimeLocal(document.querySelector('#date_picker_input'))
     dealWithDateChange(document.querySelector('#date_picker_input'))
     const SelectedDateTime = getDateTime()
@@ -508,6 +509,14 @@ const adminInit = () => {
 // const showData = type => {
     
 // }
+
+const dealWithTabs = () => {
+    const tabs = [...document.querySelectorAll('.options_container h1')]
+    tabs.map(tab => $(tab).click(e => {
+        tabs.filter(tab => tab != e.target).map(tab => tab.style.background = "")
+        e.target.style.background = "#fff"
+    }))
+}
 
 const filterSavedAppointments = (appointments , dateDetails) => {
     return appointments.filter(appointment => appointment.DayDate === dateDetails.Date && appointment.Month === dateDetails.MonthName)
@@ -554,8 +563,11 @@ const getHTMLFromTable = () => {
 }
 
 // Need to keep it in the array of appointments_Saved to be passed into this func
+// Had to sort the times by their hours first of all and then their minutes in ascending order
 const displayData = appointments => {
-    const appointmentsHTML = appointments.map(appointment => {
+    const appointmentsHTML = 
+    appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1]- next.Time.split(":")[1])
+.map(appointment => {
         if(appointment.Capacity.length >= 2) {
             return  `  
                 <div class="appointment_details span" data-id="${appointment._id}">
