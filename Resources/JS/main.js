@@ -497,7 +497,6 @@ const adminLogin = () => {
 
 const adminInit = () => {
     type = "Appointments"
-    // showData(type)
     $(`.options_container h1:contains("${type}")`)[0].style.background = "#fff"
     dealWithTabs()
     setDateTimeLocal(document.querySelector('#date_picker_input'))
@@ -506,11 +505,9 @@ const adminInit = () => {
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
     dealWithSearch()
     getAppointmentDataFromTable()
+    printPage()
 }
 
-// const showData = type => {
-    
-// }
 
 const dealWithTabs = () => {
     const tabs = [...document.querySelectorAll('.options_container h1')]
@@ -556,6 +553,13 @@ const setDateTimeLocal = date_picker => {
     date_picker.value = moment().format(moment.HTML5_FMT.DATETIME_LOCAL).toString()
 }
 
+const printPage = () => {
+    const print_btn = document.querySelector('.print_btn');
+    $(print_btn).click(()=> {
+        window.print()
+    })
+}
+
 const getAppointmentDataFromTable = () => {
     const download_btn = document.querySelector('.download_csv_btn');
     $(download_btn).click(e => {
@@ -593,13 +597,14 @@ const downloadCSV = csvData => {
     document.body.insertAdjacentHTML('beforeend' , a_tag)
     let a_tag_element = document.querySelector('.blob_link')                            
     $('.blob_link')[0].click()
-    document.body.removeChild(a_tag_element)
-        
+    document.body.removeChild(a_tag_element)  
 }
+
 
 // Need to keep it in the array of appointments_Saved to be passed into this func
 // Had to sort the times by their hours first of all and then their minutes in ascending order
 const displayData = appointments => {
+    const runningTotal = appointments.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0)
     appointments_Data = appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
     const appointmentsHTML = 
     appointments_Data.map(appointment => {
@@ -620,6 +625,7 @@ const displayData = appointments => {
         }
     }).join("")
     document.querySelector('.main_container_m').insertAdjacentHTML('beforeend', appointmentsHTML)
+    document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${runningTotal}`
     checkCapacity(appointments)
 }
 
