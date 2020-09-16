@@ -567,7 +567,7 @@ const getHTMLFromTable = () => {
 const displayData = appointments => {
     const appointmentsHTML = 
     appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1]- next.Time.split(":")[1])
-.map(appointment => {
+    .map(appointment => {
         if(appointment.Capacity.length >= 2) {
             return  `  
                 <div class="appointment_details span" data-id="${appointment._id}">
