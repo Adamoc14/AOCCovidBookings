@@ -512,6 +512,8 @@ const adminInit = () => {
 const dealWithTabs = () => {
     const tabs = [...document.querySelectorAll('.options_container h1')]
     tabs.map(tab => $(tab).click(e => {
+        if(e.target.innerHTML === "Clinic") window.location = "AdminClinic.html"
+        else if(e.target.innerHTML === "Appointments") window.location = "AdminHome.html"
         tabs.filter(tab => tab != e.target).map(tab => tab.style.background = "")
         e.target.style.background = "#fff"
     }))
@@ -675,6 +677,41 @@ let matches = []
     return matches.includes(true)                   
 }
 
+const getClinicData = async() => {
+    let res = await axios.get(`${url}api/v1/clinics`),
+        { data: clinicData } = res;
+    return clinicData
+}
+
+const adminClinicInit = async() => {
+    const clinicData = await getClinicData()
+    $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
+    dealWithTabs()
+    let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10),
+    timeSlotContainers = displayClinicTimeslots(timeSlots, clinicData);
+    timeSlotContainers.map(
+        timeSlot => $(timeSlot).click(e => {
+            clickTimeSlotClinic(e.target)
+        })
+    )
+    
+}
+
+const displayClinicTimeslots = (timeSlots,clinicData) => {
+let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
+    timeSlots = timeSlots.map(timeSlot => 
+        `<div class="timeslot_Clinic" data-time="${timeSlot}">${timeSlot}</div>`
+    ).join("")
+    timeSlotContainer.innerHTML = timeSlots
+    let timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
+    displayCurrentPickedSlots(clinicData)
+    return timeSlotContainers
+}
+
+const displayCurrentPickedSlots = clinicData => {
+    for(const clinicDataSingle of clinicData)
+        clinicDataSingle.Hours.map(hour => $(`.timeslot_Clinic:contains(${hour})`)[0].style.background = "orange")
+}
 
 // Helper Functions
 const escapeSlashAndQuotes = csvValue => {
@@ -794,7 +831,9 @@ $(document).ready(async() => {
         case window.location.pathname.toLowerCase().includes("adminhome"):
             await getData()
             adminInit()
-            break               
+            break   
+        case window.location.pathname.toLowerCase().includes("adminclinic"):
+            adminClinicInit()            
         
     }
 })

@@ -1,0 +1,75 @@
+.main_container {
+    display: grid;
+    grid-template-areas:
+        'sideBar topPart topPart topPart topPart'
+        'sideBar filterPart filterPart filterPart filterPart'
+        'sideBar mainContainer mainContainer mainContainer mainContainer'
+        'sideBar mainContainer mainContainer mainContainer mainContainer';
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    min-height: 100vh;
+    position: relative;
+}
+
+.top_part {
+    grid-area: topPart;
+    height: 25vh;
+    position: relative;
+}
+
+aside {
+    grid-area: sideBar;
+    background: orange;
+    display: grid;
+    position: fixed;
+    height: 100vh;
+    width: 20vw;
+    place-items: center;
+}
+
+.options_container {
+    width: 100%;
+}
+
+.options_container h1 {
+    width: 100%;
+    padding: .5em 0em;
+    text-align: center;
+    cursor:pointer;
+}
+
+.options_container h1:hover {
+    background: white;
+}
+
+.logout {
+    text-align: end;
+    margin: 1em 1em;
+}
+
+.clinicTimeslotsContainerInner {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto ;
+    padding: 0em 1em;
+    grid-gap: 1em;
+    place-items: center;
+} 
+
+.timeslot_Clinic {
+    border: 1px solid #eee;
+    width: 11vw;
+    height: 5vw;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 1.5vw;
+}
+
+.timeslot_Clinic:hover{
+    background: orange;
+}
+
+
+.clinicTimeslotsContainer h2 {
+    font-size: 1.5vw;
+    margin: 3em 2em;
+}
