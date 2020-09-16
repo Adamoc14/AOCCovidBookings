@@ -1,12 +1,14 @@
 // Global Variable Declarations and Function Definitions
 const appointment_Details = {},
     url = "https://whmc-server.herokuapp.com/";
-let appointments_Saved = [];
+let appointments_Saved = [],
+    appointments_Data = [];
 
 const getData = async() => {
     let res = await axios.get(`${url}api/v1/appointments`),
         { data } = res
     appointments_Saved = data
+    appointments_Data = appointments_Saved
 }
 
 const userViewInit = () => {
@@ -503,7 +505,7 @@ const adminInit = () => {
     const SelectedDateTime = getDateTime()
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
     dealWithSearch()
-    // getHTMLFromTable()
+    getAppointmentDataFromTable()
 }
 
 // const showData = type => {
@@ -554,20 +556,53 @@ const setDateTimeLocal = date_picker => {
     date_picker.value = moment().format(moment.HTML5_FMT.DATETIME_LOCAL).toString()
 }
 
-const getHTMLFromTable = () => {
-    const download_btn = document.querySelector('.download_csv_btn'),
-    table_html = document.querySelector('.main_container_m')
+const getAppointmentDataFromTable = () => {
+    const download_btn = document.querySelector('.download_csv_btn');
     $(download_btn).click(e => {
-        console.log(table_html.innerHTML)
+        const csvData = objectToCSV(appointments_Data)
+        downloadCSV(csvData)
     })
+}
+
+const getDetails = appointments => {
+    let details = []
+    appointments.map(appt => details.push(`"${escapeSlashAndQuotes(appt.firstName)} ${escapeSlashAndQuotes(appt.Surname)}"`, `"${escapeSlashAndQuotes(appt.DOB)}"` , `"${escapeSlashAndQuotes(appt.PPS_Number)}"` , `"${escapeSlashAndQuotes(appt.Car_Reg)}"`))
+    return [...details]
+}
+
+const objectToCSV = appointments_Data => {
+    const csvRows = [],
+
+    // Get the headers  
+    headers = [`"Date"`, `"Time"`, `"Name(s)"`, `"DOB(s)"`, `"PPS No(s)"`, `"Car Reg(s)"`]
+    csvRows.push(headers.join(","))
+
+    // Loop over the rows and get values for each of the headers  
+    // form escaped comma seperated values  
+    let values = appointments_Data.map(appointment => [`"${escapeSlashAndQuotes(appointment.DayDate)} ${escapeSlashAndQuotes(appointment.Month)}"`,`"${escapeSlashAndQuotes(appointment.Time)}"` , ...getDetails(appointment.Capacity)])
+    values.map(value => csvRows.push(value.join(","))) 
+
+    return csvRows.join("\n")
+}
+
+const downloadCSV = csvData => {
+    // Make a blob file 
+    const blob = new Blob([csvData], {type: 'text/csv'}),
+    blobURL = window.URL.createObjectURL(blob),
+    a_tag = `<a href="${blobURL}" class="blob_link" hidden download="WHMC_Appointments.csv"></a>`;
+    document.body.insertAdjacentHTML('beforeend' , a_tag)
+    let a_tag_element = document.querySelector('.blob_link')                            
+    $('.blob_link')[0].click()
+    document.body.removeChild(a_tag_element)
+        
 }
 
 // Need to keep it in the array of appointments_Saved to be passed into this func
 // Had to sort the times by their hours first of all and then their minutes in ascending order
 const displayData = appointments => {
+    appointments_Data = appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
     const appointmentsHTML = 
-    appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1]- next.Time.split(":")[1])
-    .map(appointment => {
+    appointments_Data.map(appointment => {
         if(appointment.Capacity.length >= 2) {
             return  `  
                 <div class="appointment_details span" data-id="${appointment._id}">
@@ -636,6 +671,11 @@ let matches = []
 
 
 // Helper Functions
+const escapeSlashAndQuotes = csvValue => {
+    return csvValue.replace(/"/g, '\\"')
+}
+
+
 const getLastDayNum = (year, month) => {
     return new Date(year, month + 1, 0).getDate()
 }
