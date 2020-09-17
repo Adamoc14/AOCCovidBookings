@@ -48,20 +48,27 @@
     width: 12vw;
     color: white;
     place-items: center;
+    border: 1px solid #eee;
 }
 .see_all_appointments_btn{
     background: green;
 }
 
-.see_all_appointments_btn:hover {
-    background: white;
-    color: black;
-    border: 1px solid #eee;
-}
-
 .cancelApptBtn{
     background: red;
 }
+
+.cancelApptBtn:hover{
+    background: white;
+    color: red;
+}
+
+.see_all_appointments_btn:hover {
+    background: white;
+    color: green;
+}
+
+
 
 .create_appointment_form {
     padding: 2em 2em;
