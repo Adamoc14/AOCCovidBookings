@@ -197,8 +197,8 @@ const deleteAppointment = async(id , userDetails) => {
 
 const makeAppointment = async() => {
     try {
-        let appointment = await makeRequest()
-        window.location = `userView.html?id=${appointment._id}`
+        const { data: Users_Appointments }= await makeRequest()
+        window.location = `userView.html?id=${Users_Appointments._id}`
         return appointment
     } catch (error) {
         console.log(error)
