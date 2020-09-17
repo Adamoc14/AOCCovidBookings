@@ -208,7 +208,7 @@ const makeAppointment = async() => {
 
 const createAppointmentBtnClick = () => {
     const create_appt_btn = document.querySelector('#create_appointment_btn'),
-    const form = document.querySelector('form');
+    form = document.querySelector('form');
     $(create_appt_btn).click(() => {
         let formValidated = validateForm()
 
