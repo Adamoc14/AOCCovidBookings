@@ -2,13 +2,15 @@
 const appointment_Details = {},
     url = "https://whmc-server.herokuapp.com/";
 let appointments_Saved = [],
-    appointments_Data = [];
+    appointments_Data = [],
+    clinic_Data = []
 
 const getData = async() => {
     let res = await axios.get(`${url}api/v1/appointments`),
         { data } = res
     appointments_Saved = data
     appointments_Data = appointments_Saved
+    clinic_Data = await getClinicData()
 }
 
 const userViewInit = () => {
@@ -390,7 +392,7 @@ const displayTimeslots = timeSlots => {
 }
 
 const checkAgainstAppointments = () => {
-    appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
+    appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
     appointments_Saved
             .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
             .map(appointment_s => {
@@ -401,12 +403,26 @@ const checkAgainstAppointments = () => {
 }
 
 const checkTime = (timeNow , timeSlotContainers) => {
+    // This does four checks to find the available slots for patients 
+    /**
+     * 1) Checks the date is equal to the date the user specifies 
+     * 2) Checks against the clinic hours 
+     * 3) Checks and filters the disabled timeSlots by hour 
+     * - Equal to the hour then checks the minutes and sees if minutes now are more than the time user is using the app
+     * - More than the hour 
+     * 4) This ensures that when the user logs on they should only see available slots 
+     * and not one's that are not available because of clinic hours, not available because they have passed 
+     * in minutes or hours for that matter  
+     */
     if(new Date().getDate()  === Number(appointment_Details["DayDate"])) {
-        timeSlotContainers.filter(timeslotContainer => timeslotContainer.innerHTML.split(":")[0] < timeNow).map(timeslotContainer => {
-            timeslotContainer.classList.add('disabled')
-            timeslotContainer.style.background = "orange"
-            timeslotContainer.style.color = "black";
-        })
+        debugger
+        for(hour of clinic_Data[0].Hours)
+            timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour || (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] < new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
+            .map(timeslotContainer => {
+                timeslotContainer.classList.add('disabled')
+                timeslotContainer.style.background = "orange"
+                timeslotContainer.style.color = "black";
+            })
     }
 }
 
@@ -679,7 +695,7 @@ let matches = []
 
 const getClinicData = async() => {
     let res = await axios.get(`${url}api/v1/clinics`),
-        { data: clinicData } = res;
+        { data: clinicData } = res
     return clinicData
 }
 
