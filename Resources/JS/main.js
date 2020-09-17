@@ -152,7 +152,6 @@ const dealWithFormSubmit = () => {
     const actual_create_btn = document.querySelector('.see_all_appointments_btn'),
     submitted = false
     $(actual_create_btn).click(e => {
-        e.preventDefault()
         /**
          * Because of await making the call stack perform same thing again
          * This was making it send two requests and insert two records into the DB
@@ -207,12 +206,10 @@ const makeAppointment = async() => {
 }
 
 const createAppointmentBtnClick = () => {
-    const create_appt_btn = document.querySelector('#create_appointment_btn'),
-    form = document.querySelector('form');
-    $(create_appt_btn).click(() => {
-        $(form).submit(e => {
-            e.preventDefault()
-        })
+    const form = document.querySelector('form');
+    $(form).submit(e => {
+        e.preventDefault()
+
         let formValidated = validateForm()
 
         if(!formValidated) {
