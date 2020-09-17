@@ -49,6 +49,7 @@
     color: white;
     place-items: center;
     border: 1px solid #eee;
+    cursor: pointer;
 }
 .see_all_appointments_btn{
     background: green;
