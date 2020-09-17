@@ -119,34 +119,6 @@ const dealWithFormUpdate = async() => {
     })
 }
 
-// const dealWithFormSubmit = () => {
-//     const form = document.querySelector('form')
-//     $(form).submit(e => {
-//         e.preventDefault()
-//         /**
-//          * Because of await making the call stack perform same thing again
-//          * This was making it send two requests and insert two records into the DB
-//          * This is a fix for this, 
-//          * Look for info or something that should have a value already from the first time
-//          */ 
-//         if(appointment_Details["firstName"] !== undefined) return
-
-        
-
-//         // Getting the form Data and filling it to appointment_Details
-//         let formData = getFormData(form)
-//         appointment_Details["firstName"] = formData.get('firstName')
-//         appointment_Details["Surname"] = formData.get('Surname')
-//         appointment_Details["Mobile"] = formData.get('Mobile')
-//         appointment_Details["DOB"] = formData.get('DOB')
-//         whichCard(formData.get('card_decision') , formData)
-//         whichDestination(formData.get('destination_decision') , formData)
-
-//         // Calls the method to perform the async function to post my data 
-//         makeAppointment()
-//         href = "userView.html?id=${appointment_made_details._id}"
-//     })
-// } 
 
 const dealWithFormSubmit = () => {
     const actual_create_btn = document.querySelector('.see_all_appointments_btn');
@@ -184,16 +156,6 @@ const deleteAppointment = async(id , userDetails) => {
     }
 }
 
-// const makeAppointment = async() => {
-//     try {
-//         let appointment = await makeRequest()
-//         displayAppointmentPopup(appointment)
-//         // window.location.href = 'userView.html'
-//         return appointment
-//     } catch (error) {
-//         console.log(error)
-//     }    
-// }
 
 const makeAppointment = async() => {
     try {
@@ -240,31 +202,7 @@ const displayAppointmentPopup = appointment_Details => {
     let modal = fillinModalDetails(appointment_Details)
     document.querySelector('.appointment_made_modal').innerHTML = modal;
     document.querySelector('.appointment_made_modal').style.display = "block"
-    // userDetails = appointment_made_details
 }
-
-// const displayAppointmentPopup = appointment => {
-//     let { data: appointment_made_details } = appointment,
-//         modal = fillinModalDetails(appointment_made_details)
-//     document.querySelector('.appointment_made_modal').innerHTML = modal;
-//     document.querySelector('.appointment_made_modal').style.display = "block"
-//     // userDetails = appointment_made_details
-// }
-
-// const fillinModalDetails = appointment_made_details => {
-//     return `<div class="appointment_made_modal_content">
-//                 <h2>Hi ${appointment_made_details.firstName} ${appointment_made_details.Surname},</h2>
-//                 <h4>You requested an appointment for</h4>
-//                 <div class="date_time_container">
-//                     <h3><strong>Date :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayName} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayDate} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Month}</h3>
-//                     <h3><strong>Time :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Time}</h3>
-//                 </div>
-//                 <div class="btns_container">
-//                     <a href="userView.html?id=${appointment_made_details._id}" class="see_all_appointments_btn">Confirm</a>
-//                     <a class="cancelApptBtn">Cancel</a>
-//                 </div>
-//             </div>`
-// }
 
 const fillinModalDetails = appointment_made_details => {
     return `<div class="appointment_made_modal_content">
