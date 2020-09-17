@@ -149,8 +149,8 @@ const dealWithFormUpdate = async() => {
 // } 
 
 const dealWithFormSubmit = () => {
-    const actual_create_btn = document.querySelector('.see_all_appointments_btn'),
-    submitted = false
+    const actual_create_btn = document.querySelector('.see_all_appointments_btn');
+    let submitted = false
     $(actual_create_btn).click(e => {
         /**
          * Because of await making the call stack perform same thing again
