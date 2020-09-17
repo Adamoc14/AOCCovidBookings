@@ -33,17 +33,17 @@
     color: orange;
 }
 
-.buttons_container {
+.btns_container{
     display: flex;
     justify-content: center;
 }
 
-.buttons_container a{
+.btns_container a{
     margin: 0em 5em;
 }
 
 .see_all_appointments_btn , 
-.cancel_appt_btn {
+.cancelApptBtn{
     display: grid;
     width: 12vw;
     color: white;
@@ -59,7 +59,7 @@
     border: 1px solid #eee;
 }
 
-.cancel_appt_btn {
+.cancelApptBtn{
     background: red;
 }
 
