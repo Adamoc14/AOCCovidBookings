@@ -227,6 +227,7 @@ const createAppointmentBtnClick = () => {
         whichDestination(formData.get('destination_decision') , formData)
 
         displayAppointmentPopup(appointment_Details)
+        dealWithFormSubmit()
     })
 }
 
@@ -977,7 +978,6 @@ $(document).ready(async() => {
             displayPastMonths()
             displayPPSInput()
             createAppointmentBtnClick()
-            dealWithFormSubmit()
             dealWithMonths() 
             dealWithTerms()
             break
@@ -986,7 +986,6 @@ $(document).ready(async() => {
             displayPastMonths()
             displayPPSInput()
             createAppointmentBtnClick()
-            dealWithFormSubmit()
             dealWithMonths()   
             dealWithTerms()
             break
