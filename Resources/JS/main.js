@@ -206,7 +206,7 @@ const displayAppointmentPopup = appointment_Details => {
 }
 
 const cancelModal = modal => {
-    const cancel_btn = docuement.querySelector('.cancelApptBtn')
+    const cancel_btn = document.querySelector('.cancelApptBtn')
     $(cancel_btn).click(() => {
         modal.style.display = "none"
     })
