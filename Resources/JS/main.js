@@ -546,8 +546,20 @@ const adminLogin = () => {
             Password: $('#password_input').val()
         }
         e.preventDefault()
-        if(!isValidLogin(loginDetails)) return
+        if(!isValidLogin(loginDetails)) {
+            alert("Your username or password is invalid")
+            return
+        }
+        sessionStorage.setItem("Admin", "LoggedIn");
         window.location = "adminHome.html"
+    })
+}
+
+const adminLogout = () => {
+    const logout_btn = document.querySelector('.logout')
+    $(logout_btn).click(()=> {
+        sessionStorage.removeItem("Admin");
+        window.location = "AdminLogin.html"
     })
 }
 
@@ -951,9 +963,11 @@ $(document).ready(async() => {
         case window.location.pathname.toLowerCase().includes("adminhome"):
             await getData()
             adminInit()
+            adminLogout()
             break   
         case window.location.pathname.toLowerCase().includes("adminclinic"):
-            adminClinicInit()            
+            adminClinicInit()
+            adminLogout()            
         
     }
 })
