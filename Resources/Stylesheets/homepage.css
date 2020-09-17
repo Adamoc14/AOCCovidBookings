@@ -15,7 +15,6 @@
     grid-template-columns: auto;
     width: 66vw;
     margin: 0 auto;
-    min-height: 75vh;
     transform: translate(25%, 14%);
     text-align: center;
     padding: 2em 2em;
@@ -23,18 +22,45 @@
     box-shadow: 2px 4px 20px 0px black;
 }
 
-.see_all_appointments_btn {
-    padding: .8em .8em;
-    width: 30vw;
-    background: green;
-    margin: 0 auto;
+.appointment_made_modal_content {
+    min-height: 69vh;
+}
+.terms_and_c_modal_content{
+    min-height: 75vh;
+}
+
+.terms_and_c_modal_content a:hover {
+    color: orange;
+}
+
+.buttons_container {
+    display: flex;
+    justify-content: center;
+}
+
+.buttons_container a{
+    margin: 0em 5em;
+}
+
+.see_all_appointments_btn , 
+.cancel_appt_btn {
+    display: grid;
+    width: 12vw;
     color: white;
+    place-items: center;
+}
+.see_all_appointments_btn{
+    background: green;
 }
 
 .see_all_appointments_btn:hover {
     background: white;
     color: black;
     border: 1px solid #eee;
+}
+
+.cancel_appt_btn {
+    background: red;
 }
 
 .create_appointment_form {

@@ -54,6 +54,22 @@
     display: flex;
     width: 92vw;
     align-items: center;
+    justify-content: space-between;
+}
+
+.print_btn {
+    width: 9vw;
+    height: 7vh;
+    display: grid;
+    background: #1BA1E2;
+    border: 1px solid #eee;
+    place-items: center;
+    cursor: pointer;
+}
+
+.print_btn:hover {
+    background: white;
+    color: #1BA1E2;
 }
 
 .plus_btn_add {
@@ -62,7 +78,7 @@
     cursor: pointer;
     margin-left: auto;
     width: 30vw;
-    margin:0 auto;
+    margin: 1em auto;
     text-align:center;
 }
 

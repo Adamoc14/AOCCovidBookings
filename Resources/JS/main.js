@@ -19,6 +19,7 @@ const userViewInit = () => {
 
 const displayUserView = async() => {
     const apptContainer = document.querySelector('.appointment_display_container_inner'),
+    print_btn = document.querySelector('.print_btn')
     id = new URLSearchParams(new URL(window.location.href).search).get("id"),
     {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`),
     appointmentsData = 
@@ -54,14 +55,21 @@ const displayUserView = async() => {
             </div>
         </div>
         `
-    )
+    );
     apptContainer.insertAdjacentHTML('beforeend',appointmentsData)
     $(document.querySelector('.delete_btn')).click(e => {
         e.preventDefault();
         deleteAppointment(e.currentTarget.dataset.appt , userDetails)
     })
-    
+    printPage(print_btn)
 }
+
+const printPage = button => {
+    $(button).click(() => {
+        window.print()
+    })
+}
+
 
 const displayPastMonths = () => {
     const monthToday = new Date().getMonth()
@@ -185,8 +193,10 @@ const fillinModalDetails = appointment_made_details => {
                     <h3><strong>Date :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayName} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].DayDate} ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Month}</h3>
                     <h3><strong>Time :</strong> ${appointment_made_details.Appointments[appointment_made_details.Appointments.length - 1].Time}</h3>
                 </div>
-                <a href="userView.html?id=${appointment_made_details._id}" class="see_all_appointments_btn">Confirm</a>
-                <a>Cancel</a>
+                <div class="buttons_container">
+                    <a href="userView.html?id=5f62f9e88303f70017d7684a" class="see_all_appointments_btn">Confirm</a>
+                    <a class="cancel_appt_btn">Cancel</a>
+                </div>
             </div>`
 }
 
@@ -493,7 +503,7 @@ const closeModal = () => {
 const fillInTermsModal = () => {
     return `<div class="terms_and_c_modal_content">
                 <h2>Terms and Conditions Apply</h2>
-                <p>You must be present at the following time, be in full compliance with our measures put in place to protect you and others against COVID-19 </p>
+                <p>I consent to recieving vaccination and I'm aware of the risks and side effects as per patient information leaflet at <a href="https://medicines.org.uk">https://medicines.org.uk</a></p>
             </div>`
 }
 
@@ -520,7 +530,8 @@ const adminInit = () => {
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
     dealWithSearch()
     getAppointmentDataFromTable()
-    printPage()
+    const print_btn = document.querySelector('.print_btn');
+    printPage(print_btn)
 }
 
 
@@ -570,12 +581,6 @@ const setDateTimeLocal = date_picker => {
     date_picker.value = moment().format(moment.HTML5_FMT.DATETIME_LOCAL).toString()
 }
 
-const printPage = () => {
-    const print_btn = document.querySelector('.print_btn');
-    $(print_btn).click(()=> {
-        window.print()
-    })
-}
 
 const getAppointmentDataFromTable = () => {
     const download_btn = document.querySelector('.download_csv_btn');
