@@ -30,6 +30,47 @@ aside {
     width: 100%;
 }
 
+.hours_reveal_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 17vh;
+}
+
+.satisfied_container {
+    width: 50vw;
+    margin: 9vh 0vw 4vh 18vw;
+    height: 67vh;
+    background: white;
+    padding: 1em 1em;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+.choice_container div {
+    padding: .2em 1em;
+    font-size: 1.8vw;
+    margin: 1em 1em;
+    cursor: pointer;
+}
+.choice_container {
+    display: flex;
+    justify-content: center;
+}
+
+
+.yes_btn{
+    background: orange;
+}
+
+.no_btn{
+    border: 1px solid #eee;
+}
+
+
 .options_container h1 {
     width: 100%;
     padding: .5em 0em;
@@ -46,12 +87,16 @@ aside {
     margin: 1em 1em;
 }
 
+.clinicTimeslotsContainer{
+    display: none;
+}
+
 .clinicTimeslotsContainerInner {
-    display: grid;
     grid-template-columns: auto auto auto auto auto auto ;
     padding: 0em 1em;
     grid-gap: 1em;
     place-items: center;
+    display: grid;
 } 
 
 .timeslot_Clinic {
@@ -68,8 +113,41 @@ aside {
     background: orange;
 }
 
+.selected{
+    background: orange;
+}
 
-.clinicTimeslotsContainer h2 {
+.Providers_container {
+    padding: 1em;
+    display: none;
+}
+.clinicTimeslotsContainer h2, 
+.Providers_container h2 {
     font-size: 1.5vw;
-    margin: 3em 2em;
+    margin: 1em 1.2em;
+}
+
+.Providers_container_inner h4 {
+    font-size: 1.6vw;
+}
+.Providers_container_inner {
+    padding: 2em 1em;
+    display: flex;
+    width: 29vw;
+    justify-content: center;
+    align-items: center;
+}
+
+#providers_input {
+    width: 5vw;
+    margin: 0em 1em;
+}
+
+
+.clinicUpdate_Btn {
+    background: orange;
+    width: 20vw;
+    margin: 0 auto;
+    text-align: center;
+    cursor: pointer;
 }

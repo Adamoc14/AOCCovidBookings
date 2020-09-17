@@ -687,30 +687,99 @@ const adminClinicInit = async() => {
     const clinicData = await getClinicData()
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
-    let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10),
-    timeSlotContainers = displayClinicTimeslots(timeSlots, clinicData);
-    timeSlotContainers.map(
-        timeSlot => $(timeSlot).click(e => {
-            clickTimeSlotClinic(e.target)
-        })
-    )
-    
+    clinicData.map(clinicDataSingle => document.querySelector('.hours_reveal_container').innerHTML = `Hours : ${clinicDataSingle.Hours.join(" ")} <br><br> Providers: ${clinicDataSingle.Providers}` )
+    listenForChoice(clinicData)
 }
 
-const displayClinicTimeslots = (timeSlots,clinicData) => {
+const makeClinicUpdate = async (timeSlotContainers, provider_value, id) => {
+    const hours_array = timeSlotContainers.filter(timeslot => timeslot.classList.contains('selected')).map(timeslot => timeslot.innerHTML),
+    clinic_updated_data = {
+        Hours: hours_array,
+        Providers: provider_value
+    }
+    try {
+        await axios.put(`${url}api/v1/clinics/${id}`, clinic_updated_data)
+        window.location = "AdminClinic.html"
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const listenForChoice = clinicData => {
+    const selection_btns = document.querySelectorAll('.choice_container div');
+    $(selection_btns).click(e => {
+        const selectedChoice = dealWithChoice(e.target)
+        let timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
+            timeSlotContainers = "";
+        if (!selectedChoice) displayClinicTimeslots(timeSlots, clinicData, true);
+        else {
+            timeSlotContainers = displayClinicTimeslots(timeSlots, clinicData , false);
+            timeSlotContainers.map(
+                timeSlot => $(timeSlot).click(e => {
+                    e.target.classList.toggle('selected')
+                })
+            )
+            clinicSubmitBtnClick(timeSlotContainers, clinicData)
+        }
+    })
+}
+
+const getProvidersValue = () => {
+    const provider_input = document.querySelector('#providers_input')
+    if(provider_input.value.length === 0) {
+        alert("Please provide a value for providers input") 
+        return
+    } else {
+        return provider_input.value
+    } 
+}
+
+const clinicSubmitBtnClick = (timeSlotContainers, clinicData) => {
+    const submit_btn = document.querySelector('.clinicUpdate_Btn')
+    $(submit_btn).click(()=> {
+        let provider_value = getProvidersValue()
+        if(provider_value !== undefined)
+            makeClinicUpdate(timeSlotContainers, provider_value, clinicData[0]._id)
+    })
+}
+
+
+const dealWithChoice = target => {
+    switch(target.innerHTML){
+        case "Yes":
+            return true
+        case "No": 
+            return false
+    }
+}
+
+const displayClinicTimeslots = (timeSlots, clinicData , happy) => {
 let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
     timeSlots = timeSlots.map(timeSlot => 
         `<div class="timeslot_Clinic" data-time="${timeSlot}">${timeSlot}</div>`
     ).join("")
+    document.querySelector('.clinicTimeslotsContainer').style.display = "block"
+    document.querySelector('.Providers_container').style.display = "block"
+    document.querySelector('.satisfied_container').style.display = "none"
     timeSlotContainer.innerHTML = timeSlots
+
     let timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
-    displayCurrentPickedSlots(clinicData)
-    return timeSlotContainers
+    if(happy) displayCurrentPickedSlots(clinicData, timeSlotContainers)
+    else {
+        let timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
+        document.querySelector('.Providers_container').insertAdjacentHTML('beforeend', `<div class="clinicUpdate_Btn">Update</div>`)
+        return timeSlotContainers
+    }
 }
 
-const displayCurrentPickedSlots = clinicData => {
-    for(const clinicDataSingle of clinicData)
-        clinicDataSingle.Hours.map(hour => $(`.timeslot_Clinic:contains(${hour})`)[0].style.background = "orange")
+const displayCurrentPickedSlots = (clinicData, timeSlotContainers) => {
+    for(const clinicDataSingle of clinicData){
+        clinicDataSingle.Hours.map(hour => {$(`.timeslot_Clinic:contains(${hour})`)[0].style.background = "orange"})
+        document.querySelector('#providers_input').value = clinicDataSingle.Providers
+    }
+    timeSlotContainers.map(timeslot => timeslot.classList.add('disabled'))
+    document.querySelector('#providers_input').classList.add('disabled')
+    
 }
 
 // Helper Functions
