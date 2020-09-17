@@ -202,6 +202,14 @@ const displayAppointmentPopup = appointment_Details => {
     let modal = fillinModalDetails(appointment_Details)
     document.querySelector('.appointment_made_modal').innerHTML = modal;
     document.querySelector('.appointment_made_modal').style.display = "block"
+    cancelModal(document.querySelector('.appointment_made_modal'))
+}
+
+const cancelModal = modal => {
+    const cancel_btn = docuement.querySelector('.cancelApptBtn')
+    $(cancel_btn).click(() => {
+        modal.style.display = "none"
+    })
 }
 
 const fillinModalDetails = appointment_made_details => {
@@ -285,6 +293,8 @@ const clickMonth = (months , target) => {
         let monthSelected = getMonthSelected(target.dataset.month)
         return monthSelected
 }
+
+
 
 
 const dealWithDays = days => {
