@@ -415,7 +415,6 @@ const checkTime = (timeNow , timeSlotContainers) => {
      * in minutes or hours for that matter  
      */
     if(new Date().getDate()  === Number(appointment_Details["DayDate"])) {
-        debugger
         for(hour of clinic_Data[0].Hours)
             timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour || (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] < new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
             .map(timeslotContainer => {
