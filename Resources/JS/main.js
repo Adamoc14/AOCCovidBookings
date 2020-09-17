@@ -953,6 +953,7 @@ $(document).ready(async() => {
             userViewInit()
             break
         case window.location.pathname.includes("edit"):
+            getData()
             displayPastMonths()
             dealWithFormUpdate()
             dealWithMonths()
