@@ -80,6 +80,12 @@
     width: 30vw;
     margin: 1em auto;
     text-align:center;
+    border: 1px solid #eee;
+}
+
+.plus_btn_add:hover{
+    background: #fff;
+    color: #1BA1E2;
 }
 
 .buttons_container {
