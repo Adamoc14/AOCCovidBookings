@@ -117,11 +117,27 @@
     .appointment_container {
         height: 21vh;
     }
+    .appointment_display_container_inner {
+        min-height: 25vh;
+    }
+    .appointment_details_container h2 {
+        font-size: 2.8vw;
+    }
     .date_square {
         width: 19vw;
         height: 8vh;
     }
     .action_btn{
         width: 14vw;
+    }
+    .top_header h2 {
+        font-size: 2.5vw;
+    }
+    .print_btn{
+        width: 16vw;
+        height: 4vh;
+    }
+    .plus_btn_add {
+        width: 35vw;
     }
 }
