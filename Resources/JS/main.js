@@ -210,6 +210,7 @@ const createAppointmentBtnClick = () => {
     const create_appt_btn = document.querySelector('#create_appointment_btn'),
     form = document.querySelector('form');
     $(create_appt_btn).click(() => {
+        $(form).submit()
         let formValidated = validateForm()
 
         if(!formValidated) {
