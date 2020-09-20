@@ -1,3 +1,9 @@
+.user_top_part {
+    padding: 0.5em 1em;
+}
+.user_top_part img{
+    width: 30vw;
+}
 
 .appointment_display_container_main {
     padding: 2em 2em;
