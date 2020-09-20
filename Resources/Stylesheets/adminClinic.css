@@ -128,6 +128,11 @@ aside {
     background: orange;
 }
 
+.daySelected {
+    background: green;
+    color: #fff ;
+}
+
 .Providers_container {
     padding: 1em;
     display: none;
@@ -161,4 +166,96 @@ aside {
     margin: 0 auto;
     text-align: center;
     cursor: pointer;
+}
+
+.months_container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    width: 66vw;
+    margin: 1em auto;
+    text-align: center;
+    grid-gap: 1em;
+}
+
+.month {
+    background: aliceblue;
+    padding: 1em;
+    cursor: pointer;
+}
+
+.month:hover{
+    background: green !important;
+    color: #fff !important;
+}
+
+.day {
+    border: 1px solid #eee;
+    width: 5vw;
+    height: 5vw;
+    display: grid;
+    border-radius: 50%;
+    place-items: center;
+    cursor: pointer;
+}
+
+.day:hover{
+    background: green !important;
+    color: #fff !important;
+}
+
+.calendar_container_m , 
+.time_slot_container_m{
+    margin-top: 2em;
+    margin-bottom: 2em;
+    display: none;
+}
+
+
+.keyContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.keyState {
+    margin: 0em 1em;
+    display: flex;
+    align-items: center;
+}
+
+.circleState {
+    width: 1.5vw;
+    height: 1.5vw;
+    border-radius: 50%;
+    margin-right: .5em;
+}
+
+.closedState {
+    background: orange;
+}
+.fullState {
+    background: red;
+}
+.availableState {
+    background: aliceblue;
+    border: 1px solid rgb(0,0,0,.2);
+}
+
+.selectedState{
+    background: green;
+}
+
+.keyState h5 {
+    font-size: 1.7vw;
+}
+
+.calendar_container{
+    display: grid;
+    place-items: center;
+    grid-template-columns: auto auto auto auto auto auto auto;
+    margin: 1em 0em;
+    text-align: center;
+    grid-gap: 1em;
+}
+.dayOfWeek {
+    font-size: 1.5vw;
 }

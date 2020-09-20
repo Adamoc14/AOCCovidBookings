@@ -71,15 +71,15 @@ const printPage = button => {
 }
 
 
-const displayPastMonths = () => {
+const displayPastMonths = place => {
     const monthToday = new Date().getMonth()
     const months = [...document.querySelectorAll('.month')]
     months.filter(month => month.dataset.month < monthToday).map(month => month.classList.add('disabled'))
     document.querySelector(`.month[data-month="${monthToday}"]`).style.background = "green"
-    displayPastDays(months , document.querySelector(`.month[data-month="${monthToday}"]`))
+    displayPastDays(months , document.querySelector(`.month[data-month="${monthToday}"]`) , place)
 }
 
-const displayPastDays = (months,startMonth) => {
+const displayPastDays = (months,startMonth , place) => {
     // Get month Selected Info , adds it to appointment details
     let monthSelected = clickMonth(months, startMonth);
     appointment_Details["Month"] = monthSelected.Name
@@ -88,7 +88,8 @@ const displayPastDays = (months,startMonth) => {
     let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name),
         dayStarted = new Date().getDate();
     displayDaysIrrelevant(days , dayStarted)
-    dealWithDays(days)
+    if (place === "Clinic") addClinicDays(days)
+    else dealWithDays(days)
 }
 
 
@@ -258,7 +259,7 @@ const getFormData = form => {
     return formData
 }
 
-const dealWithMonths = () => {
+const dealWithMonths = place => {
     const months = [...document.querySelectorAll('.month')];
     months.map(month => {
         $(month).click(e => {
@@ -274,8 +275,9 @@ const dealWithMonths = () => {
                 displayDaysIrrelevant(days)
             }
 
-            //Once the daysContainer is filled with the daysCircles, now we can access the days
-            dealWithDays(days)
+            if(place === "Clinic") addClinicDays(days, monthSelected.Name)
+            else dealWithDays(days)
+            
         })
     })
     
@@ -434,8 +436,10 @@ const displayTimeslots = timeSlots => {
 }
 
 const checkAgainstAppointments = () => {
-    appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
-    appointments_Saved
+    for(date of clinic_Data[0].Dates)
+        if(appointment_Details["DayDate"] == date) appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
+        else appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
+        appointments_Saved
             .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
             .map(appointment_s => {
                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
@@ -457,14 +461,24 @@ const checkTime = (timeNow , timeSlotContainers) => {
      * in minutes or hours for that matter  
      */
     if(new Date().getDate()  === Number(appointment_Details["DayDate"])) {
-        for(hour of clinic_Data[0].Hours)
-            timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour || (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] < new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
+            timeSlotContainers.filter(timeSlot =>  (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] > new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
             .map(timeslotContainer => {
                 timeslotContainer.classList.add('disabled')
                 timeslotContainer.style.background = "orange"
                 timeslotContainer.style.color = "black";
             })
     }
+    for (date of clinic_Data[0].Dates)
+        if (Number(date) === Number(appointment_Details["DayDate"])){
+            for(hour of clinic_Data[0].Hours){
+                timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour)
+                    .map(timeslotContainer => {
+                        timeslotContainer.classList.add('disabled')
+                        timeslotContainer.style.background = "orange"
+                        timeslotContainer.style.color = "black";
+                    })
+            }
+        }
 }
 
 const getTimeslotContainers = () => {
@@ -772,9 +786,20 @@ const adminClinicInit = async() => {
     listenForChoice(clinicData)
 }
 
+const addClinicDays = (days , monthSelected) => {
+    days.map(day => {
+        $(day).click(e => {
+            e.target.classList.toggle('daySelected') 
+        })
+    })
+}
+
 const makeClinicUpdate = async (timeSlotContainers, provider_value, id) => {
     const hours_array = timeSlotContainers.filter(timeslot => timeslot.classList.contains('selected')).map(timeslot => timeslot.innerHTML),
+    dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML)
     clinic_updated_data = {
+        Month: appointment_Details["Month"],
+        Dates: dates_array,
         Hours: hours_array,
         Providers: provider_value
     }
@@ -847,7 +872,6 @@ let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
     let timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
     if(happy) displayCurrentPickedSlots(clinicData, timeSlotContainers)
     else {
-        let timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
         document.querySelector('.Providers_container').insertAdjacentHTML('beforeend', `<div class="clinicUpdate_Btn">Update</div>`)
         return timeSlotContainers
     }
@@ -986,6 +1010,8 @@ $(document).ready(async() => {
             break   
         case window.location.pathname.toLowerCase().includes("adminclinic"):
             adminClinicInit()
+            displayPastMonths("Clinic")
+            dealWithMonths("Clinic") 
             adminLogout()            
         
     }
