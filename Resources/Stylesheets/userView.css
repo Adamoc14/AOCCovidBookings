@@ -1,6 +1,15 @@
 .user_top_part {
     padding: 0.5em 1em;
 }
+
+.userHeader{
+    display: flex;
+    justify-content: space-between;
+}
+.top_buttons_container {
+    display: flex;
+    align-items: center;
+}
 .user_top_part img{
     width: 30vw;
 }
@@ -76,6 +85,22 @@
 .print_btn:hover {
     background: white;
     color: #1BA1E2;
+}
+
+.exit_btn {
+    width: 9vw;
+    height: 7vh;
+    display: grid;
+    background: red;
+    border: 1px solid #eee;
+    place-items: center;
+    cursor: pointer;
+    margin-left: 1em;
+}
+
+.exit_btn:hover {
+    background: white;
+    color: red;
 }
 
 .plus_btn_add {
