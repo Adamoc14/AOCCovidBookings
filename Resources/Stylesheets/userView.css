@@ -40,7 +40,7 @@
 }
 
 .date_square {
-    width: 11vw;
+    min-width: 12vw;
     height: 18vh;
     margin: 1em;
     background: white;
