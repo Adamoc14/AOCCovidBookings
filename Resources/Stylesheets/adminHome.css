@@ -12,7 +12,7 @@
 
 .top_part {
     grid-area: topPart;
-    height: 25vh;
+    min-height: 12vh;
     position: relative;
 }
 
@@ -44,15 +44,15 @@ aside {
 .filter_container {
     grid-area: filterPart;
     display: flex;
-    height: 15vh;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-around;
-    position: relative;
+    min-height: 30vh;
 }
 
 .numberOfUsers {
     display: flex;
-    font-size: 1.5vw;
+    font-size: 1.7vw;
 }
 
 .button_options {
@@ -87,11 +87,10 @@ aside {
 .search_container {
     display: flex;
     justify-content: center;
-    margin: 2em 0em;
 }
 
 #search_input {
-    width: 50vw;
+    width: 36vw;
     margin-right: 1em;
 }
 
@@ -163,4 +162,8 @@ aside {
     display: grid;
     place-items: center;
     cursor: pointer
+}
+
+.numberOfAppointments {
+    font-size: 1.5vw;
 }

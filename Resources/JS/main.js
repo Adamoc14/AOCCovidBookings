@@ -670,7 +670,8 @@ const downloadCSV = csvData => {
 // Need to keep it in the array of appointments_Saved to be passed into this func
 // Had to sort the times by their hours first of all and then their minutes in ascending order
 const displayData = appointments => {
-    const runningTotal = appointments.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0)
+    const runningTotal = appointments.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0),
+    overallTotal = appointments_Saved.length
     appointments_Data = appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
     const appointmentsHTML = 
     appointments_Data.map(appointment => {
@@ -689,9 +690,10 @@ const displayData = appointments => {
                 </div>
                 `
         }
-    }).join("")
+    }).join("");
     document.querySelector('.main_container_m').insertAdjacentHTML('beforeend', appointmentsHTML)
     document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${runningTotal}`
+    document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overallTotal}`
     checkCapacity(appointments)
     checkDelete()
 }
