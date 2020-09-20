@@ -98,6 +98,10 @@
     margin-left: 1em;
 }
 
+.appointment_details_container {
+    margin-top: 1em;
+}
+
 .exit_btn:hover {
     background: white;
     color: red;
