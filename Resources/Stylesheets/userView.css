@@ -17,7 +17,7 @@
 }
 
 .appointment_container {
-    height: 43vh;
+    min-height: 43vh;
     margin: 1em 0em;
     display: grid;
     grid-template-columns: auto;
