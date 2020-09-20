@@ -59,7 +59,7 @@ const displayUserView = async() => {
     apptContainer.insertAdjacentHTML('beforeend',appointmentsData)
     $(document.querySelector('.delete_btn')).click(e => {
         e.preventDefault();
-        deleteAppointment(e.currentTarget.dataset.appt , userDetails)
+        deleteAppointment(e.currentTarget.dataset.appt , userDetails._id, "Client")
     })
     printPage(print_btn)
 }
@@ -147,10 +147,11 @@ const updateAppointment = async (appt_id) => {
     }
 }
 
-const deleteAppointment = async(id , userDetails) => {
+const deleteAppointment = async (id, userID , place) => {
     try {
-        const { data: Users_Appointments } = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userDetails._id}`)
-        window.location = `userView.html?id=${ Users_Appointments._id}`
+        const { data: Users_Appointments } = await axios.delete(`${url}api/v1/appointments/${id}?userId=${userID}`)
+        if(place === "Client") window.location = `userView.html?id=${ Users_Appointments._id}`
+        else window.location = `AdminHome.html`
     } catch (error) {
         console.log(error)
     }
@@ -608,11 +609,11 @@ const dealWithDateChange = date_picker => {
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
                     <h4 class="container_sm">Time(inc.Date)</h4>
-                    <h4 class="container_sm">Name(s)</h4>
+                    <h4 class="container_sm">First Name(s)</h4>
+                    <h4 class="container_sm">Surname(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
                     <h4 class="container_sm">PPS No(s)</h4>
                     <h4 class="container_sm">Car Reg(s)</h4>
-                    
                 </div>
         `
         const SelectedDateTime = getDateTime()
@@ -635,7 +636,7 @@ const getAppointmentDataFromTable = () => {
 
 const getDetails = appointments => {
     let details = []
-    appointments.map(appt => details.push(`"${escapeSlashAndQuotes(appt.firstName)} ${escapeSlashAndQuotes(appt.Surname)}"`, `"${escapeSlashAndQuotes(appt.DOB)}"` , `"${escapeSlashAndQuotes(appt.PPS_Number)}"` , `"${escapeSlashAndQuotes(appt.Car_Reg)}"`))
+    appointments.map(appt => details.push(`"${escapeSlashAndQuotes(appt.firstName)}"`, `"${escapeSlashAndQuotes(appt.Surname)}"`, `"${escapeSlashAndQuotes(appt.DOB)}"` , `"${escapeSlashAndQuotes(appt.PPS_Number)}"` , `"${escapeSlashAndQuotes(appt.Car_Reg)}"`))
     return [...details]
 }
 
@@ -643,7 +644,7 @@ const objectToCSV = appointments_Data => {
     const csvRows = [],
 
     // Get the headers  
-    headers = [`"Date"`, `"Time"`, `"Name(s)"`, `"DOB(s)"`, `"PPS No(s)"`, `"Car Reg(s)"`]
+    headers = [`"Date"`, `"Time"`, `"First Name(s)"`, `"Surname(s)"` , `"DOB(s)"`, `"PPS No(s)"`, `"Car Reg(s)"`]
     csvRows.push(headers.join(","))
 
     // Loop over the rows and get values for each of the headers  
@@ -677,14 +678,14 @@ const displayData = appointments => {
             return  `  
                 <div class="appointment_details span" data-id="${appointment._id}">
                     <h3 class="time"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
-                    ${getUserDetails(appointment.Capacity)}
+                    ${getUserDetails(appointment.Capacity, appointment._id)}
                 </div>
                 `
         } else {
             return  `  
                 <div class="appointment_details" data-id="${appointment._id}">
                     <h3 class="time"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
-                    ${getUserDetails(appointment.Capacity)}
+                    ${getUserDetails(appointment.Capacity, appointment._id)}
                 </div>
                 `
         }
@@ -692,6 +693,16 @@ const displayData = appointments => {
     document.querySelector('.main_container_m').insertAdjacentHTML('beforeend', appointmentsHTML)
     document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${runningTotal}`
     checkCapacity(appointments)
+    checkDelete()
+}
+
+const checkDelete = () => {
+    const delete_btns = [...document.querySelectorAll('.delete')]
+    delete_btns.map(delete_btn => 
+        $(delete_btn).click(e => {
+            deleteAppointment(e.target.dataset.apptid , e.target.dataset.userid , "Backend")
+        })
+    )  
 }
 
 const checkCapacity = appointments => {
@@ -702,15 +713,19 @@ const checkCapacity = appointments => {
     })      
 }
 
-const getUserDetails = userDetails => {
+const getUserDetails = (userDetails, appID) => {
     userDetails = userDetails.map(user => 
-    `   <h4 class="container_sm">${user.firstName} ${user.Surname}</h4>
+    `   <h4 class="container_sm">${user.firstName}</h4>
+        <h4 class="container_sm">${user.Surname}</h4> 
         <h4 class="container_sm">${user.DOB}</h4>
         <h4 class="container_sm">${user.PPS_Number}</h4>
         <h4 class="container_sm">${user.Car_Reg}</h4>
+        <h4 class="delete" data-userID="${user._id}" data-apptID="${appID}">X</h4>
     `).join("")
     return userDetails
 }
+
+
 
 const dealWithSearch = () => {
     const searchInput = document.querySelector('#search_input')
@@ -718,7 +733,8 @@ const dealWithSearch = () => {
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
                     <h4 class="container_sm">Time(inc.Date)</h4>
-                    <h4 class="container_sm">Name(s)</h4>
+                    <h4 class="container_sm">First Name(s)</h4>
+                    <h4 class="container_sm">Surname(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
                     <h4 class="container_sm">PPS No(s)</h4>
                     <h4 class="container_sm">Car Reg(s)</h4>

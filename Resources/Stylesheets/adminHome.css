@@ -97,7 +97,7 @@ aside {
 
 .headings{
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr) 7%;
     margin-bottom: 1em;
     padding-bottom: .2em;
     border-bottom: 1px solid #eee;
@@ -105,7 +105,8 @@ aside {
 
 .appointment_details {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr) 7%;
+    grid-row-gap: .2em;
     margin-bottom: 1em;
     padding-bottom: 1em;
     border-bottom: 1px solid #eee;
@@ -153,4 +154,13 @@ aside {
     padding: 0.3em 1em;
     font-size: 1vw;
     border: 1px solid #eee;
+}
+
+.delete {
+    width: 3vw;
+    height: 5vh;
+    background: red;
+    display: grid;
+    place-items: center;
+    cursor: pointer
 }
