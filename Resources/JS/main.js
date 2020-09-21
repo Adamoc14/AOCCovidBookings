@@ -287,7 +287,7 @@ const dealWithMonths = place => {
                 displayDaysIrrelevant(days)
             }
 
-            if(place === "Clinic") addClinicDays(days, monthSelected.Name)
+            if(place === "Clinic") addClinicDays(days)
             else dealWithDays(days)
             
         })
@@ -813,31 +813,17 @@ const checkDateEnd = dates => {
 
 const adminClinicAddInit = async() => {
     const clinicData = await getClinicData(),
-    timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
-    timeSlotContainers = "";
+    timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10);
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
     displayPastMonths("Clinic")
     displayClinicTimeslots(timeSlots)
-
+    clinicSubmitBtnClick(clinicData)
     // displayMonthAndDates(clinicData)
 }
 
-const adminClinicInit = async() => {
-    const clinicData = await getClinicData()
-    $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
-    dealWithTabs()
-    clinicData.map(clinicDataSingle => 
-        document.querySelector('.hours_reveal_container').innerHTML = 
-            `<div class ="reveal_container"><strong>Month:</strong> ${clinicDataSingle.Month}</div>
-            <div class ="reveal_container"><strong>Dates:</strong> ${clinicDataSingle.Dates}</div>
-            <div class ="reveal_container"><strong>Hours:</strong> ${clinicDataSingle.Hours.join(", ")}</div>
-            <div class ="reveal_container"><strong>Providers:</strong> ${clinicDataSingle.Providers}</div>`
-    )
-    listenForChoice(clinicData)
-}
 
-const addClinicDays = (days , monthSelected) => {
+const addClinicDays = days => {
     days.map(day => {
         $(day).click(e => {
             e.target.classList.toggle('daySelected') 
@@ -845,9 +831,39 @@ const addClinicDays = (days , monthSelected) => {
     })
 }
 
-const makeClinicUpdate = async (timeSlotContainers, provider_value, id) => {
-    const hours_array = timeSlotContainers.filter(timeslot => timeslot.classList.contains('selected')).map(timeslot => timeslot.innerHTML),
-    dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML)
+const clinicSubmitBtnClick = clinicData => {
+    const submit_btn = document.querySelector('.addClinicSlotBtn')
+    $(submit_btn).click(()=> {
+        let provider_value = getProvidersValue(),
+            hours_array = [...document.querySelectorAll('.timeslot_Clinic.selected')].map(timeslot => timeslot.innerHTML),
+            dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML);
+        if (dates_array.length === 0 || hours_array.length === 0) {
+            alert("You must select date(s) and hour(s)")
+            return
+        } else if (provider_value === undefined) {
+            alert("You must indicate how many providers are needed")
+            return
+        }
+        new_clinic_slot = {
+            Month: appointment_Details["Month"],
+            Dates: dates_array,
+            Hours: hours_array,
+            Providers: provider_value
+        }   
+        makeClinicPost(new_clinic_slot)
+    })
+}
+
+const makeClinicPost = async(newClinicSlot) => {
+    try {
+        await axios.post(`${url}api/v1/clinics`, newClinicSlot)
+        window.location = "AdminClinic.html"
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const makeClinicUpdate = async(provider_value, id) => {
     clinic_updated_data = {
         Month: appointment_Details["Month"],
         Dates: dates_array,
@@ -862,54 +878,6 @@ const makeClinicUpdate = async (timeSlotContainers, provider_value, id) => {
     }
 }
 
-const listenForChoice = clinicData => {
-    const selection_btns = document.querySelectorAll('.choice_container div');
-    $(selection_btns).click(e => {
-        const selectedChoice = dealWithChoice(e.target)
-        let timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
-            timeSlotContainers = "";
-        if (!selectedChoice) {
-            document.querySelector('.months_container').style.display = "grid"
-            displayClinicTimeslots(timeSlots, clinicData, true)
-            displayMonthAndDates(clinicData)
-        } else {
-            document.querySelector('.months_container').style.display = "grid"
-            displayPastMonths("Clinic")
-            dealWithMonths("Clinic") 
-            timeSlotContainers = displayClinicTimeslots(timeSlots, clinicData , false);
-            timeSlotContainers.map(
-                timeSlot => $(timeSlot).click(e => {
-                    e.target.classList.toggle('selected')
-                })
-            )
-            clinicSubmitBtnClick(timeSlotContainers, clinicData)
-        }
-    })
-}
-
-const displayMonthAndDates = clinicData => {
-    const months = [...document.querySelectorAll('.month')]
-    months.map(month => month.classList.add('disabled'))
-    $(`.month:contains("${clinicData[0]["Month"]}")`)[0].style.background = "green"
-    $(`.month:contains("${clinicData[0]["Month"]}")`)[0].style.color = "white"
-    // Get month Selected Info , adds it to appointment details
-    let monthSelected = clickMonth(months, $(`.month:contains("${clinicData[0]["Month"]}")`)[0]);
-    appointment_Details["Month"] = monthSelected.Name
-
-    // Display Calendar and Days That are closed
-    let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name)
-    if (monthSelected.Name === nameOfMonth(new Date().getMonth())) {
-        displayDaysIrrelevant(days, new Date().getDate())
-    } else {
-        displayDaysIrrelevant(days)
-    }
-    days.map(day => day.classList.add('disabled'))
-    days.filter(date => clinicData[0].Dates.includes(date.innerHTML)).map(date => {
-        date.style.background = "green"
-        date.style.color = "white"
-    })
-}
-
 const getProvidersValue = () => {
     const provider_input = document.querySelector('#providers_input')
     if(provider_input.value.length === 0) {
@@ -920,43 +888,27 @@ const getProvidersValue = () => {
     } 
 }
 
-const clinicSubmitBtnClick = (timeSlotContainers, clinicData) => {
-    const submit_btn = document.querySelector('.clinicUpdate_Btn')
-    $(submit_btn).click(()=> {
-        let provider_value = getProvidersValue()
-        if(provider_value !== undefined)
-            makeClinicUpdate(timeSlotContainers, provider_value, clinicData[0]._id)
-    })
-}
-
-
-const dealWithChoice = target => {
-    switch(target.innerHTML){
-        case "Yes":
-            return true
-        case "No": 
-            return false
-    }
-}
-
 const displayClinicTimeslots = timeSlots => {
 let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
     timeSlots = timeSlots.map(timeSlot => 
         `<div class="timeslot_Clinic" data-time="${timeSlot}">${timeSlot}</div>`
     ).join("")
-    document.querySelector('.clinicTimeslotsContainer').style.display = "block"
     timeSlotContainer.innerHTML = timeSlots
 }
 
-const displayCurrentPickedSlots = (clinicData, timeSlotContainers) => {
-    for(const clinicDataSingle of clinicData){
-        clinicDataSingle.Hours.map(hour => {$(`.timeslot_Clinic:contains(${hour})`)[0].style.background = "orange"})
-        document.querySelector('#providers_input').value = clinicDataSingle.Providers
-    }
-    timeSlotContainers.map(timeslot => timeslot.classList.add('disabled'))
-    document.querySelector('#providers_input').classList.add('disabled')
+// const displayCurrentPickedSlots = (clinicData, timeSlotContainers) => {
+//     for(const clinicDataSingle of clinicData){
+//         clinicDataSingle.Hours.map(hour => {$(`.timeslot_Clinic:contains(${hour})`)[0].style.background = "orange"})
+//         document.querySelector('#providers_input').value = clinicDataSingle.Providers
+//     }
+//     timeSlotContainers.map(timeslot => timeslot.classList.add('disabled'))
+//     document.querySelector('#providers_input').classList.add('disabled')
     
-}
+// }
+
+
+
+
 
 // Helper Functions
 const escapeSlashAndQuotes = csvValue => {

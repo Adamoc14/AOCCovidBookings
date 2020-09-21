@@ -15,6 +15,7 @@
     margin: 1em auto;
     place-items: center;
     background: orange;
+    cursor: pointer;
 }
 
 .selected{
@@ -25,3 +26,4 @@
     background: green;
     color: #fff ;
 }
+
