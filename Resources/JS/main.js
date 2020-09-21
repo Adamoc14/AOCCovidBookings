@@ -347,8 +347,6 @@ const dealWithTimes = () => {
     // let time_now = new Date(),
         // newRoundedTime = roundMinutes(time_now),
     let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10),
-    // let timeSlots = makeTimeslots(moment().startOf('day'), [] , 10),
-        // timeSlotsOnTheFly = makeTimeslotsOnFly(newRoundedTime, 10, []),
         timeSlotContainers = displayTimeslots(timeSlots);
     timeSlotContainers.map(timeSlot => {
         $(timeSlot).click(e => {
@@ -397,28 +395,6 @@ const getDaySelected = target => {
     return daySelected
 }
 
-const makeTimeslotsOnFly = (newRoundedTime, end , timeSlots) => {
-    let completed = false;
-    // if(Number(newRoundedTime.split(":")[0]) > 18) return
-    timeSlots.push(newRoundedTime)
-    if(!completed){
-        if (timeSlots.includes("18:0")) {
-            completed = true
-            return [...timeSlots]
-        } 
-        if (Number(newRoundedTime.split(":")[1]) + 10 >= 60) {
-            const hours = Number(newRoundedTime.split(":")[0]) + 1,
-            minutes = "00";
-            if (Array.isArray(makeTimeslots(`${hours}:${Number(minutes)}`, end, timeSlots))) return timeSlots
-            timeSlots.push(makeTimeslots(`${hours}:${Number(minutes)}`, end, timeSlots))
-        } else {
-            if (Array.isArray(makeTimeslots(`${newRoundedTime.split(":")[0]}:${Number(newRoundedTime.split(":")[1]) + 10}`, end, timeSlots))) return timeSlots
-            timeSlots.push(makeTimeslots(`${newRoundedTime.split(":")[0]}:${Number(newRoundedTime.split(":")[1]) + 10}`, end, timeSlots))
-        } 
-    }
-    return timeSlots
-}
-
 const makeTimeslots = (startTime, timeSlots , interval) => {
     let completed = false
     timeSlots.push(`${startTime.hours()}:${startTime.minutes()}`)
@@ -432,8 +408,6 @@ const makeTimeslots = (startTime, timeSlots , interval) => {
         }
     }
 }
-
-
 
 const displayTimeslots = timeSlots => {
     document.querySelector('.time_slot_container_m').style.display = "block"
@@ -548,11 +522,11 @@ const fillInCalendar = (monthSelectedNum, numberOfDays, firstDay, monthSelectedN
 const dealWithTerms = () => {
     const terms_btn = document.querySelector('.open_terms_btn')
     $(terms_btn).click(e => {
-        openModal(e.currentTarget)
+        openModal()
     })
 }
 
-const openModal = (target) => {
+const openModal = () => {
     const modal = fillInTermsModal()
     document.querySelector('.terms_and_c_modal').innerHTML = modal;
     document.querySelector('.terms_and_c_modal').style.display = "block" 
@@ -843,7 +817,7 @@ const adminClinicAddInit = async() => {
     timeSlotContainers = "";
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
-    displayPastMonths()
+    displayPastMonths("Clinic")
     displayClinicTimeslots(timeSlots)
 
     // displayMonthAndDates(clinicData)

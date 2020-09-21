@@ -16,3 +16,12 @@
     place-items: center;
     background: orange;
 }
+
+.selected{
+    background: orange;
+}
+
+.daySelected {
+    background: green;
+    color: #fff ;
+}
