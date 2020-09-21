@@ -30,13 +30,13 @@ aside {
     width: 100%;
 }
 
-.hours_reveal_container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.reveal_container {
     text-align: center;
-    min-height: 17vh;
+    margin: .5em 0em;
+    font-weight: 100;
+    font-size: 1.7vw;
 }
+
 
 .satisfied_container {
     width: 50vw;
@@ -169,7 +169,7 @@ aside {
 }
 
 .months_container {
-    display: grid;
+    display: none;
     grid-template-columns: auto auto auto;
     width: 66vw;
     margin: 1em auto;
@@ -258,4 +258,8 @@ aside {
 }
 .dayOfWeek {
     font-size: 1.5vw;
+}
+
+.calendar_container_m h3:first-child {
+    margin: 1em 1em;
 }

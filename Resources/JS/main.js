@@ -436,17 +436,9 @@ const displayTimeslots = timeSlots => {
 }
 
 const checkAgainstAppointments = () => {
-    // if (clinic_Data[0].Dates.includes(appointment_Details["DayDate"]))
-    //     for(date of clinic_Data[0].Dates)
-    //         appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
-    // else appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
-    // appointments_Saved
-    //     .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
-    //     .map(appointment_s => {
-    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
-    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-    //     })
+    // This just checks if the date picked is within the date slots that the clinic picks
+    // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
+    // 2) Else - filters the timeslots availability by by Capacity of equal or more than 2
     if (clinic_Data[0].Dates.includes(appointment_Details["DayDate"])) {
         appointments_Saved
             .filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2 && (appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"]))
@@ -800,7 +792,13 @@ const adminClinicInit = async() => {
     const clinicData = await getClinicData()
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
-    clinicData.map(clinicDataSingle => document.querySelector('.hours_reveal_container').innerHTML = `Hours : ${clinicDataSingle.Hours.join(" ")} <br><br> Providers: ${clinicDataSingle.Providers}` )
+    clinicData.map(clinicDataSingle => 
+        document.querySelector('.hours_reveal_container').innerHTML = 
+            `<div class ="reveal_container"><strong>Month:</strong> ${clinicDataSingle.Month}</div>
+            <div class ="reveal_container"><strong>Dates:</strong> ${clinicDataSingle.Dates}</div>
+            <div class ="reveal_container"><strong>Hours:</strong> ${clinicDataSingle.Hours.join(", ")}</div>
+            <div class ="reveal_container"><strong>Providers:</strong> ${clinicDataSingle.Providers}</div>`
+    )
     listenForChoice(clinicData)
 }
 
@@ -835,8 +833,14 @@ const listenForChoice = clinicData => {
         const selectedChoice = dealWithChoice(e.target)
         let timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
             timeSlotContainers = "";
-        if (!selectedChoice) displayClinicTimeslots(timeSlots, clinicData, true);
-        else {
+        if (!selectedChoice) {
+            document.querySelector('.months_container').style.display = "grid"
+            displayClinicTimeslots(timeSlots, clinicData, true)
+            displayMonthAndDates(clinicData)
+        } else {
+            document.querySelector('.months_container').style.display = "grid"
+            displayPastMonths("Clinic")
+            dealWithMonths("Clinic") 
             timeSlotContainers = displayClinicTimeslots(timeSlots, clinicData , false);
             timeSlotContainers.map(
                 timeSlot => $(timeSlot).click(e => {
@@ -845,6 +849,29 @@ const listenForChoice = clinicData => {
             )
             clinicSubmitBtnClick(timeSlotContainers, clinicData)
         }
+    })
+}
+
+const displayMonthAndDates = clinicData => {
+    const months = [...document.querySelectorAll('.month')]
+    months.map(month => month.classList.add('disabled'))
+    $(`.month:contains("${clinicData[0]["Month"]}")`)[0].style.background = "green"
+    $(`.month:contains("${clinicData[0]["Month"]}")`)[0].style.color = "white"
+    // Get month Selected Info , adds it to appointment details
+    let monthSelected = clickMonth(months, $(`.month:contains("${clinicData[0]["Month"]}")`)[0]);
+    appointment_Details["Month"] = monthSelected.Name
+
+    // Display Calendar and Days That are closed
+    let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name)
+    if (monthSelected.Name === nameOfMonth(new Date().getMonth())) {
+        displayDaysIrrelevant(days, new Date().getDate())
+    } else {
+        displayDaysIrrelevant(days)
+    }
+    days.map(day => day.classList.add('disabled'))
+    days.filter(date => clinicData[0].Dates.includes(date.innerHTML)).map(date => {
+        date.style.background = "green"
+        date.style.color = "white"
     })
 }
 
@@ -1028,8 +1055,6 @@ $(document).ready(async() => {
             break   
         case window.location.pathname.toLowerCase().includes("adminclinic"):
             adminClinicInit()
-            displayPastMonths("Clinic")
-            dealWithMonths("Clinic") 
             adminLogout()            
         
     }
