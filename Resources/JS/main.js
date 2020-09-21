@@ -572,7 +572,7 @@ const closeModal = () => {
 const fillInTermsModal = () => {
     return `<div class="terms_and_c_modal_content">
                 <h2>Terms and Conditions Apply</h2>
-                <p>I consent to recieving vaccination and I'm aware of the risks and side effects as per patient information leaflet at <a href="https://www.medicines.org.uk/emc/search?q=%22Influenza+vaccine%22">https://www.medicines.org.uk/InfluenzaVaccine</a></p>
+                <p>I consent to receiving vaccination and I'm aware of the risks and side effects as per patient information leaflet at <a href="https://www.medicines.org.uk/emc/search?q=%22Influenza+vaccine%22">https://www.medicines.org.uk/InfluenzaVaccine</a></p>
             </div>`
 }
 
@@ -800,6 +800,46 @@ const getClinicData = async() => {
     let res = await axios.get(`${url}api/v1/clinics`),
         { data: clinicData } = res
     return clinicData
+}
+
+
+const adminClinicHomeInit = async() => {
+    const clinicData = await getClinicData()
+    $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
+    dealWithTabs()
+    displayAllSlots(clinicData)
+}
+
+
+const displayAllSlots = clinicData => {
+    const slot_container = document.querySelector('.clinic_slots_container'),
+    contents = clinicData.map(clinic_slot => 
+    `
+        <div class="slot_entry_container">
+            <div class="date_square_container">
+                <div class="date_square">${clinic_slot.Month.slice(0, 3)}</div>
+            </div>
+            <div class="slot_details_container">
+                <h2>Hours: ${clinic_slot.Hours.join(", ")}</h2>
+                <h2>Providers: ${clinic_slot.Providers}</h2>
+                <h2>Dates: ${clinic_slot.Dates.join(", ")}</h2>
+            </div>
+            <div class="manipulate_slot_buttons_container">
+                <a class="update_btn action_btn" href="AdminClinicEdit.html?id=${clinic_slot._id}">Edit</a>
+                <div class="delete_btn action_btn" data-appt="${clinic_slot._id}">Cancel</div>
+            </div>
+        </div>
+    `)
+    slot_container.insertAdjacentHTML('beforeend', contents)
+}
+
+const checkDateEnd = dates => {
+    return dates.length === 1 ? dates[0] : dates[dates.length - 1]
+}
+
+const adminClinicAddInit = async() => {
+    const clinicData = await getClinicData()
+    
 }
 
 const adminClinicInit = async() => {
@@ -1067,9 +1107,18 @@ $(document).ready(async() => {
             adminInit()
             adminLogout()
             break   
-        case window.location.pathname.toLowerCase().includes("adminclinic"):
-            adminClinicInit()
-            adminLogout()            
+        // case window.location.pathname.toLowerCase().includes("adminclinic"):
+        //     adminClinicInit()
+        //     adminLogout() 
+        //     break
+        case window.location.pathname.toLowerCase().includes("adminclinichome"):
+            adminClinicHomeInit() 
+            adminLogout() 
+            break 
+        case window.location.pathname.toLowerCase().includes("adminclinicadd"):
+            adminClinicAddInit() 
+            adminLogout() 
+            break          
         
     }
 })

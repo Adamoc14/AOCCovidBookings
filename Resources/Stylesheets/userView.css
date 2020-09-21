@@ -144,9 +144,6 @@
     cursor:pointer;
 }
 
-.add_btn{
-    background: indianred;
-}
 
 @media (max-width: 600px){
     .appointment_container {
