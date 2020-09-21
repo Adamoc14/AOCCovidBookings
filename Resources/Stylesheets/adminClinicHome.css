@@ -1,70 +1,15 @@
 .main_container {
-    display: grid;
-    grid-template-areas:
-        'sideBar topPart topPart topPart topPart'
-        'sideBar mainContainer mainContainer mainContainer mainContainer'
-        'sideBar mainContainer mainContainer mainContainer mainContainer'
-        'sideBar mainContainer mainContainer mainContainer mainContainer';
-    grid-template-columns: 20% 20% 20% 20% 20%;
-    grid-template-rows: 25%;
-    min-height: 100vh;
-    position: relative;
-}
-
-.top_part {
-    grid-area: topPart;
-    height: 25vh;
-    position: relative;
-}
-
-.top_part_inner {
-    display: flex;
-    justify-content: space-between;
-    margin: 1em 1em;
-    align-items: center;
-}
-
-aside {
-    grid-area: sideBar;
-    background: orange;
-    display: grid;
-    position: fixed;
-    height: 100vh;
-    width: 20vw;
-    place-items: center;
-}
-
-.options_container {
-    width: 100%;
-}
-
-.options_container h1 {
-    width: 100%;
-    padding: .5em 0em;
-    text-align: center;
-    cursor: pointer;
-}
-
-.logout {
-    cursor: pointer;
-    font-size: 1.8vw;
-}
-
-.top_part_inner img {
-    width: 27vw;
-}
-
-.clinic_slots_container{
-    grid-area: mainContainer;
+    grid-template-rows: 20% 80%;
+    margin-left: 20vw;
 }
 
 .slot_container {
     display: flex;
     justify-content: flex-end;
+    padding: 1em 2em;
 }
 
 .clinic_slots_container {
-    grid-area: mainContainer;
     margin-top: 2em;
     padding: 2em 2em
 }
@@ -117,7 +62,6 @@ aside {
     background: #1BA1E2;
     cursor: pointer;
     width: 17vw;
-    margin: 0em 1em;
     text-align: center;
     border: 1px solid #eee;
 }

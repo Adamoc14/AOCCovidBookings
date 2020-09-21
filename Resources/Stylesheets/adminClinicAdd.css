@@ -1,0 +1,18 @@
+.main_container{
+    grid-template-rows: 5% 95%;
+    margin-left: 20vw;
+}
+
+.top_part{
+    min-height: 20vh;
+    margin-bottom: 1em;
+}
+
+.addClinicSlotBtn {
+    width: 20vw;
+    height: 8vh;
+    display: grid;
+    margin: 1em auto;
+    place-items: center;
+    background: orange;
+}

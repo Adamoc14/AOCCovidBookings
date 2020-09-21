@@ -838,8 +838,15 @@ const checkDateEnd = dates => {
 }
 
 const adminClinicAddInit = async() => {
-    const clinicData = await getClinicData()
-    
+    const clinicData = await getClinicData(),
+    timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
+    timeSlotContainers = "";
+    $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
+    dealWithTabs()
+    displayPastMonths()
+    displayClinicTimeslots(timeSlots)
+
+    // displayMonthAndDates(clinicData)
 }
 
 const adminClinicInit = async() => {
@@ -958,22 +965,13 @@ const dealWithChoice = target => {
     }
 }
 
-const displayClinicTimeslots = (timeSlots, clinicData , happy) => {
+const displayClinicTimeslots = timeSlots => {
 let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
     timeSlots = timeSlots.map(timeSlot => 
         `<div class="timeslot_Clinic" data-time="${timeSlot}">${timeSlot}</div>`
     ).join("")
     document.querySelector('.clinicTimeslotsContainer').style.display = "block"
-    document.querySelector('.Providers_container').style.display = "block"
-    document.querySelector('.satisfied_container').style.display = "none"
     timeSlotContainer.innerHTML = timeSlots
-
-    let timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
-    if(happy) displayCurrentPickedSlots(clinicData, timeSlotContainers)
-    else {
-        document.querySelector('.Providers_container').insertAdjacentHTML('beforeend', `<div class="clinicUpdate_Btn">Update</div>`)
-        return timeSlotContainers
-    }
 }
 
 const displayCurrentPickedSlots = (clinicData, timeSlotContainers) => {
