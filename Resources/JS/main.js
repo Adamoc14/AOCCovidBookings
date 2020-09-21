@@ -3,7 +3,8 @@ const appointment_Details = {},
     url = "https://whmc-server.herokuapp.com/";
 let appointments_Saved = [],
     appointments_Data = [],
-    clinic_Data = []
+    clinic_Data = [],
+    errMessage = []
 
 const getData = async() => {
     let res = await axios.get(`${url}api/v1/appointments`),
@@ -174,28 +175,37 @@ const createAppointmentBtnClick = () => {
     $(form).submit(e => {
         e.preventDefault()
 
-        let formValidated = validateForm()
+        let bookingDetailsValidated = validateBookingDetails()
 
-        if(!formValidated) {
+
+        if(!bookingDetailsValidated) {
             alert("Please pick a valid month, date and time before progressing")
             return
         }
 
         // Getting the form Data and filling it to appointment_Details
         let formData = getFormData(form)
+        if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("You must select a card option and/ or desired destination option from the radio buttons above")
+        whichCard(formData.get('card_decision'), formData)
+        whichDestination(formData.get('destination_decision'), formData)
+        if(errMessage.length !== 0) {
+            errMessage.filter((error , index) => errMessage.lastIndexOf(error) === index)
+            .map(error => alert(error))
+            errMessage = []
+            return
+        }
         appointment_Details["firstName"] = formData.get('firstName')
         appointment_Details["Surname"] = formData.get('Surname')
         appointment_Details["Mobile"] = formData.get('Mobile')
         appointment_Details["DOB"] = formData.get('DOB')
-        whichCard(formData.get('card_decision') , formData)
-        whichDestination(formData.get('destination_decision') , formData)
+        
 
         displayAppointmentPopup(appointment_Details)
         dealWithFormSubmit()
     })
 }
 
-const validateForm = () => {
+const validateBookingDetails = () => {
     return appointment_Details["Month"] !== undefined && appointment_Details["DayDate"] !== undefined && appointment_Details["Time"] !== undefined
 }
 
@@ -241,7 +251,8 @@ const whichCard = (value , formData) => {
         appointment_Details["PPS_Number"] = false
     } else if (value === "PPS_Number"){
         appointment_Details["Medical_Card"] = false
-        appointment_Details["PPS_Number"] = formData.get('PPS_Number_Input')
+        if (formData.get('PPS_Number_Input') && formData.get('PPS_Number_Input') !== "") appointment_Details["PPS_Number"] = formData.get('PPS_Number_Input')
+        else return errMessage.push("You did not fill in a PPS Value")
     }
 }
 const whichDestination = (value , formData) => {
@@ -250,7 +261,8 @@ const whichDestination = (value , formData) => {
         appointment_Details["Car_Reg"] = false
     } else if (value === "Drive_Through"){
         appointment_Details["Surgery"] = false
-        appointment_Details["Car_Reg"] = formData.get('Car_Reg_Input')
+        if(formData.get('Car_Reg_Input') && formData.get('Car_Reg_Input') !== "") appointment_Details["Car_Reg"] = formData.get('Car_Reg_Input')
+        else return errMessage.push("You did not fill in a Car Registration Value")
     }
 }
 
