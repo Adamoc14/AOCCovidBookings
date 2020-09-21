@@ -355,6 +355,7 @@ const dealWithTimes = () => {
              // Get time Selected Info, adds it to appointment details
             let timeSelected = clickTime(timeSlotContainers, e.target)
             checkAgainstAppointments()
+            checkTime(new Date().getHours(), timeSlotContainers)
             appointment_Details["Time"] = timeSelected
         })
     })
