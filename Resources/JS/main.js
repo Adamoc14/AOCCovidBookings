@@ -484,7 +484,7 @@ const checkTime = (timeNow , timeSlotContainers) => {
      * in minutes or hours for that matter  
      */
     if(new Date().getDate()  === Number(appointment_Details["DayDate"])) {
-            timeSlotContainers.filter(timeSlot =>  (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] > new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
+            timeSlotContainers.filter(timeSlot =>  (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] < new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
             .map(timeslotContainer => {
                 timeslotContainer.classList.add('disabled')
                 timeslotContainer.style.background = "orange"
