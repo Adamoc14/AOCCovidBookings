@@ -748,6 +748,7 @@ const checkCapacity = appointments => {
     appointments.map(appointment => {
         if(appointment.Capacity.length >= 2){
             $('.span').css('grid-template-rows', `repeat(${appointment.Capacity.length},1fr)`)
+            $('.time').css('grid-row', `span ${appointment.Capacity.length}`)
         }
     })      
 }
