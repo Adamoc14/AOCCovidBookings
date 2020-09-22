@@ -43,10 +43,13 @@
 }
 .user_top_part {
     padding: 0.5em 1em;
+    display: flex;
+    align-items: center;
 }
 
-.user_top_part img{
-    width: 30vw;
+.user_top_part img {
+    width: 20vw;
+    margin: 0em 1.2em;
 }
 
 .see_all_appointments_btn , 

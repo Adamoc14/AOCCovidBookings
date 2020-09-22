@@ -2,16 +2,19 @@
     padding: 0.5em 1em;
 }
 
-.userHeader{
+.userHeader {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
+
 .top_buttons_container {
     display: flex;
     align-items: center;
 }
 .user_top_part img{
-    width: 30vw;
+    width: 20vw;
+    margin: 0em 1.2em;
 }
 
 .appointment_display_container_main {
