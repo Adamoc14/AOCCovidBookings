@@ -102,9 +102,9 @@ const displayPPSInput = () =>{
     $(document.querySelector('.Medical_Card')).get(0).onclick = () => {
         document.querySelector('.pps_number_input_container').classList.remove("display")
     }
-    $(document.querySelector('.Drive_Through')).get(0).onclick = () => {
-        document.querySelector('.car_reg_container').classList.add("display")
-    }
+    // $(document.querySelector('.Drive_Through')).get(0).onclick = () => {
+    //     document.querySelector('.car_reg_container').classList.add("display")
+    // }
     $(document.querySelector('.Surgery')).get(0).onclick = () => {
         document.querySelector('.car_reg_container').classList.remove("display")
     }
