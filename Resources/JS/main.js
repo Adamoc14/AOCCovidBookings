@@ -429,51 +429,37 @@ const displayTimeslots = timeSlots => {
 const checkAgainstAppointments = () => {
     // This just checks if the date picked is within the date slots that the clinic picks
     // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
-    // 2) Else - filters the timeslots availability by by Capacity of equal or more than 2
-    clinic_Data.map(clinic_Dets => {
-            const goingByClinicRules = appointments_Saved
-            .filter(appt => clinic_Dets.Dates.includes(appt.DayDate) && appt.Month === appointment_Details["Month"])
-            .filter(appointment => appointment.Capacity.length >= parseInt(clinic_Dets.Providers) * 2 )
-
-            const goingByNormalRules = appointments_Saved
-            .filter(appt => clinic_Dets.Dates.includes(appt.DayDate) === false && appt.Month === appointment_Details["Month"])
-            .filter(appointment => appointment.Capacity.length >= 2)
-
-            // const exceededSpecialRulesCapacity = appointments_Saved
-            //     .filter(appt => clinic_Dets.Dates.includes(appt.DayDate) && clinic_Dets.Month === appt.Month)
-            //     .filter(appointment => appointment.Capacity.length >= parseInt(clinic_Dets.Providers) * 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
-            //     .map(appointment_s => {
-            //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-            //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
-            //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-            //     })
-            // const exceedsNormalRulesCapacity = appointments_Saved
-            //     .filter(appt => clinic_Dets.Dates.includes(appt.DayDate) === false)
-            //     .filter(appointment => appointment.Capacity.length >= 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
-            //     .map(appointment_s => {
-            //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-            //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
-            //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-            //     })
-                // if () {
-            //     appointments_Saved
-            //         .filter(appointment => appointment.Capacity.length >= parseInt(clinic_Dets.Providers) * 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
-            //         .map(appointment_s => {
-            //             document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-            //             document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
-            //             document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-            //         })
-            // } else {
-            //     appointments_Saved
-            //         .filter()
-            //         .map(appointment_s => {
-            //                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-            //                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
-            //                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-            //         })   
-            // }   
-    })
+    // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
     
+    // appointments_Saved
+    //     .filter(appointment => appointment.Capacity.length >= 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
+    //     .map(appointment_s => {
+    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
+    //     })
+
+    // clinic_Data.map(clinic_Dets => {
+    //     if (clinic_Dets.Dates.includes(appointment_Details["DayDate"])) {
+    //         appointments_Saved
+    //             .filter(appointment => appointment.Capacity.length >= parseInt(clinic_Dets.Providers) * 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
+    //             .map(appointment_s => {
+    //                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+    //                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+    //                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
+    //             })
+    // }})    
+
+    for (date of clinic_Data[0].Dates)
+        if (appointment_Details["DayDate"] == date) appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
+        else appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
+    appointments_Saved
+        .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
+        .map(appointment_s => {
+            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
+        })
 }
 
 const checkTime = (timeNow , timeSlotContainers) => {
@@ -1129,7 +1115,7 @@ $(document).ready(async() => {
         case window.location.pathname.includes("userview"):
             userViewInit()
             break
-        case window.location.pathname.includes("edit"):
+        case window.location.pathname === "edit":
             getData()
             displayPastMonths()
             dealWithFormUpdate()
@@ -1151,7 +1137,7 @@ $(document).ready(async() => {
             adminClinicAddInit() 
             adminLogout() 
             break 
-        case window.location.pathname.toLowerCase().includes("adminclinicedit"):
+        case window.location.pathname.toLowerCase() === "adminclinicedit":
             adminClinicEditInit() 
             adminLogout() 
             break          
