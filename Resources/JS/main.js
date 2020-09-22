@@ -431,23 +431,26 @@ const checkAgainstAppointments = () => {
     // This just checks if the date picked is within the date slots that the clinic picks
     // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
     // 2) Else - filters the timeslots availability by by Capacity of equal or more than 2
-    if (clinic_Data[0].Dates.includes(appointment_Details["DayDate"])) {
-        appointments_Saved
-            .filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
-            .map(appointment_s => {
-                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
-                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-            })
-    } else {
-        appointments_Saved
-            .filter(appointment => appointment.Capacity.length >= 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
-            .map(appointment_s => {
+    clinic_Data.map(clinic_Dets => {
+        if (clinic_Dets.Dates.includes(appointment_Details["DayDate"])) {
+            appointments_Saved
+                .filter(appointment => appointment.Capacity.length >= parseInt(clinic_Dets.Providers) * 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
+                .map(appointment_s => {
                     document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
                     document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
                     document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-            })   
-    }
+                })
+        } else {
+            appointments_Saved
+                .filter(appointment => appointment.Capacity.length >= 2 && (appointment.Month === appointment_Details["Month"] && appointment.DayDate === appointment_Details["DayDate"] && appointment.DayName === appointment_Details["DayName"]))
+                .map(appointment_s => {
+                        document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                        document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+                        document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
+                })   
+        }   
+    })
+    
 }
 
 const checkTime = (timeNow , timeSlotContainers) => {
@@ -470,17 +473,20 @@ const checkTime = (timeNow , timeSlotContainers) => {
                 timeslotContainer.style.color = "black";
             })
     }
-    for (date of clinic_Data[0].Dates)
-        if (Number(date) === Number(appointment_Details["DayDate"])){
-            for(hour of clinic_Data[0].Hours){
-                timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour)
-                    .map(timeslotContainer => {
-                        timeslotContainer.classList.add('disabled')
-                        timeslotContainer.style.background = "orange"
-                        timeslotContainer.style.color = "black";
-                    })
+    clinic_Data.map(clinic_Dets => {
+        for (date of clinic_Dets.Dates)
+            if (Number(date) === Number(appointment_Details["DayDate"])) {
+                for (hour of clinic_Dets.Hours) {
+                    timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour)
+                        .map(timeslotContainer => {
+                            timeslotContainer.classList.add('disabled')
+                            timeslotContainer.style.background = "orange"
+                            timeslotContainer.style.color = "black";
+                        })
+                }
             }
-        }
+    })
+    
 }
 
 const getTimeslotContainers = () => {
@@ -694,14 +700,14 @@ const displayData = appointments => {
         if(appointment.Capacity.length >= 2) {
             return  `  
                 <div class="appointment_details span" data-id="${appointment._id}">
-                    <h3 class="time"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
+                    <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
                     ${getUserDetails(appointment.Capacity, appointment._id)}
                 </div>
                 `
         } else {
             return  `  
                 <div class="appointment_details" data-id="${appointment._id}">
-                    <h3 class="time"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
+                    <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
                     ${getUserDetails(appointment.Capacity, appointment._id)}
                 </div>
                 `
@@ -727,7 +733,9 @@ const checkCapacity = appointments => {
     appointments.map(appointment => {
         if(appointment.Capacity.length >= 2){
             $('.span').css('grid-template-rows', `repeat(${appointment.Capacity.length},1fr)`)
-            $('.time').css('grid-row', `span ${appointment.Capacity.length}`)
+            debugger
+            [...document.querySelectorAll('.time')]
+            .map(time => $(time).css('grid-row', `span ${time.dataset.capacity}`))
         }
     })      
 }
