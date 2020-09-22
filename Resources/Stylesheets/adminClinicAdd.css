@@ -24,9 +24,11 @@
     cursor: pointer;
 }
 
-.backSlotBtn{
+.backSlotBtn ,
+.addClinicSlotBtn:hover{
     background: white;
     border: 1px solid #eee;
+    color: orange;
 }
 
 .backSlotBtn:hover{
@@ -34,10 +36,6 @@
     color: white;
 }
 
-.addClinicSlotBtn:hover{
-    background: white;
-    border: 1px solid #eee;
-}
 
 
 
