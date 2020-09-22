@@ -189,9 +189,10 @@ const createAppointmentBtnClick = () => {
 
         // Getting the form Data and filling it to appointment_Details
         let formData = getFormData(form)
-        if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
+        if (formData.get('card_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
+        // if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
         whichCard(formData.get('card_decision'), formData)
-        whichDestination(formData.get('destination_decision'), formData)
+        // whichDestination(formData.get('destination_decision'), formData)
         if(errMessage.length !== 0) {
             errMessage.filter((error , index) => errMessage.lastIndexOf(error) === index)
             .map(error => alert(error))
@@ -755,11 +756,16 @@ const checkCapacity = appointments => {
 
 const getUserDetails = (userDetails, appID) => {
     userDetails = userDetails.map(user => 
+    // `   <h4 class="container_sm">${user.firstName}</h4>
+    //     <h4 class="container_sm">${user.Surname}</h4> 
+    //     <h4 class="container_sm">${user.DOB}</h4>
+    //     <h4 class="container_sm">${user.PPS_Number}</h4>
+    //     <h4 class="container_sm">${user.Car_Reg}</h4>
+    //     <h4 class="delete" data-userID="${user._id}" data-apptID="${appID}">X</h4>
     `   <h4 class="container_sm">${user.firstName}</h4>
         <h4 class="container_sm">${user.Surname}</h4> 
         <h4 class="container_sm">${user.DOB}</h4>
         <h4 class="container_sm">${user.PPS_Number}</h4>
-        <h4 class="container_sm">${user.Car_Reg}</h4>
         <h4 class="delete" data-userID="${user._id}" data-apptID="${appID}">X</h4>
     `).join("")
     return userDetails
@@ -792,7 +798,8 @@ return appointments_Saved.filter(appointment => appointment.Time.includes(search
 
 const loopUsers = (users , searchValue) => {
 let matches = []
-    users.map(user => matches.push(user._id.includes(searchValue), user.firstName.includes(searchValue), user.Surname.includes(searchValue) , user.firstName + user.Surname === searchValue, user.DOB.includes(searchValue), user.Car_Reg.includes(searchValue), user.PPS_Number.includes(searchValue)))
+    // users.map(user => matches.push(user._id.includes(searchValue), user.firstName.includes(searchValue), user.Surname.includes(searchValue) , user.firstName + user.Surname === searchValue, user.DOB.includes(searchValue), user.Car_Reg.includes(searchValue), user.PPS_Number.includes(searchValue)))
+    users.map(user => matches.push(user._id.includes(searchValue), user.firstName.includes(searchValue), user.Surname.includes(searchValue) , user.firstName + user.Surname === searchValue, user.DOB.includes(searchValue), user.PPS_Number.includes(searchValue)))
     return matches.includes(true)                   
 }
 
@@ -1135,7 +1142,7 @@ $(document).ready(async() => {
             adminLogout()
             break   
         case window.location.pathname.toLowerCase().includes("adminclinichome"):
-            adminClinicHomeInit() 
+            adminClinicHomeInit()
             adminLogout() 
             break 
         case window.location.pathname.toLowerCase().includes("adminclinicadd"):
