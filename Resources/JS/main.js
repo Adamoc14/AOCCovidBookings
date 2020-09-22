@@ -733,7 +733,6 @@ const checkCapacity = appointments => {
     appointments.map(appointment => {
         if(appointment.Capacity.length >= 2){
             $('.span').css('grid-template-rows', `repeat(${appointment.Capacity.length},1fr)`)
-            debugger
             [...document.querySelectorAll('.time')]
             .map(time => $(time).css('grid-row', `span ${time.dataset.capacity}`))
         }
