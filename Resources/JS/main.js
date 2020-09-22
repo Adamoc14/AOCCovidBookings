@@ -1115,7 +1115,7 @@ $(document).ready(async() => {
         case window.location.pathname.includes("userview"):
             userViewInit()
             break
-        case window.location.pathname === "edit":
+        case window.location.pathname.includes("edit"):
             getData()
             displayPastMonths()
             dealWithFormUpdate()
@@ -1137,7 +1137,7 @@ $(document).ready(async() => {
             adminClinicAddInit() 
             adminLogout() 
             break 
-        case window.location.pathname.toLowerCase() === "/adminclinicedit":
+        case window.location.pathname.toLowerCase().includes("adminclinicupdate"):
             adminClinicEditInit() 
             adminLogout() 
             break          
