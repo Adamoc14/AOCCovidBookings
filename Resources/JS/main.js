@@ -178,8 +178,6 @@ const createAppointmentBtnClick = () => {
         e.preventDefault()
 
         let bookingDetailsValidated = validateBookingDetails()
-
-
         if(!bookingDetailsValidated) {
             alert("Please pick a valid month, date and time before progressing")
             return
