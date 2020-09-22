@@ -1137,7 +1137,7 @@ $(document).ready(async() => {
             adminClinicAddInit() 
             adminLogout() 
             break 
-        case window.location.pathname.toLowerCase() === "adminclinicedit":
+        case window.location.pathname.toLowerCase() === "/adminclinicedit":
             adminClinicEditInit() 
             adminLogout() 
             break          
