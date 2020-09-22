@@ -117,6 +117,11 @@ const dealWithFormUpdate = async() => {
         // { data: userDetails } = await axios.get(`${url}api/v1/appointments/${user_id}`);
     $(formUpdate).submit(e => {
         e.preventDefault()
+        let bookingDetailsValidated = validateBookingDetails()
+        if (!bookingDetailsValidated) {
+            alert("Please pick a valid month, date and time before progressing")
+            return
+        }
         appointment_Details["userId"] = user_id
         updateAppointment(appointment_id)
     })
