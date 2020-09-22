@@ -456,16 +456,28 @@ const checkAgainstAppointments = () => {
     //             })
     // }})    
 
-    for (date of clinic_Data[0].Dates)
-        if (appointment_Details["DayDate"] == date) appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
-        else appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
-    appointments_Saved
-        .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
-        .map(appointment_s => {
-            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
-            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
-        })
+    // for (date of clinic_Data[0].Dates)
+    //     if (appointment_Details["DayDate"] == date) appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
+    //     else appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
+    // appointments_Saved
+    //     .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
+    //     .map(appointment_s => {
+    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+    //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
+    //     })
+    for(clinicDataSingle of clinic_Data)
+        for (date of clinicDataSingle.Dates)
+            if (appointment_Details["DayDate"] == date) appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
+            else appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
+            appointments_Saved
+                .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
+                .map(appointment_s => {
+                    document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                    document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.background = "red"
+                    document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).style.color = "white"
+                })
+
 }
 
 const checkTime = (timeNow , timeSlotContainers) => {
@@ -643,6 +655,7 @@ const getDateTime = () => {
 
 const dealWithDateChange = date_picker => {
     $(date_picker).on('change', e => {
+        // <h4 class="container_sm">Car Reg(s)</h4>
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
                     <h4 class="container_sm">Time(inc.Date)</h4>
@@ -650,7 +663,6 @@ const dealWithDateChange = date_picker => {
                     <h4 class="container_sm">Surname(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
                     <h4 class="container_sm">PPS No(s)</h4>
-                    <h4 class="container_sm">Car Reg(s)</h4>
                 </div>
         `
         const SelectedDateTime = getDateTime()
@@ -673,7 +685,8 @@ const getAppointmentDataFromTable = () => {
 
 const getDetails = appointments => {
     let details = []
-    appointments.map(appt => details.push(`"${escapeSlashAndQuotes(appt.firstName)}"`, `"${escapeSlashAndQuotes(appt.Surname)}"`, `"${escapeSlashAndQuotes(appt.DOB)}"` , `"${escapeSlashAndQuotes(appt.PPS_Number)}"` , `"${escapeSlashAndQuotes(appt.Car_Reg)}"`))
+    appointments.map(appt => details.push(`"${escapeSlashAndQuotes(appt.firstName)}"`, `"${escapeSlashAndQuotes(appt.Surname)}"`, `"${escapeSlashAndQuotes(appt.DOB)}"` , `"${escapeSlashAndQuotes(appt.PPS_Number)}"`))
+    // appointments.map(appt => details.push(`"${escapeSlashAndQuotes(appt.firstName)}"`, `"${escapeSlashAndQuotes(appt.Surname)}"`, `"${escapeSlashAndQuotes(appt.DOB)}"` , `"${escapeSlashAndQuotes(appt.PPS_Number)}"` , `"${escapeSlashAndQuotes(appt.Car_Reg)}"`))
     return [...details]
 }
 
@@ -681,7 +694,8 @@ const objectToCSV = appointments_Data => {
     const csvRows = [],
 
     // Get the headers  
-    headers = [`"Date"`, `"Time"`, `"First Name(s)"`, `"Surname(s)"` , `"DOB(s)"`, `"PPS No(s)"`, `"Car Reg(s)"`]
+    headers = [`"Date"`, `"Time"`, `"First Name(s)"`, `"Surname(s)"` , `"DOB(s)"`, `"PPS No(s)"`]
+    // headers = [`"Date"`, `"Time"`, `"First Name(s)"`, `"Surname(s)"` , `"DOB(s)"`, `"PPS No(s)"`, `"Car Reg(s)"`]
     csvRows.push(headers.join(","))
 
     // Loop over the rows and get values for each of the headers  
@@ -776,6 +790,7 @@ const getUserDetails = (userDetails, appID) => {
 const dealWithSearch = () => {
     const searchInput = document.querySelector('#search_input')
     $(searchInput).on('input change', e => {
+        // <h4 class="container_sm">Car Reg(s)</h4>
         document.querySelector('.main_container_m').innerHTML = `
                 <div class="headings">
                     <h4 class="container_sm">Time(inc.Date)</h4>
@@ -783,7 +798,6 @@ const dealWithSearch = () => {
                     <h4 class="container_sm">Surname(s)</h4>
                     <h4 class="container_sm">DOB(s)</h4>
                     <h4 class="container_sm">PPS No(s)</h4>
-                    <h4 class="container_sm">Car Reg(s)</h4>
                 </div>
         `
         let filteredAppointments = checkSearchAgainst(e.target.value)
