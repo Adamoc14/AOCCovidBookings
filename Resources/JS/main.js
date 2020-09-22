@@ -828,7 +828,7 @@ const displayAllSlots = clinicData => {
                 <h2><strong>Dates:</strong> ${clinic_slot.Dates.join(", ")}</h2>
             </div>
             <div class="manipulate_slot_buttons_container">
-                <a class="update_btn action_btn" href="AdminClinicEdit.html?id=${clinic_slot._id}">Edit</a>
+                <a class="update_btn action_btn" href="AdminClinicUpdate.html?id=${clinic_slot._id}">Edit</a>
                 <div class="delete_btn action_btn" data-clinic_id="${clinic_slot._id}">Cancel</div>
             </div>
         </div>
