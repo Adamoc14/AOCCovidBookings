@@ -28,16 +28,12 @@
 .addClinicSlotBtn:hover{
     background: white;
     border: 1px solid #eee;
-    color: orange;
 }
 
 .backSlotBtn:hover{
     background: orange;
     color: white;
 }
-
-
-
 
 .selected{
     background: orange;
