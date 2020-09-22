@@ -88,14 +88,10 @@ const displayPastDays = (months,startMonth , place) => {
     // Display Calendar and Days That are closed
     let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name),
         dayStarted = new Date().getDate();
-    if (place === "Clinic") {
-        addClinicDays(days)
-        displayDaysIrrelevant(days , dayStarted)
-        debugger
-    } else {
-        displayDaysIrrelevant(days , dayStarted)
-        dealWithDays(days)
-    }
+    if (place === "Clinic")addClinicDays(days)
+    else dealWithDays(days)
+    
+    displayDaysIrrelevant(days , dayStarted)
 }
 
 
