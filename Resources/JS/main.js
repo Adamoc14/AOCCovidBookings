@@ -187,7 +187,7 @@ const createAppointmentBtnClick = () => {
 
         // Getting the form Data and filling it to appointment_Details
         let formData = getFormData(form)
-        if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("You must select a card option and/ or desired destination option from the radio buttons above")
+        if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
         whichCard(formData.get('card_decision'), formData)
         whichDestination(formData.get('destination_decision'), formData)
         if(errMessage.length !== 0) {
@@ -689,7 +689,7 @@ const downloadCSV = csvData => {
 // Had to sort the times by their hours first of all and then their minutes in ascending order
 const displayData = appointments => {
     const runningTotal = appointments.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0),
-    overallTotal = appointments_Saved.length
+        overallTotal = appointments_Saved.map(appt => appt.Capacity.length).reduce((a, b) => a + b, 0)
     appointments_Data = appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
     const appointmentsHTML = 
     appointments_Data.map(appointment => {
@@ -804,9 +804,9 @@ const displayAllSlots = clinicData => {
                 <div class="date_square">${clinic_slot.Month.slice(0, 3)}</div>
             </div>
             <div class="slot_details_container">
-                <h2>Hours (Not Available): ${clinic_slot.Hours.join(", ")}</h2>
-                <h2>Providers: ${clinic_slot.Providers}</h2>
-                <h2>Dates: ${clinic_slot.Dates.join(", ")}</h2>
+                <h2><strong>Hours (Not Available):</strong> ${clinic_slot.Hours.join(", ")}</h2>
+                <h2><strong>Providers:</strong> ${clinic_slot.Providers}</h2>
+                <h2><strong>Dates:</strong> ${clinic_slot.Dates.join(", ")}</h2>
             </div>
             <div class="manipulate_slot_buttons_container">
                 <a class="update_btn action_btn" href="AdminClinicEdit.html?id=${clinic_slot._id}">Edit</a>

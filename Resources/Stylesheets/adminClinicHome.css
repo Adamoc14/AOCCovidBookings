@@ -9,8 +9,11 @@
     padding: 1em 2em;
 }
 
+
+
 .clinic_slots_container {
     padding: 0em 2em;
+    margin-top: 3em;
 }
 
 .slot_entry_container {
@@ -75,4 +78,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.slot_details_container h2 {
+    font-weight: 200;
+    font-size: 1.8vw;
 }
