@@ -10,8 +10,7 @@
 }
 
 .clinic_slots_container {
-    margin-top: 2em;
-    padding: 2em 2em
+    padding: 0em 2em;
 }
 
 .slot_entry_container {
@@ -20,6 +19,7 @@
     grid-template-rows: 70% 30%;
     padding: 1em;
     border: 1px solid #eee;
+    margin: 1em 0em;
 }
 
 .manipulate_slot_buttons_container {

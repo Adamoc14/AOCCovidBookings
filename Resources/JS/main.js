@@ -88,9 +88,11 @@ const displayPastDays = (months,startMonth , place) => {
     // Display Calendar and Days That are closed
     let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name),
         dayStarted = new Date().getDate();
-    displayDaysIrrelevant(days , dayStarted)
     if (place === "Clinic") addClinicDays(days)
-    else dealWithDays(days)
+    else {
+        displayDaysIrrelevant(days , dayStarted)
+        dealWithDays(days)
+    }
 }
 
 
@@ -271,7 +273,7 @@ const getFormData = form => {
     return formData
 }
 
-const dealWithMonths = place => {
+const dealWithMonths = (place, clinicData, clinicDataSingle) => {
     const months = [...document.querySelectorAll('.month')];
     months.map(month => {
         $(month).click(e => {
@@ -286,8 +288,13 @@ const dealWithMonths = place => {
             } else {
                 displayDaysIrrelevant(days)
             }
+            
 
-            if(place === "Clinic") addClinicDays(days)
+            if(place === "Clinic") {
+                addClinicDays(days)
+                checkSlots(clinicData)
+                if(clinicDataSingle !== undefined ) getEditingSlot(clinicDataSingle)
+            }
             else dealWithDays(days)
             
         })
@@ -782,7 +789,10 @@ const adminClinicHomeInit = async() => {
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
     displayAllSlots(clinicData)
+    const delete_btns = [...document.querySelectorAll('.delete_btn')]
+    delete_btns.map(delete_btn => $(delete_btn).click(e => deleteClinicSlot(e.target.dataset.clinic_id))) 
 }
+
 
 
 const displayAllSlots = clinicData => {
@@ -794,16 +804,16 @@ const displayAllSlots = clinicData => {
                 <div class="date_square">${clinic_slot.Month.slice(0, 3)}</div>
             </div>
             <div class="slot_details_container">
-                <h2>Hours: ${clinic_slot.Hours.join(", ")}</h2>
+                <h2>Hours (Not Available): ${clinic_slot.Hours.join(", ")}</h2>
                 <h2>Providers: ${clinic_slot.Providers}</h2>
                 <h2>Dates: ${clinic_slot.Dates.join(", ")}</h2>
             </div>
             <div class="manipulate_slot_buttons_container">
                 <a class="update_btn action_btn" href="AdminClinicEdit.html?id=${clinic_slot._id}">Edit</a>
-                <div class="delete_btn action_btn" data-appt="${clinic_slot._id}">Cancel</div>
+                <div class="delete_btn action_btn" data-clinic_id="${clinic_slot._id}">Cancel</div>
             </div>
         </div>
-    `)
+    `).join("")
     slot_container.insertAdjacentHTML('beforeend', contents)
 }
 
@@ -811,17 +821,59 @@ const checkDateEnd = dates => {
     return dates.length === 1 ? dates[0] : dates[dates.length - 1]
 }
 
+
 const adminClinicAddInit = async() => {
     const clinicData = await getClinicData(),
-    timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10);
+    timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
+    submit_btn = document.querySelector('.addClinicSlotBtn');
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
     displayPastMonths("Clinic")
-    displayClinicTimeslots(timeSlots)
-    clinicSubmitBtnClick(clinicData)
+    dealWithMonths("Clinic" , clinicData)
+    checkSlots(clinicData)
+    const timeSlotsContainers = displayClinicTimeslots(timeSlots)
+    addClinicTimes(timeSlotsContainers)
+    clinicSubmitBtnClick(submit_btn , "Post")
     // displayMonthAndDates(clinicData)
 }
 
+const checkSlots = clinicData => {
+    for(const clinicSlot of clinicData)
+        [...document.querySelectorAll('.day')]
+        .filter(day => clinicSlot.Month === day.dataset.month)
+        .filter(day =>  clinicSlot.Dates.includes(day.innerHTML))
+        .map(day => {
+            day.classList.add('disabled')
+            day.classList.add('slot_taken')
+        })
+}
+
+const getEditingSlot = clinicSingle => {
+    [...document.querySelectorAll('.day')]
+    .filter(day => clinicSingle.Month === day.dataset.month)
+    .filter(day => clinicSingle.Dates.includes(day.innerHTML))
+    .map(day => {
+        day.classList.remove('disabled')
+        day.classList.remove('slot_taken')
+        day.classList.toggle('daySelected')
+    })
+}
+
+const getEditingTimeslot = clinicSingle => {
+    [...document.querySelectorAll('.timeslot_Clinic')]
+    .filter(slot => clinicSingle.Hours.includes(slot.innerHTML))
+    .map(slot => {
+        slot.classList.toggle('selected')
+    })
+}
+
+const addClinicTimes = timeSlots => {
+    timeSlots.map(timeSlot => {
+        $(timeSlot).click(e => {
+            e.target.classList.toggle('selected')
+        })
+    })
+}
 
 const addClinicDays = days => {
     days.map(day => {
@@ -831,18 +883,19 @@ const addClinicDays = days => {
     })
 }
 
-const clinicSubmitBtnClick = clinicData => {
-    const submit_btn = document.querySelector('.addClinicSlotBtn')
+const clinicSubmitBtnClick = (submit_btn, method, id) => {
     $(submit_btn).click(()=> {
         let provider_value = getProvidersValue(),
             hours_array = [...document.querySelectorAll('.timeslot_Clinic.selected')].map(timeslot => timeslot.innerHTML),
             dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML);
         if (dates_array.length === 0 || hours_array.length === 0) {
-            alert("You must select date(s) and hour(s)")
-            return
-        } else if (provider_value === undefined) {
-            alert("You must indicate how many providers are needed")
-            return
+            errMessage.push("You must select date(s) and hour(s)")
+        } else if(!provider_value){
+            errMessage.push("You must indicate how many providers are needed")
+        }
+        if(errMessage.length !== 0){
+            errMessage.filter((message ,index) => errMessage.lastIndexOf(message) === index).map(msg => alert(msg)) 
+            return errMessage = []
         }
         new_clinic_slot = {
             Month: appointment_Details["Month"],
@@ -850,42 +903,71 @@ const clinicSubmitBtnClick = clinicData => {
             Hours: hours_array,
             Providers: provider_value
         }   
-        makeClinicPost(new_clinic_slot)
+        if(method === "Post") makeClinicPost(new_clinic_slot)
+        else if(method === "Update") makeClinicUpdate(new_clinic_slot, id)
     })
+}
+
+
+const adminClinicEditInit = async() => {
+    const clinicDataAll = await getClinicData(),
+        id = new URLSearchParams(new URL(window.location.href).search).get("id"),
+        clinicDataSingle = await getClinicSlotSingle(id),
+        timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
+        submit_btn = document.querySelector('.addClinicSlotBtn');
+    $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
+    dealWithTabs()
+    displayPastMonths("Clinic")
+
+    document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`).style.background = "green"
+    displayPastDays([...document.querySelectorAll('.month')], document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`), "Clinic")
+    
+
+    dealWithMonths("Clinic" , clinicDataAll , clinicDataSingle)
+    checkSlots(clinicDataAll)
+    getEditingSlot(clinicDataSingle)
+    const timeSlotsContainers = displayClinicTimeslots(timeSlots)
+    getEditingTimeslot(clinicDataSingle)
+    document.querySelector('#providers_input').value = clinicDataSingle.Providers
+    addClinicTimes(timeSlotsContainers)
+    clinicSubmitBtnClick(submit_btn , "Update" , id)
+}
+
+const getClinicSlotSingle = async(id) => {
+    let res = await axios.get(`${url}api/v1/clinics/${id}`),
+        { data: clinicDataSingle } = res
+    return clinicDataSingle
 }
 
 const makeClinicPost = async(newClinicSlot) => {
     try {
         await axios.post(`${url}api/v1/clinics`, newClinicSlot)
-        window.location = "AdminClinic.html"
+        window.location = "AdminClinicHome.html"
     } catch (error) {
         console.log(error)
     }
 }
 
-const makeClinicUpdate = async(provider_value, id) => {
-    clinic_updated_data = {
-        Month: appointment_Details["Month"],
-        Dates: dates_array,
-        Hours: hours_array,
-        Providers: provider_value
+const deleteClinicSlot = async(id) => {
+    try {
+        await axios.delete(`${url}api/v1/clinics/${id}`)
+        window.location = "AdminClinicHome.html"
+    } catch (error) {
+        console.log(error)
     }
+}
+
+const makeClinicUpdate = async (clinic_updated_data, id) => {
     try {
         await axios.put(`${url}api/v1/clinics/${id}`, clinic_updated_data)
-        window.location = "AdminClinic.html"
+        window.location = "AdminClinicHome.html"
     } catch (error) {
         console.log(error)
     }
 }
 
 const getProvidersValue = () => {
-    const provider_input = document.querySelector('#providers_input')
-    if(provider_input.value.length === 0) {
-        alert("Please provide a value for providers input") 
-        return
-    } else {
-        return provider_input.value
-    } 
+    return document.querySelector('#providers_input').value !== "" ? document.querySelector('#providers_input').value : document.querySelector('#providers_input').value !== ""
 }
 
 const displayClinicTimeslots = timeSlots => {
@@ -894,6 +976,8 @@ let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
         `<div class="timeslot_Clinic" data-time="${timeSlot}">${timeSlot}</div>`
     ).join("")
     timeSlotContainer.innerHTML = timeSlots
+    const timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
+    return timeSlotContainers
 }
 
 // const displayCurrentPickedSlots = (clinicData, timeSlotContainers) => {
@@ -1031,16 +1115,16 @@ $(document).ready(async() => {
             adminInit()
             adminLogout()
             break   
-        // case window.location.pathname.toLowerCase().includes("adminclinic"):
-        //     adminClinicInit()
-        //     adminLogout() 
-        //     break
         case window.location.pathname.toLowerCase().includes("adminclinichome"):
             adminClinicHomeInit() 
             adminLogout() 
             break 
         case window.location.pathname.toLowerCase().includes("adminclinicadd"):
             adminClinicAddInit() 
+            adminLogout() 
+            break 
+        case window.location.pathname.toLowerCase().includes("adminclinicedit"):
+            adminClinicEditInit() 
             adminLogout() 
             break          
         
