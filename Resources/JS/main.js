@@ -468,7 +468,7 @@ const checkAgainstAppointments = () => {
     //     })
     for(clinicDataSingle of clinic_Data)
         for (date of clinicDataSingle.Dates)
-            if (appointment_Details["DayDate"] == date) appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinic_Data[0].Providers) * 2)
+            if (appointment_Details["DayDate"] == date) appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinicDataSingle.Providers) * 2)
             else appointments_Saved = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
             appointments_Saved
                 .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
