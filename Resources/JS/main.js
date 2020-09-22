@@ -105,9 +105,9 @@ const displayPPSInput = () =>{
     // $(document.querySelector('.Drive_Through')).get(0).onclick = () => {
     //     document.querySelector('.car_reg_container').classList.add("display")
     // }
-    $(document.querySelector('.Surgery')).get(0).onclick = () => {
-        document.querySelector('.car_reg_container').classList.remove("display")
-    }
+    // $(document.querySelector('.Surgery')).get(0).onclick = () => {
+    //     document.querySelector('.car_reg_container').classList.remove("display")
+    // }
 }
 
 const dealWithFormUpdate = async() => {
