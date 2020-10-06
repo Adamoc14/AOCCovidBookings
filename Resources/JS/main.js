@@ -363,8 +363,8 @@ const dealWithTimes = () => {
         $(timeSlot).click(e => {
              // Get time Selected Info, adds it to appointment details
             let timeSelected = clickTime(timeSlotContainers, e.target)
-            checkAgainstAppointments()
             checkTime(new Date().getHours(), timeSlotContainers)
+            checkAgainstAppointments()
             appointment_Details["Time"] = timeSelected
         })
     })
