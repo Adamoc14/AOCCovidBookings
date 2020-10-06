@@ -428,8 +428,8 @@ const displayTimeslots = timeSlots => {
     ).join("")
     timeSlotContainer.innerHTML = timeSlots
     let timeSlotContainers = getTimeslotContainers()
-    checkAgainstAppointments()
     checkTime(new Date().getHours() , timeSlotContainers)
+    checkAgainstAppointments()
     return timeSlotContainers
 }
 
