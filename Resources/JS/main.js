@@ -619,7 +619,7 @@ const dealWithTabs = () => {
 }
 
 const filterSavedAppointments = (appointments , dateDetails) => {
-    return appointments.filter(appointment => appointment.DayDate === dateDetails.Date && appointment.Month === dateDetails.MonthName)
+    return appointments.filter(appointment => parseInt(appointment.DayDate) === parseInt(dateDetails.Date) && appointment.Month === dateDetails.MonthName)
 }
 
 const getDateTime = () => {
