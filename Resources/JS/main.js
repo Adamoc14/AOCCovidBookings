@@ -410,7 +410,7 @@ const makeTimeslots = (startTime, timeSlots , interval) => {
     let completed = false
     timeSlots.push(`${startTime.hours()}:${startTime.minutes()}`)
     if(!completed){
-        if(startTime.hours() === 18 && startTime.minutes() === 0){
+        if(startTime.hours() === 19 && startTime.minutes() === 30){
             completed = true 
             return [...timeSlots]
         } else {
