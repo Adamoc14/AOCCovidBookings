@@ -461,21 +461,29 @@ const checkTime = (timeNow , timeSlotContainers) => {
      * and not one's that are not available because of clinic hours, not available because they have passed 
      * in minutes or hours for that matter  
      */
-    if(new Date().getDate()  === Number(appointment_Details["DayDate"])) {
-            timeSlotContainers.filter(timeSlot =>  (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] < new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
-            .map(timeslotContainer => {
-                timeslotContainer.classList.add('disabled')
-                timeslotContainer.style.background = "orange"
-                timeslotContainer.style.color = "black";
-            })
-    }
+    // if(new Date().getDate()  === Number(appointment_Details["DayDate"])) {
+    //         timeSlotContainers.filter(timeSlot =>  (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] < new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
+    //         .map(timeslotContainer => {
+    //             timeslotContainer.classList.add('disabled')
+    //             timeslotContainer.style.background = "orange"
+    //             timeslotContainer.style.color = "black";
+    //         })
+    // }
+    // timeSlotContainers
+    // .filter(timeSlot =>  (timeSlot.innerHTML.split(":")[0] == timeNow + 1 && timeSlot.innerHTML.split(":")[1] < new Date().getMinutes()) || timeSlot.innerHTML.split(":")[0] < timeNow + 1)
+    // .map(timeslotContainer => {
+    //     timeslotContainer.classList.add('disabled')
+    //     timeslotContainer.style.background = "orange"
+    //     timeslotContainer.style.color = "black";
+    // })
+    timeSlotContainers
+    .map(timeslotContainer => {
+        timeslotContainer.classList.add('disabled')
+        timeslotContainer.classList.add('orange_disabled')
+    })
     clinic_Data.map(clinic_Dets => {
         for (date of clinic_Dets.Dates)
             if (Number(date) === Number(appointment_Details["DayDate"])) {
-                timeSlotContainers.map(timeslotContainer => {
-                    timeslotContainer.classList.add('disabled')
-                    timeslotContainer.classList.add('orange_disabled')
-                })
                 for (hour of clinic_Dets.Hours) {
                     timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour)
                         .map(timeslotContainer => {
