@@ -373,7 +373,7 @@ const dealWithTimes = () => {
 
 const clickTime = (timeSlotContainers , target) => {
     // Styles the time selected and ones that aren't accordingly
-    timeSlotContainers.filter(timeSlot => timeSlot !== target).map(timeSlot => {
+    timeSlotContainers.filter(timeSlot => timeSlot !== target && !timeSlot.classList.contains('disabled')).map(timeSlot => {
         timeSlot.style.background = "aliceblue"
         timeSlot.style.color = "black"
     })
