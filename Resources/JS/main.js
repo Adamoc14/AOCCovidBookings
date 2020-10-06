@@ -473,7 +473,7 @@ const checkTime = (timeNow , timeSlotContainers) => {
         for (date of clinic_Dets.Dates)
             if (Number(date) === Number(appointment_Details["DayDate"])) {
                 for (hour of clinic_Dets.Hours) {
-                    timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour)
+                    timeSlotContainers.filter(timeSlot => timeSlot.innerHTML !== hour)
                         .map(timeslotContainer => {
                             timeslotContainer.classList.add('disabled')
                             timeslotContainer.style.background = "orange"
