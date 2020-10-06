@@ -472,12 +472,15 @@ const checkTime = (timeNow , timeSlotContainers) => {
     clinic_Data.map(clinic_Dets => {
         for (date of clinic_Dets.Dates)
             if (Number(date) === Number(appointment_Details["DayDate"])) {
+                timeSlotContainers.map(timeslotContainer => {
+                    timeslotContainer.classList.add('disabled')
+                    timeslotContainer.classList.add('orange_disabled')
+                })
                 for (hour of clinic_Dets.Hours) {
-                    timeSlotContainers.filter(timeSlot => timeSlot.innerHTML !== hour)
+                    timeSlotContainers.filter(timeSlot => timeSlot.innerHTML === hour)
                         .map(timeslotContainer => {
-                            timeslotContainer.classList.add('disabled')
-                            timeslotContainer.style.background = "orange"
-                            timeslotContainer.style.color = "black";
+                            timeslotContainer.classList.remove('disabled')
+                            timeslotContainer.classList.add('original_bg_timeslot')
                         })
                 }
             }

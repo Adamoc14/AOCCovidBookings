@@ -233,8 +233,11 @@ h3{
     grid-gap: 1em;
 }
 
-.timeslot {
+.original_bg_timeslot{
     background: aliceblue;
+}
+
+.timeslot {
     padding: 1em;
     border-radius: 50px;
     cursor: pointer;

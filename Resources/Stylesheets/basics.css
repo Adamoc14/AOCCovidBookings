@@ -179,6 +179,11 @@ footer {
     opacity: 0.7;
 }
 
+.orange_disabled{
+    background: orange;
+    color: black;
+}
+
 
 
 
