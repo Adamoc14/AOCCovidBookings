@@ -184,6 +184,11 @@ footer {
     color: black;
 }
 
+.full_disabled{
+    background: red;
+    color: white;
+}
+
 
 
 
