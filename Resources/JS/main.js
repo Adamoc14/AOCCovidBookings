@@ -445,7 +445,6 @@ const checkAgainstAppointments = () => {
     })
     for(clinicDataSingle of clinic_Data)
         if(appointment_Details["Month"] == clinicDataSingle.Month) {
-            let fullAppointments = []
             timeslotsContainers = getTimeslotContainers()
             for (date of clinicDataSingle.Dates)
                 if (appointment_Details["DayDate"] == date){
