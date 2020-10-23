@@ -458,16 +458,25 @@ const checkAgainstAppointments = () => {
                                 appointment_s.classList.remove("orange_disabled")
                             })
                     }
-                    fullAppointments = appointments_Saved.filter(appointment => appointment.Capacity.length >= parseInt(clinicDataSingle.Providers) * 2)
+                    appointments_Saved
+                        .filter(appointment => appointment.DayDate == date)
+                        .filter(appointment => appointment.Capacity.length >= parseInt(clinicDataSingle.Providers) * 2)
+                        .map(appointment_s => {
+                            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
+                            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                            document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
+                        })
                 } 
-                else fullAppointments = appointments_Saved.filter(appointment => appointment.Capacity.length >= 2)
-                fullAppointments
-                    .filter(appointment_s => appointment_s.Month === appointment_Details["Month"] && appointment_s.DayDate === appointment_Details["DayDate"] && appointment_s.DayName === appointment_Details["DayName"])
-                    .map(appointment_s => {
-                        document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
-                        document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-                        document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
-                    })
+                // else {
+                //     appointments_Saved
+                //         .filter(appointment => appointment.DayDate != date)
+                //         .filter(appointment => appointment.Capacity.length >= 2)
+                //         .map(appointment_s => {
+                //             document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
+                //             document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                //             document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
+                //         })
+                // }
         } 
 }
 
