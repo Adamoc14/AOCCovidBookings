@@ -860,7 +860,7 @@ const displayAllSlots = clinicData => {
             </div>
             <div class="manipulate_slot_buttons_container">
                 <a class="update_btn action_btn" href="AdminClinicUpdate.html?id=${clinic_slot._id}">Edit</a>
-                <div class="delete_btn action_btn" data-clinic_id="${clinic_slot._id}">Cancel</div>
+                <div class="delete_btn action_btn" data-clinic_id="${clinic_slot._id}">Delete</div>
             </div>
         </div>
     `).join("")
