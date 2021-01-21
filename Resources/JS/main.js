@@ -1,6 +1,6 @@
 // Global Variable Declarations and Function Definitions
 const appointment_Details = {},
-    url = "https://whmc-server.herokuapp.com/";
+    url = "http://localhost:8000/";
 let appointments_Saved = [],
     appointments_Data = [],
     clinic_Data = [],

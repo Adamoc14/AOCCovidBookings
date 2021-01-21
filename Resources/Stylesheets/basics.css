@@ -189,7 +189,14 @@ footer {
     color: white;
 }
 
-
+.terms_and_conditions_container {
+    width: 70vw;
+    height: 40vh;
+    overflow-y: scroll;
+    border: 2px solid #eee;
+    padding: 1em;
+    margin-bottom: .2em;
+}
 
 
 
