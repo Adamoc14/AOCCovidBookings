@@ -14,8 +14,33 @@ const getData = async() => {
     clinic_Data = await getClinicData()
 }
 
+const getSingleUserRecord = async userId => {
+    let users = []
+    let user = await axios.get(`${url}api/v1/appointments/${userId}`)
+    return user;
+}
+
 const userViewInit = () => {
     displayUserView()
+}
+
+const checkVaccineAbility = () => {
+    const vaccine_deciders = [...document.querySelectorAll('.vaccine_decider')];
+    vaccine_deciders.map(vaccine_decider => 
+        $(vaccine_decider).click(e => {
+            if(e.target.value === "Yes"){
+                document.querySelector('.blocking_form_modal_outer').style.display = "flex";
+            }
+        })
+    )
+    checkDOB()
+}
+
+const checkDOB = () => {
+    const DOB_Input = document.querySelector('.dob_container input[type=text]');
+    $(DOB_Input).focusout(e => {
+        new Date().getFullYear() - e.target.value.substring(6,) >= 85 ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex"; 
+    })
 }
 
 const displayUserView = async() => {
@@ -204,7 +229,12 @@ const createAppointmentBtnClick = () => {
         appointment_Details["Surname"] = formData.get('Surname')
         appointment_Details["Mobile"] = formData.get('Mobile')
         appointment_Details["DOB"] = formData.get('DOB')
-        
+        appointment_Details["Gender"] = formData.get('Gender')
+        appointment_Details["Street_Address"] = formData.get('Address_Line_One')
+        appointment_Details["City_Address"] = formData.get('Address_Line_Two')
+        appointment_Details["County"] = formData.get('County')
+        appointment_Details["Alternate_Number"] = formData.get('Alternate_Mobile')
+        debugger
 
         displayAppointmentPopup(appointment_Details)
         dealWithFormSubmit()
@@ -577,7 +607,7 @@ const dealWithTerms = () => {
 const openModal = () => {
     const modal = fillInTermsModal()
     document.querySelector('.terms_and_c_modal').innerHTML = modal;
-    document.querySelector('.terms_and_c_modal').style.display = "block" 
+    document.querySelector('.terms_and_c_modal').style.display = "flex" 
     $(window).click(e => {
         if (e.target === document.querySelector('.terms_and_c_modal')) closeModal()
     })  
@@ -633,10 +663,59 @@ const adminInit = () => {
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
     dealWithSearch()
     getAppointmentDataFromTable()
+    dealWithSingleRecordPick()
     const print_btn = document.querySelector('.print_btn');
     printPage(print_btn)
 }
 
+
+const dealWithSingleRecordPick = () => {
+    const records = [...document.querySelectorAll('.appointment_details')]
+    records.map(record => $(record).click(e => {
+        window.location = `SingleRecordView.html?userId=${e.currentTarget.lastElementChild.dataset.userid}&apptId=${e.currentTarget.lastElementChild.dataset.apptid}`
+    }))
+}
+
+// Single User Record Page
+
+const singleRecordPageInit = async() => {
+    const userId = getURLData().get('userId')
+    const { data: users } = await getSingleUserRecord(userId)
+    fillInRecords(users);
+    printPage(document.querySelector('.single_record_print_btn'));
+}
+
+const fillInRecords = users => {
+    const usersContainer = document.querySelector('.UsersContainerOuter');
+    let usersData = fillInSingleUserData(users);
+    usersData += `<a href="AdminHome.html" class="backSlotBtn">Back</a>`
+    // let usersData = users.map(user => fillInSingleUserData(user));
+    usersContainer.insertAdjacentHTML('afterbegin', usersData);
+}
+
+const fillInSingleUserData = user => {
+    return `
+        <div class="single_user_record">
+            <div class="single_user_record_top_part">
+                <img src="">
+                <div class="single_record_print_btn">Print</div>
+            </div>
+            <div class="single_user_record_bottom_part">
+                ${user.PPS_Number === "false" ? `<h4 class="pps_or_mc">Medical Card: ${user.Medical_Card}</h4>` : `<h4 class="pps_or_mc">PPS Number: ${user.PPS_Number}</h4>`}
+                <h4>Name: ${user.firstName} ${user.Surname}</h4>
+                <h4>Email: ${user.Email}</h4>
+                <h4>DOB: ${user.DOB}</h4>
+                <h4>Gender: ${user.Gender}</h4>
+                <h4>Mobile: ${user.Mobile}</h4>
+                <h4>Alternate Number: ${user.Alternate_Number}</h4>
+                <h4>Street Address: ${user.Street_Address}</h4>
+                <h4>City: ${user.City_Address}</h4>
+                <h4>County: ${user.County}</h4>
+
+            </div>
+        </div>
+    `
+}
 
 const dealWithTabs = () => {
     const tabs = [...document.querySelectorAll('.options_container h1')]
@@ -1128,6 +1207,11 @@ const roundMinutes = (time_now) => {
 
 const isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"
 
+const getURLData = () => {
+    const params = new URLSearchParams(window.location.search)
+    return params
+}
+
 // Initialization Methods
 
 $(document).ready(async() => {
@@ -1135,6 +1219,7 @@ $(document).ready(async() => {
         case window.location.pathname === "/" || window.location.pathname === "/Client/":
             getData()
             displayPastMonths()
+            checkVaccineAbility()
             displayPPSInput()
             createAppointmentBtnClick()
             dealWithMonths() 
@@ -1143,12 +1228,13 @@ $(document).ready(async() => {
         case window.location.pathname.includes("index"):
             getData()
             displayPastMonths()
+            checkVaccineAbility()
             displayPPSInput()
             createAppointmentBtnClick()
             dealWithMonths()   
             dealWithTerms()
             break
-        case window.location.pathname.includes("userview"):
+        case (/(?:^|\W)userview(?:$|\W)/).test(window.location.pathname.toLowerCase()):
             userViewInit()
             break
         case window.location.pathname.includes("edit"):
@@ -1160,11 +1246,11 @@ $(document).ready(async() => {
         case window.location.pathname.toLowerCase().includes("adminlogin"):
             adminLogin()
             break
-        case window.location.pathname.toLowerCase().includes("adminhome"):
+        case (/(?:^|\W)adminhome(?:$|\W)/).test(window.location.pathname.toLowerCase()):
             await getData()
             adminInit()
             adminLogout()
-            break   
+            break
         case window.location.pathname.toLowerCase().includes("adminclinichome"):
             adminClinicHomeInit()
             adminLogout() 
@@ -1176,7 +1262,10 @@ $(document).ready(async() => {
         case window.location.pathname.toLowerCase().includes("adminclinicupdate"):
             adminClinicEditInit() 
             adminLogout() 
-            break          
+            break 
+        case (/(?:^|\W)singlerecordview(?:$|\W)/).test(window.location.pathname.toLowerCase()):
+            singleRecordPageInit();
+            break      
         
     }
 })

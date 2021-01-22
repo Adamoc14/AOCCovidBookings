@@ -1,14 +1,18 @@
 .appointment_made_modal,
-.terms_and_c_modal{
+.terms_and_c_modal ,
+.blocking_form_modal_outer{
     width: 100vw;
     position: fixed;
+    top: 0;
     display: none;
-    z-index:2;
+    z-index: 2;
     min-height: 100vh;
-    background: rgb(0,0,0,.6)
+    background: rgb(0,0,0,.6);
+    place-items: center;
 }
 .appointment_made_modal_content, 
-.terms_and_c_modal_content {
+.terms_and_c_modal_content,
+.blocking_form_modal_content {
     position: fixed;
     z-index: 2;
     display: grid;
@@ -20,6 +24,13 @@
     padding: 2em 2em;
     background: aliceblue;
     box-shadow: 2px 4px 20px 0px black;
+}
+
+.blocking_form_modal_btn {
+    padding: .5em .5em;
+    width: 17vw;
+    background: red;
+    margin: 1em auto;
 }
 
 .appointment_made_modal_content {

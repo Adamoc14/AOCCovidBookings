@@ -19,38 +19,44 @@
             <img src="./Resources/Images/WHMC_Main.jpg" alt="This is a picture of the WHMC logo">
             WESTERN HOUSE MEDICAL CENTRE
         </div>
+        <div class="blocking_form_modal_outer">
+            <div class="blocking_form_modal_content">
+                <p>Unfortunately you don't qualify under government guidelines and thus are not eligible at the moment to be administered this vaccine, we will update this page as soon as you are. Please check back soon.</p>
+                <a href="index.html" class="blocking_form_modal_btn">Try Again Soon</a>
+            </div>
+        </div>
         <div class="create_appointment_form">
             <form action="" method="post">
                 <h3>Have you had Anaphylaxis(serious systemic allergic reaction requiring medical intervention) following a previous dose of the vaccine or any of it's constituents? </h3>
                 <div class="Anaphylaxis_decision_container container">
                     <div class="Anaphylaxis_Yes_container card_container">
-                        <input type="radio" name="Anaphylaxis_decision" id="Anaphylaxis_Yes" class="Anaphylaxis_Yes" value="Yes" required>
+                        <input type="radio" name="Anaphylaxis_decision" id="Anaphylaxis_Yes" class="Anaphylaxis_Yes vaccine_decider" value="Yes" required>
                         <label for="Anaphylaxis_Yes" class="label_radio">Yes</label>
                     </div>
                     <div class="Anaphylaxis_No_container card_container">
-                        <input type="radio" name="Anaphylaxis_decision" id="Anaphylaxis_No" class="Anaphylaxis_No" value="No">
+                        <input type="radio" name="Anaphylaxis_decision" id="Anaphylaxis_No" class="Anaphylaxis_No vaccine_decider" value="No">
                         <label for="Anaphylaxis_No" class="label_radio">No</label>
                     </div>
                 </div>
                 <h3>Have you been diagnosed with COVID-19 within the last 4 weeks?</h3>
                 <div class="Had_Covid_Container container">
                     <div class="Covid_Yes_container card_container">
-                        <input type="radio" name="Covid_decision" id="Covid_Yes" class="Covid_Yes" value="Yes" required>
+                        <input type="radio" name="Covid_decision" id="Covid_Yes" class="Covid_Yes vaccine_decider" value="Yes" required>
                         <label for="Covid_Yes" class="label_radio">Yes</label>
                     </div>
                     <div class="Covid_No_container card_container">
-                        <input type="radio" name="Covid_decision" id="Covid_No" class="Covid_No" value="No">
+                        <input type="radio" name="Covid_decision" id="Covid_No" class="Covid_No vaccine_decider" value="No">
                         <label for="Covid_No" class="label_radio">No</label>
                     </div>
                 </div>
                 <h3>Have you had another vaccine within the last 14 days?</h3>
                 <div class="Had_Vaccine_Container container">
                     <div class="Covid_Vaccine_Yes_container card_container">
-                        <input type="radio" name="Covid_Vaccine_decision" id="Covid_Vaccine_Yes" class="Covid_Vaccine_Yes" value="Yes" required>
+                        <input type="radio" name="Covid_Vaccine_decision" id="Covid_Vaccine_Yes" class="Covid_Vaccine_Yes vaccine_decider" value="Yes" required>
                         <label for="Covid_Vaccine_Yes" class="label_radio">Yes</label>
                     </div>
                     <div class="Covid_Vaccine_No_container card_container">
-                        <input type="radio" name="Covid_Vaccine_decision" id="Covid_Vaccine_No" class="Covid_Vaccine_No" value="No">
+                        <input type="radio" name="Covid_Vaccine_decision" id="Covid_Vaccine_No" class="Covid_Vaccine_No vaccine_decider" value="No">
                         <label for="Covid_Vaccine_No" class="label_radio">No</label>
                     </div>
                 </div>
@@ -73,17 +79,38 @@
                     <label for="surname">Surname</label>
                     <input type="text" name="Surname" id="surname" class="name" required>
                 </div>
+                <div class="dob_container container">
+                    <label for="dob">Date Of Birth (DD/MM/YYYY)</label>
+                    <input type="text" name="DOB" id="dob" placeholder="DD/MM/YYYY" maxlength="10"
+                        pattern="^((\d{1,2})(\/)(\d{1,2})(\/)(\d{4}))" title="Please enter a dob in the form DD/MM/YYYY" required>
+                </div>
+                <div class="gender_container container">
+                    <label for="gender">Gender</label>
+                    <input type="text" name="Gender" id="gender" class="name" required>
+                </div>
                 <div class="email_container container">
                     <label for="email">Email</label>
                     <input type="text" name="Email" id="email" class="name" required>
                 </div>
-                <div class="dob_container container">
-                    <label for="dob">Date Of Birth (DD/MM/YYYY)</label>
-                    <input type="text" name="DOB" id="dob" placeholder="DD/MM/YYYY" pattern="^((\d{1,2})(\/)(\d{1,2})(\/)(\d{4}))" title="Please enter a dob in the form DD/MM/YYYY" required>
-                </div>
                 <div class="mobile_container container">
                     <label for="mobile">Mobile No. (No Spaces)</label>
                     <input type="tel" name="Mobile" id="mobile" pattern="[0-9]{3}[0-9]{3}[0-9]{4}" title="Please enter a valid mobile number in the form 0861234567" required>
+                </div>
+                <div class="alternate_mobile_container container">
+                    <label for="alternate_mobile">Alternate_mobile No. (No Spaces)</label>
+                    <input type="tel" name="Alternate_Mobile" id="alternate_mobile" pattern="[0-9]{3}[0-9]{3}[0-9]{4}" title="Please enter a valid mobile number in the form 0861234567" required>
+                </div>
+                <div class="address_line_one_container container">
+                    <label for="address_line_one">Address Line 1(Street)</label>
+                    <input type="text" name="Address_Line_One" id="address_line_one" required>
+                </div>
+                <div class="address_line_two_container container">
+                    <label for="address_line_two">Address Line 2(City)</label>
+                    <input type="text" name="Address_Line_Two" id="address_line_two" required>
+                </div>
+                <div class="county_container container">
+                    <label for="county">County</label>
+                    <input type="text" name="County" id="county" required>
                 </div>
                 <h3>Choose an option from below</h3>
                 <div class="card_decision_container container">

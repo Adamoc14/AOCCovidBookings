@@ -98,7 +98,6 @@ aside {
     display: grid;
     grid-template-columns: repeat(5, 1fr) 7%;
     /* grid-template-columns: repeat(6, 1fr) 7%; */
-    margin-bottom: 1em;
     padding-bottom: .2em;
     border-bottom: 1px solid #eee;
 }
@@ -109,8 +108,11 @@ aside {
     /* grid-template-columns: repeat(6, 1fr) 7%; */
     grid-row-gap: .2em;
     margin-bottom: 1em;
-    padding-bottom: 1em;
+    padding: 1em 0em;
     border-bottom: 1px solid #eee;
+}
+.appointment_details:hover{
+    background: #eee;
 }
 
 .appointment_details.span{
