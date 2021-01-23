@@ -723,26 +723,27 @@ const exportToDoc = buttons => {
     buttons.map(button => 
         $(button).click(async e => {
             let doc = new docx.Document(),
-            outputStr = "",
+            // outputStr = "",
             records = [...document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).children];
-            records.map(record => outputStr += `\n${record.innerText}`)
-            debugger
-            doc.addSection({
-                children: [
-                    new docx.Paragraph({
-                        children: [
-                            new docx.TextRun({
-                                text: `${outputStr}
-                                Patient Signature ________________________
-                                `
-                                // text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerText}
-                                // Patient Signature ________________________
-                                // `
-                            })
-                        ]
-                    })
-                ]
-            });
+            records.map(record => {
+                // outputStr += `\n${record.innerText}`
+                doc.addSection({
+                    children: [
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: `${record.innerText}`
+                                    // text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerText}
+                                    // Patient Signature ________________________
+                                    // `
+                                })
+                            ]
+                        })
+                    ]
+                });
+            })
+            // debugger
+            
             // doc.createParagraph('Hi this is my first paragraph');
             const blob = await docx.Packer.toBlob(doc)
             saveAs(blob, `patientRecord.docx`);
