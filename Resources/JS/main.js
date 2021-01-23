@@ -732,9 +732,12 @@ const exportToDoc = buttons => {
                     new docx.Paragraph({
                         children: [
                             new docx.TextRun({
-                                text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerText}
+                                text: `${outputStr}
                                 Patient Signature ________________________
                                 `
+                                // text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerText}
+                                // Patient Signature ________________________
+                                // `
                             })
                         ]
                     })
