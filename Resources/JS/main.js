@@ -722,13 +722,18 @@ const fillInSingleUserData = user => {
 const exportToDoc = buttons => {
     buttons.map(button => 
         $(button).click(async e => {
-            let doc = new docx.Document()
+            let doc = new docx.Document(),
+            outputStr = "",
+            records = [...document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).children];
+            records.map(record => outputStr += `\n${record.innerText}`)
+            debugger
             doc.addSection({
                 children: [
                     new docx.Paragraph({
                         children: [
                             new docx.TextRun({
-                                text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerHTML}
+                                text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerText}
+                                Patient Signature ________________________
                                 `
                             })
                         ]
