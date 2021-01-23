@@ -15,9 +15,8 @@ const getData = async() => {
 }
 
 const getSingleUserRecord = async userId => {
-    let users = []
-    let user = await axios.get(`${url}api/v1/appointments/${userId}`)
-    return user;
+    let users = await axios.get(`${url}api/v1/appointments/details/${userId}`)
+    return users;
 }
 
 const userViewInit = () => {
@@ -45,7 +44,7 @@ const checkDOB = () => {
 
 const displayUserView = async() => {
     const apptContainer = document.querySelector('.appointment_display_container_inner'),
-    print_btn = document.querySelector('.print_btn')
+    print_btn = [...document.querySelectorAll('.print_btn')]
     id = new URLSearchParams(new URL(window.location.href).search).get("id"),
     {data: userDetails} = await axios.get(`${url}api/v1/appointments/${id}`),
     appointmentsData = 
@@ -90,10 +89,10 @@ const displayUserView = async() => {
     printPage(print_btn)
 }
 
-const printPage = button => {
-    $(button).click(() => {
+const printPage = buttons => {
+    buttons.map(button => $(button).click(() => {
         window.print()
-    })
+    })) 
 }
 
 
@@ -664,7 +663,7 @@ const adminInit = () => {
     dealWithSearch()
     getAppointmentDataFromTable()
     dealWithSingleRecordPick()
-    const print_btn = document.querySelector('.print_btn');
+    const print_btn = [...document.querySelectorAll('.print_btn')];
     printPage(print_btn)
 }
 
@@ -672,7 +671,8 @@ const adminInit = () => {
 const dealWithSingleRecordPick = () => {
     const records = [...document.querySelectorAll('.appointment_details')]
     records.map(record => $(record).click(e => {
-        window.location = `SingleRecordView.html?userId=${e.currentTarget.lastElementChild.dataset.userid}&apptId=${e.currentTarget.lastElementChild.dataset.apptid}`
+        window.location = `SingleRecordView.html?userId=${[...$(e.currentTarget).find(".delete")].map(records => records.dataset.userid).toString()
+}&apptId=${e.currentTarget.dataset.id}`
     }))
 }
 
@@ -682,14 +682,15 @@ const singleRecordPageInit = async() => {
     const userId = getURLData().get('userId')
     const { data: users } = await getSingleUserRecord(userId)
     fillInRecords(users);
-    printPage(document.querySelector('.single_record_print_btn'));
+    printPage([...document.querySelectorAll('.single_record_print_btn')] );
+    exportToDoc([...document.querySelectorAll('.single_record_export_to_doc_btn')] )
 }
 
 const fillInRecords = users => {
     const usersContainer = document.querySelector('.UsersContainerOuter');
-    let usersData = fillInSingleUserData(users);
+    let usersData = users.map(user => fillInSingleUserData(user)).join("");
+    // let usersData = fillInSingleUserData(users);
     usersData += `<a href="AdminHome.html" class="backSlotBtn">Back</a>`
-    // let usersData = users.map(user => fillInSingleUserData(user));
     usersContainer.insertAdjacentHTML('afterbegin', usersData);
 }
 
@@ -699,6 +700,7 @@ const fillInSingleUserData = user => {
             <div class="single_user_record_top_part">
                 <img src="Resources/Images/user.svg">
                 <div class="single_record_print_btn">Print</div>
+                <div class="single_record_export_to_doc_btn">Export To DOC</div>
             </div>
             <div class="single_user_record_bottom_part">
                 ${user.PPS_Number === "false" ? `<h4 class="pps_or_mc">Medical Card: ${user.Medical_Card}</h4>` : `<h4 class="pps_or_mc">PPS Number: ${user.PPS_Number}</h4>`}
@@ -715,6 +717,29 @@ const fillInSingleUserData = user => {
             </div>
         </div>
     `
+}
+
+const exportToDoc = buttons => {
+    buttons.map(button => 
+        $(button).click(async() => {
+            let doc = new docx.Document()
+            doc.addSection({
+                children: [
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: `Hi this is my first paragraph
+                                `
+                            })
+                        ]
+                    })
+                ]
+            });
+            // doc.createParagraph('Hi this is my first paragraph');
+            const blob = await docx.Packer.toBlob(doc)
+            saveAs(blob, `patientRecord.docx`);
+        })
+    )
 }
 
 const dealWithTabs = () => {
@@ -836,6 +861,7 @@ const displayData = appointments => {
     document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overallTotal}`
     checkCapacity(appointments)
     checkDelete()
+    dealWithSingleRecordPick();
 }
 
 const checkDelete = () => {
