@@ -700,9 +700,9 @@ const fillInSingleUserData = user => {
             <div class="single_user_record_top_part">
                 <img src="Resources/Images/user.svg">
                 <div class="single_record_print_btn">Print</div>
-                <div class="single_record_export_to_doc_btn">Export To DOC</div>
+                <div class="single_record_export_to_doc_btn" data-id="${user._id}" >Export To DOC</div>
             </div>
-            <div class="single_user_record_bottom_part">
+            <div class="single_user_record_bottom_part" data-id="${user._id}">
                 ${user.PPS_Number === "false" ? `<h4 class="pps_or_mc">Medical Card: ${user.Medical_Card}</h4>` : `<h4 class="pps_or_mc">PPS Number: ${user.PPS_Number}</h4>`}
                 <h4>Name: ${user.firstName} ${user.Surname}</h4>
                 <h4>Email: ${user.Email}</h4>
@@ -721,14 +721,14 @@ const fillInSingleUserData = user => {
 
 const exportToDoc = buttons => {
     buttons.map(button => 
-        $(button).click(async() => {
+        $(button).click(async e => {
             let doc = new docx.Document()
             doc.addSection({
                 children: [
                     new docx.Paragraph({
                         children: [
                             new docx.TextRun({
-                                text: `Hi this is my first paragraph
+                                text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerHTML}
                                 `
                             })
                         ]
