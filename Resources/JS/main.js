@@ -725,23 +725,24 @@ const exportToDoc = buttons => {
             let doc = new docx.Document(),
             // outputStr = "",
             records = [...document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).children];
-            records.map(record => {
-                // outputStr += `\n${record.innerText}`
-                doc.addSection({
-                    children: [
-                        new docx.Paragraph({
-                            children: [
+            // outputStr += `\n${record.innerText}`
+            doc.addSection({
+                children: [
+                    new docx.Paragraph({
+                        children: [
+                            records.map(record => 
                                 new docx.TextRun({
                                     text: `${record.innerText}`
                                     // text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerText}
                                     // Patient Signature ________________________
                                     // `
                                 })
-                            ]
-                        })
-                    ]
-                });
-            })
+                            )
+                        ]
+                    })
+                ]
+            });
+            
             // debugger
             
             // doc.createParagraph('Hi this is my first paragraph');
