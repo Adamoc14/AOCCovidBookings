@@ -697,7 +697,7 @@ const fillInSingleUserData = user => {
     return `
         <div class="single_user_record">
             <div class="single_user_record_top_part">
-                <img src="">
+                <img src="Resources/Images/user.svg">
                 <div class="single_record_print_btn">Print</div>
             </div>
             <div class="single_user_record_bottom_part">

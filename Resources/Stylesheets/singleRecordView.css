@@ -1,0 +1,40 @@
+.single_user_record_top_part{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-right: 1em;
+}
+
+.single_user_record_top_part img{
+    width: 7vw;
+    margin: 0 auto;
+    margin-right: 11em;
+    padding: .3em;
+    border-radius: 50%;
+    border: 1px solid #eee;
+}
+
+.single_record_print_btn{
+    background: orange;
+    padding: .5em 1em;
+}
+
+.UsersContainerOuter{
+    padding: 2em 2em;
+}
+
+.single_user_record{
+    padding:1em;
+    border: 1px solid #eee;
+}
+
+.backSlotBtn {
+    width: 20vw;
+    height: 8vh;
+    display: grid;
+    margin: 1em auto;
+    place-items: center;
+    background: orange;
+    cursor: pointer;
+}
+
