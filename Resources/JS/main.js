@@ -728,17 +728,18 @@ const exportToDoc = buttons => {
             // outputStr += `\n${record.innerText}`
             doc.addSection({
                 children: [
-                    new docx.Paragraph({
-                        children: [
-                            records.map(record => 
-                                new docx.TextRun({
-                                    text: `${record.innerText}`
-                                    // text: `${document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).innerText}
-                                    // Patient Signature ________________________
-                                    // `
-                                })
-                            )
-                        ]
+                    records.map(record => {
+                        const arr = [];
+                        arr.push(
+                            new docx.Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: `${record.innerText}`,
+                                    })
+                                ],
+                            })
+                        )
+                        return arr;
                     })
                 ]
             });
