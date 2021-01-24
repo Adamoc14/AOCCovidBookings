@@ -19,6 +19,11 @@ const getSingleUserRecord = async userId => {
     return users;
 }
 
+const getRelativeAppt = async apptId => {
+    let appt = await axios.get(`${url}api/v1/appointments/appt/${apptId}`)
+    return appt
+}
+
 const userViewInit = () => {
     displayUserView()
 }
@@ -233,6 +238,7 @@ const createAppointmentBtnClick = () => {
         appointment_Details["City_Address"] = formData.get('Address_Line_Two')
         appointment_Details["County"] = formData.get('County')
         appointment_Details["Alternate_Number"] = formData.get('Alternate_Mobile')
+        appointment_Details["Bleeding_Disorder_Or_Anticoagulation"] = formData.get('Bleeding_Disorder_decision')
         debugger
 
         displayAppointmentPopup(appointment_Details)
@@ -680,27 +686,29 @@ const dealWithSingleRecordPick = () => {
 
 const singleRecordPageInit = async() => {
     const userId = getURLData().get('userId')
+    const apptId = getURLData().get('apptId')
     const { data: users } = await getSingleUserRecord(userId)
-    fillInRecords(users);
+    const {data: appt} = await getRelativeAppt(apptId)
+    fillInRecords(users, appt);
     printPage([...document.querySelectorAll('.single_record_print_btn')] );
     exportToDoc([...document.querySelectorAll('.single_record_export_to_doc_btn')] )
 }
 
-const fillInRecords = users => {
+const fillInRecords = (users, appt) => {
     const usersContainer = document.querySelector('.UsersContainerOuter');
-    let usersData = users.map(user => fillInSingleUserData(user)).join("");
+    let usersData = users.map(user => fillInSingleUserData(user, appt)).join("");
     // let usersData = fillInSingleUserData(users);
     usersData += `<a href="AdminHome.html" class="backSlotBtn">Back</a>`
     usersContainer.insertAdjacentHTML('afterbegin', usersData);
 }
 
-const fillInSingleUserData = user => {
+const fillInSingleUserData = (user,appt) => {
     return `
         <div class="single_user_record">
             <div class="single_user_record_top_part">
-                <img src="Resources/Images/user.svg">
+                <img src="Resources/Images/user.svg" class="record_img">
                 <div class="single_record_print_btn">Print</div>
-                <div class="single_record_export_to_doc_btn" data-id="${user._id}" >Export To DOC</div>
+                <div class="single_record_export_to_doc_btn" data-id="${user._id}" data-patient="${user.firstName} ${user.Surname}" ><img src="Resources/Images/export_file.svg"></div>
             </div>
             <div class="single_user_record_bottom_part" data-id="${user._id}">
                 ${user.PPS_Number === "false" ? `<h4 class="pps_or_mc">Medical Card: ${user.Medical_Card}</h4>` : `<h4 class="pps_or_mc">PPS Number: ${user.PPS_Number}</h4>`}
@@ -713,7 +721,8 @@ const fillInSingleUserData = user => {
                 <h4>Street Address: ${user.Street_Address}</h4>
                 <h4>City: ${user.City_Address}</h4>
                 <h4>County: ${user.County}</h4>
-
+                <h4>Bleeding Disorder or Anti-Coagulation Therapy: ${user.Bleeding_Disorder_Or_Anticoagulation}</h4>
+                <h4>Appointment: ${appt.DayName}, ${appt.DayDate} ${appt.Month} ${appt.Time}</h4>
             </div>
         </div>
     `
@@ -724,22 +733,28 @@ const exportToDoc = buttons => {
         $(button).click(async e => {
             let doc = new docx.Document(),
             // outputStr = "",
-            records = [...document.querySelector(`.single_user_record_bottom_part[data-id="${e.target.dataset.id}"]`).children];
+            records = [...document.querySelector(`.single_user_record_bottom_part[data-id="${e.currentTarget.dataset.id}"]`).children];
             // outputStr += `\n${record.innerText}`
             doc.addSection({
+                children: 
+                    records.map(record => 
+                        new docx.Paragraph({
+                            children: [
+                                new docx.TextRun({
+                                    text: `${record.innerText}`
+                                })
+                            ]
+                        })
+                    )
+            });
+            doc.addSection({
                 children: [
-                    records.map(record => {
-                        const arr = [];
-                        arr.push(
-                            new docx.Paragraph({
-                                children: [
-                                    new TextRun({
-                                        text: `${record.innerText}`,
-                                    })
-                                ],
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun({
+                                text: `Patient Signature __________`
                             })
-                        )
-                        return arr;
+                        ]
                     })
                 ]
             });
@@ -748,7 +763,7 @@ const exportToDoc = buttons => {
             
             // doc.createParagraph('Hi this is my first paragraph');
             const blob = await docx.Packer.toBlob(doc)
-            saveAs(blob, `patientRecord.docx`);
+            saveAs(blob, `${e.currentTarget.dataset.patient}.docx`);
         })
     )
 }
@@ -952,11 +967,21 @@ const getClinicData = async() => {
 
 const adminClinicHomeInit = async() => {
     const clinicData = await getClinicData()
+    const {data:Covid_Terms}  = await axios.get(`${url}api/v1/covid_terms`)
+    document.querySelector('#min_age').value = Covid_Terms[0].Min_Age
+    document.querySelector('#min_age').dataset.id = Covid_Terms[0]._id
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
     displayAllSlots(clinicData)
     const delete_btns = [...document.querySelectorAll('.delete_btn')]
     delete_btns.map(delete_btn => $(delete_btn).click(e => deleteClinicSlot(e.target.dataset.clinic_id))) 
+    dealWithCovidTermAgeChange(document.querySelector('#min_age'))
+}
+
+const dealWithCovidTermAgeChange = covid_age_input => {
+    $(covid_age_input).focusout(async e => {
+        await axios.put(`${url}api/v1/covid_terms/${e.target.dataset.id}`, {"Min_Age": e.target.value})
+    })
 }
 
 

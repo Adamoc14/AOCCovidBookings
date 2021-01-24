@@ -9,7 +9,16 @@
     padding: 1em 2em;
 }
 
+.covid_terms_input_container {
+    width: 55vw;
+    display: flex;
+    align-items: center;
+}
 
+#min_age{
+    width:5vw;
+    margin-left:.5em;
+}
 
 .clinic_slots_container {
     padding: 0em 2em;
