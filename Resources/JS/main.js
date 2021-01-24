@@ -4,6 +4,7 @@ const appointment_Details = {},
 let appointments_Saved = [],
     appointments_Data = [],
     clinic_Data = [],
+    covid_term = {}
     errMessage = []
 
 const getData = async() => {
@@ -12,6 +13,12 @@ const getData = async() => {
     appointments_Saved = data
     appointments_Data = appointments_Saved
     clinic_Data = await getClinicData()
+    await getCovidTerm()
+}
+
+const getCovidTerm = async() => {
+    const {data:Covid_Terms}  = await axios.get(`${url}api/v1/covid_terms`)
+    covid_term = Covid_Terms[0]
 }
 
 const getSingleUserRecord = async userId => {
@@ -43,7 +50,7 @@ const checkVaccineAbility = () => {
 const checkDOB = () => {
     const DOB_Input = document.querySelector('.dob_container input[type=text]');
     $(DOB_Input).focusout(e => {
-        new Date().getFullYear() - e.target.value.substring(6,) >= 85 ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex"; 
+        new Date().getFullYear() - e.target.value.substring(6,) >= covid_term.Min_Age ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex"; 
     })
 }
 
@@ -967,9 +974,9 @@ const getClinicData = async() => {
 
 const adminClinicHomeInit = async() => {
     const clinicData = await getClinicData()
-    const {data:Covid_Terms}  = await axios.get(`${url}api/v1/covid_terms`)
-    document.querySelector('#min_age').value = Covid_Terms[0].Min_Age
-    document.querySelector('#min_age').dataset.id = Covid_Terms[0]._id
+    await getCovidTerm()
+    document.querySelector('#min_age').value = covid_term.Min_Age
+    document.querySelector('#min_age').dataset.id = covid_term._id
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
     displayAllSlots(clinicData)
