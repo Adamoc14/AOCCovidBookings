@@ -794,7 +794,7 @@ const getDateTime = () => {
         Year: document.querySelector('#date_picker_input')?.value?.split("-")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[0],
         Month: document.querySelector('#date_picker_input')?.value?.split("-")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[1],
         MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1) || nameOfMonth(parseInt(document.querySelector('#default_date_picker_input')?.value?.split("-")[1]) - 1),
-        Date: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2].split("T")[0],
+        Date: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2],
         Time: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2].split("T")[1]
     }
     return dateDetails
@@ -993,8 +993,11 @@ const adminClinicHomeInit = async() => {
     let year = new Date().getFullYear();
     let month = numOfmonthStartFromJan(covid_term.Month)
     let date = covid_term.Date;
-    if(parseInt(date) < 10) date = "0" + date.toString()
-    if(parseInt(month) < 10) month = "0" + month.toString()
+    if(month === 0) month+=1
+    if(!month.toString().includes("0") || !date.toString().includes("0")) {
+        if(parseInt(date) < 10) date = "0" + date.toString()
+        if(parseInt(month) < 10) month = "0" + month.toString()
+    }
     document.querySelector('#default_date_picker_input').value = `${year}-${month}-${date}`;
     // setDateTimeLocal(document.querySelector('#default_date_picker_input'))
     dealWithDateChange(document.querySelector('#default_date_picker_input'))
