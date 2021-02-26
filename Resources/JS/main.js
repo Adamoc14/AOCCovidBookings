@@ -821,7 +821,8 @@ const dealWithDateChange = date_picker => {
 
 const updateDefaultDate = async(SelectedDateTime) => {
     try {
-        await axios.put(`${url}api/v1/covid_terms/${e.target.dataset.id}`, {"Month": SelectedDateTime.MonthName , "Date": SelectedDateTime.Date})
+        await getCovidTerm()
+        await axios.put(`${url}api/v1/covid_terms/${covid_term._id}`, {"Min_Age": covid_term.Min_Age , "Month": SelectedDateTime.MonthName , "Date": SelectedDateTime.Date})
     } catch (error) {
         console.log(error);
     }
@@ -899,9 +900,9 @@ const displayData = appointments => {
                 `
         }
     }).join("");
-    document.querySelector('.main_container_m').insertAdjacentHTML('beforeend', appointmentsHTML)
-    document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${runningTotal}`
-    document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overallTotal}`
+    document.querySelector('.main_container_m')?.insertAdjacentHTML('beforeend', appointmentsHTML)
+    document.querySelector('.numberOfUsers') ? document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${runningTotal}` : false
+    document.querySelector('.numberOfAppointments') ? document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overallTotal}` : false
     checkCapacity(appointments)
     checkDelete()
     dealWithSingleRecordPick();
@@ -989,10 +990,15 @@ const adminClinicHomeInit = async() => {
     document.querySelector('#min_age').dataset.id = covid_term._id
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
-    setDateTimeLocal(document.querySelector('#default_date_picker_input'))
+    let year = new Date().getFullYear();
+    let month = numOfmonthStartFromJan(covid_term.Month)
+    let date = covid_term.Date;
+    if(parseInt(date) < 10) date = "0" + date.toString()
+    if(parseInt(month) < 10) month = "0" + month.toString()
+    document.querySelector('#default_date_picker_input').value = `${year}-${month}-${date}`;
+    // setDateTimeLocal(document.querySelector('#default_date_picker_input'))
     dealWithDateChange(document.querySelector('#default_date_picker_input'))
-    const SelectedDateTime = getDateTime()
-    debugger
+    getDateTime()
     displayAllSlots(clinicData)
     const delete_btns = [...document.querySelectorAll('.delete_btn')]
     delete_btns.map(delete_btn => $(delete_btn).click(e => deleteClinicSlot(e.target.dataset.clinic_id))) 
@@ -1001,7 +1007,8 @@ const adminClinicHomeInit = async() => {
 
 const dealWithCovidTermAgeChange = covid_age_input => {
     $(covid_age_input).focusout(async e => {
-        await axios.put(`${url}api/v1/covid_terms/${e.target.dataset.id}`, {"Min_Age": e.target.value})
+        await getCovidTerm()
+        await axios.put(`${url}api/v1/covid_terms/${e.target.dataset.id}`, {"Min_Age": e.target.value, "Month": covid_term.Month , "Date": covid_term.Date})
     })
 }
 
@@ -1243,6 +1250,24 @@ const numOfmonth = month => {
         "September": 9,
 "October": 10,
 "November": 11
+    }
+    return months[month]
+}
+
+const numOfmonthStartFromJan = month => {
+    const months = {
+        "January": 0,
+        "February": 1,
+        "March": 2,
+        "April": 3,
+        "May": 4,
+        "June": 5,
+        "July": 6,
+        "August": 7,
+        "September": 8,
+        "October": 9,
+        "November": 10,
+        "December": 11,
     }
     return months[month]
 }
