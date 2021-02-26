@@ -9,6 +9,14 @@
     padding: 1em 2em;
 }
 
+.default_dates_container{
+    display: flex;
+    padding: 1em 2em;
+}
+#default_date_picker_input{
+    margin-left: 2em;
+}
+
 .covid_terms_input_container {
     width: 55vw;
     display: flex;

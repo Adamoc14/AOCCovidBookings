@@ -791,11 +791,11 @@ const filterSavedAppointments = (appointments , dateDetails) => {
 
 const getDateTime = () => {
     const dateDetails = {
-        Year: document.querySelector('#date_picker_input').value.split("-")[0],
-        Month: document.querySelector('#date_picker_input').value.split("-")[1],
-        MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input').value.split("-")[1]) - 1),
-        Date: document.querySelector('#date_picker_input').value.split("-")[2].split("T")[0],
-        Time: document.querySelector('#date_picker_input').value.split("-")[2].split("T")[1]
+        Year: document.querySelector('#date_picker_input')?.value?.split("-")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[0],
+        Month: document.querySelector('#date_picker_input')?.value?.split("-")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[1],
+        MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1) || nameOfMonth(parseInt(document.querySelector('#default_date_picker_input')?.value?.split("-")[1]) - 1),
+        Date: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2].split("T")[0],
+        Time: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2].split("T")[1]
     }
     return dateDetails
 }
@@ -803,7 +803,8 @@ const getDateTime = () => {
 const dealWithDateChange = date_picker => {
     $(date_picker).on('change', e => {
         // <h4 class="container_sm">Car Reg(s)</h4>
-        document.querySelector('.main_container_m').innerHTML = `
+        const main_coontainer_m = document.querySelector('.main_container_m') ? true : false
+        main_coontainer_m.innerHTML = `
                 <div class="headings">
                     <h4 class="container_sm">Time(inc.Date)</h4>
                     <h4 class="container_sm">First Name(s)</h4>
@@ -813,8 +814,17 @@ const dealWithDateChange = date_picker => {
                 </div>
         `
         const SelectedDateTime = getDateTime()
+        if(e.target.id === "default_date_picker_input") updateDefaultDate(SelectedDateTime);
         displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
     })
+}
+
+const updateDefaultDate = async(SelectedDateTime) => {
+    try {
+        await axios.put(`${url}api/v1/covid_terms/${e.target.dataset.id}`, {"Month": SelectedDateTime.MonthName , "Date": SelectedDateTime.Date})
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const setDateTimeLocal = date_picker => {
@@ -979,6 +989,10 @@ const adminClinicHomeInit = async() => {
     document.querySelector('#min_age').dataset.id = covid_term._id
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
+    setDateTimeLocal(document.querySelector('#default_date_picker_input'))
+    dealWithDateChange(document.querySelector('#default_date_picker_input'))
+    const SelectedDateTime = getDateTime()
+    debugger
     displayAllSlots(clinicData)
     const delete_btns = [...document.querySelectorAll('.delete_btn')]
     delete_btns.map(delete_btn => $(delete_btn).click(e => deleteClinicSlot(e.target.dataset.clinic_id))) 
@@ -1002,8 +1016,8 @@ const displayAllSlots = clinicData => {
                 <div class="date_square">${clinic_slot.Month.slice(0, 3)}</div>
             </div>
             <div class="slot_details_container">
-                <h2><strong>Hours (Not Available):</strong> ${clinic_slot.Hours.join(", ")}</h2>
-                <h2><strong>Providers:</strong> ${clinic_slot.Providers}</h2>
+                <h2><strong>Hours (Available):</strong> ${clinic_slot.Hours.join(", ")}</h2>
+                <h2><strong>Vaccinators:</strong> ${clinic_slot.Providers}</h2>
                 <h2><strong>Dates:</strong> ${clinic_slot.Dates.join(", ")}</h2>
             </div>
             <div class="manipulate_slot_buttons_container">
