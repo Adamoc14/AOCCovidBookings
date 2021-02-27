@@ -505,6 +505,7 @@ const checkAgainstAppointments = () => {
                                 appointment_s.classList.remove("orange_disabled")
                             })
                     }
+                    // Changed this - number of providers 27/02/2021
                     appointments_Saved
                         .filter(appointment => appointment.DayDate == date)
                         .filter(appointment => appointment.Capacity.length >= parseInt(clinicDataSingle.Providers))
