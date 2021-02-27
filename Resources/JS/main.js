@@ -251,7 +251,6 @@ const createAppointmentBtnClick = () => {
         appointment_Details["County"] = formData.get('County')
         appointment_Details["Alternate_Number"] = formData.get('Alternate_Mobile')
         appointment_Details["Bleeding_Disorder_Or_Anticoagulation"] = formData.get('Bleeding_Disorder_decision')
-        debugger
 
         displayAppointmentPopup(appointment_Details)
         dealWithFormSubmit()
