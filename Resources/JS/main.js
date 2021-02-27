@@ -225,9 +225,9 @@ const createAppointmentBtnClick = () => {
 
         // Getting the form Data and filling it to appointment_Details
         let formData = getFormData(form)
-        if (formData.get('card_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
+        //if (formData.get('card_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
         // if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
-        whichCard(formData.get('card_decision'), formData)
+        //whichCard(formData.get('card_decision'), formData)
         // whichDestination(formData.get('destination_decision'), formData)
         if(errMessage.length !== 0) {
             errMessage.filter((error , index) => errMessage.lastIndexOf(error) === index)

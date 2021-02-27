@@ -33,6 +33,10 @@
     margin: 1em auto;
 }
 
+.faq_hover{
+    color: orange;
+    text-decoration: underline;
+}
 .appointment_made_modal_content {
     min-height: 69vh;
 }
