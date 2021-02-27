@@ -1000,9 +1000,11 @@ const adminClinicHomeInit = async() => {
     let month = numOfmonthStartFromJan(covid_term.Month)
     let date = covid_term.Date;
     if(month === 0) month+=1
-    if(!month.toString().includes("0") || !date.toString().includes("0")) {
-        if(parseInt(date) < 10) date = "0" + date.toString()
+    if(!month.toString().includes("0")) {
         if(parseInt(month) < 10) month = "0" + month.toString()
+    }
+    if(!date.toString().includes("0")) {
+        if(parseInt(date) < 10) date = "0" + date.toString()
     }
     document.querySelector('#default_date_picker_input').value = `${year}-${month}-${date}`;
     // setDateTimeLocal(document.querySelector('#default_date_picker_input'))
