@@ -997,7 +997,7 @@ const adminClinicHomeInit = async() => {
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
     let year = new Date().getFullYear();
-    let month = numOfmonthStartFromJan(covid_term.Month)
+    let month = numOfmonthStartFromJan(covid_term.Month) + 1
     let date = covid_term.Date;
     if(month === 0) month+=1
     if(!month.toString().includes("0")) {
