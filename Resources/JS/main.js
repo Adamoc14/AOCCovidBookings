@@ -675,8 +675,19 @@ const adminLogout = () => {
 const adminInit = () => {
     type = "Appointments"
     $(`.options_container h1:contains("${type}")`)[0].style.background = "#fff"
+    let year = new Date().getFullYear();
+    let month = numOfmonthStartFromJan(covid_term.Month) + 1
+    let date = covid_term.Date;
+    if(month === 0) month+=1
+    if(!month.toString().includes("0")) {
+        if(parseInt(month) < 10) month = "0" + month.toString()
+    }
+    if(!date.toString().includes("0")) {
+        if(parseInt(date) < 10) date = "0" + date.toString()
+    }
+    document.querySelector('#date_picker_input').value = `${year}-${month}-${date}`;
     dealWithTabs()
-    setDateTimeLocal(document.querySelector('#date_picker_input'))
+    // setDateTimeLocal(document.querySelector('#date_picker_input'))
     dealWithDateChange(document.querySelector('#date_picker_input'))
     const SelectedDateTime = getDateTime()
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
@@ -801,8 +812,8 @@ const getDateTime = () => {
         Year: document.querySelector('#date_picker_input')?.value?.split("-")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[0],
         Month: document.querySelector('#date_picker_input')?.value?.split("-")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[1],
         MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1) || nameOfMonth(parseInt(document.querySelector('#default_date_picker_input')?.value?.split("-")[1]) - 1),
-        Date: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2],
-        Time: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2]
+        Date: document.querySelector('#date_picker_input')?.value?.split("-")[2]|| document.querySelector('#default_date_picker_input')?.value?.split("-")[2],
+        Time: document.querySelector('#date_picker_input')?.value?.split("-")[2] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2]
     }
     return dateDetails
 }
