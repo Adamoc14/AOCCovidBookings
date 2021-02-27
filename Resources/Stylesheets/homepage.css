@@ -33,6 +33,10 @@
     margin: 1em auto;
 }
 
+
+.notice{
+    color: red;
+}
 .faq_hover{
     color: orange;
     text-decoration: underline;
