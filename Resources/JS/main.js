@@ -295,7 +295,7 @@ const fillinModalDetails = appointment_made_details => {
 
 
 const makeRequest = () => {
-    return axios.post(`${url}api/v1/appointments`, appointment_Details)
+    return axios.post(`${local_url}api/v1/appointments`, appointment_Details)
 }
 
 const whichCard = (value , formData) => {
