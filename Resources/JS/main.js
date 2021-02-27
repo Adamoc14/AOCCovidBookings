@@ -801,7 +801,7 @@ const getDateTime = () => {
         Month: document.querySelector('#date_picker_input')?.value?.split("-")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[1],
         MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1) || nameOfMonth(parseInt(document.querySelector('#default_date_picker_input')?.value?.split("-")[1]) - 1),
         Date: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[0] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2],
-        Time: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2].split("T")[1]
+        Time: document.querySelector('#date_picker_input')?.value?.split("-")[2].split("T")[1] || document.querySelector('#default_date_picker_input')?.value?.split("-")[2]
     }
     return dateDetails
 }
