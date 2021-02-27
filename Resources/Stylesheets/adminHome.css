@@ -107,7 +107,7 @@ aside {
     grid-template-columns: repeat(5, 1fr) 7%;
     /* grid-template-columns: repeat(6, 1fr) 7%; */
     grid-row-gap: .2em;
-    margin-bottom: 1em;
+    /* margin-bottom: 1em; */
     padding: 1em 0em;
     border-bottom: 1px solid #eee;
 }
