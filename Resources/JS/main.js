@@ -885,7 +885,7 @@ const downloadCSV = csvData => {
 
 // Need to keep it in the array of appointments_Saved to be passed into this func
 // Had to sort the times by their hours first of all and then their minutes in ascending order
-const displayData = appointments => {
+const displayData = async appointments => {
     const runningTotal = appointments.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0),
         overallTotal = appointments_Saved.map(appt => appt.Capacity.length).reduce((a, b) => a + b, 0)
     appointments_Data = appointments.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
@@ -911,8 +911,8 @@ const displayData = appointments => {
     document.querySelector('.numberOfUsers') ? document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${runningTotal}` : false
     document.querySelector('.numberOfAppointments') ? document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overallTotal}` : false
     checkCapacity(appointments)
-    checkDelete()
-    dealWithSingleRecordPick();
+    await checkDelete()
+    await dealWithSingleRecordPick();
 }
 
 const checkDelete = () => {
