@@ -682,7 +682,7 @@ const adminInit = () => {
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
     dealWithSearch()
     getAppointmentDataFromTable()
-    dealWithSingleRecordPick()
+    // dealWithSingleRecordPick()
     const print_btn = [...document.querySelectorAll('.print_btn')];
     printPage(print_btn)
 }
@@ -912,7 +912,7 @@ const displayData = async appointments => {
     document.querySelector('.numberOfAppointments') ? document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overallTotal}` : false
     checkCapacity(appointments)
     await checkDelete()
-    await dealWithSingleRecordPick();
+    // await dealWithSingleRecordPick();
 }
 
 const checkDelete = () => {
