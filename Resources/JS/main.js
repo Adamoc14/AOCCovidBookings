@@ -108,18 +108,22 @@ const printPage = buttons => {
 }
 
 
-const displayPastMonths = place => {
-    const monthToday = new Date().getMonth()
+const displayPastMonths = async place => {
+    let monthToday = new Date().getMonth()
+    await getCovidTerm()
+    if(covid_term.Month !== undefined) monthToday = numOfmonth(covid_term.Month)- 1;
     const months = [...document.querySelectorAll('.month')]
     months.filter(month => month.dataset.month < monthToday).map(month => month.classList.add('disabled'))
     document.querySelector(`.month[data-month="${monthToday}"]`).style.background = "green"
     displayPastDays(months , document.querySelector(`.month[data-month="${monthToday}"]`) , place)
 }
 
-const displayPastDays = (months,startMonth , place) => {
+const displayPastDays = async(months,startMonth , place) => {
     // Get month Selected Info , adds it to appointment details
     let monthSelected = clickMonth(months, startMonth);
     appointment_Details["Month"] = monthSelected.Name
+    await getCovidTerm()
+    if(covid_term.Month !== undefined) appointment_Details["Month"] = covid_term.Month;
 
     // Display Calendar and Days That are closed
     let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name),
@@ -322,7 +326,7 @@ const getFormData = form => {
 const dealWithMonths = (place, clinicData, clinicDataSingle) => {
     const months = [...document.querySelectorAll('.month')];
     months.map(month => {
-        $(month).click(e => {
+        $(month).click( async e => {
             // Get month Selected Info , adds it to appointment details
             let monthSelected = clickMonth(months , e.target);
             appointment_Details["Month"] = monthSelected.Name
@@ -334,6 +338,8 @@ const dealWithMonths = (place, clinicData, clinicDataSingle) => {
             } else {
                 displayDaysIrrelevant(days)
             }
+            await getCovidTerm()
+            if(covid_term.Date !== undefined) $(`.day:contains('${covid_term.Date}')`).click();
             
 
             if(place === "Clinic") {
@@ -1334,6 +1340,8 @@ $(document).ready(async() => {
             // displayPPSInput()
             createAppointmentBtnClick()
             dealWithMonths() 
+            await getCovidTerm()
+            $(`.month:contains("${covid_term.Month}")`).click()
             dealWithTerms()
             break
         case window.location.pathname.includes("index"):
@@ -1342,7 +1350,9 @@ $(document).ready(async() => {
             checkVaccineAbility()
             // displayPPSInput()
             createAppointmentBtnClick()
-            dealWithMonths()   
+            dealWithMonths()  
+            await getCovidTerm() 
+            $(`.month:contains("${covid_term.Month}")`).click()
             dealWithTerms()
             break
         case (/(?:^|\W)userview(?:$|\W)/).test(window.location.pathname.toLowerCase()):
