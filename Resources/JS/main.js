@@ -688,7 +688,7 @@ const adminInit = () => {
     }
     document.querySelector('#date_picker_input').value = `${year}-${month}-${date}`;
     dealWithTabs()
-    // setDateTimeLocal(document.querySelector('#date_picker_input'))
+    setDateTimeLocal(document.querySelector('#date_picker_input'))
     dealWithDateChange(document.querySelector('#date_picker_input'))
     const SelectedDateTime = getDateTime()
     displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))

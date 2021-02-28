@@ -149,6 +149,11 @@ class UIHelperMethodManager {
             window.location = "AdminLogin.html"
         })
     }
+
+    dealWithAdminTabsChange = adminTab => {
+        $(`.options_container h1:contains("${adminTab}")`)[0].style.background = "#fff"
+    }
+
     getDayContainersFromCalendar = () => {
         return [...document.querySelectorAll('.day')];
     }
@@ -238,10 +243,17 @@ class GeneralHelperMethodManager {
         }
         return days[firstDay]
     }
+
     static getNumOfDaysInTheMonth = (startDay, endDay) => {
         if (startDay === endDay) return [startDay];
         return [startDay, ...GeneralHelperMethodManager.getNumOfDaysInTheMonth(startDay + 1, endDay)];
     }
+
+    static addZeroToNumberIfLowerThan10ReturnStringValue = number => {
+        return number < 10 ? `0${number}` : `${number}`
+    }
+
+    static retrieveTodaysDate = () =>  moment().format(moment.HTML5_FMT.DATETIME_LOCAL).toString()
 }
 
 class ValidationHelperManager {
@@ -766,12 +778,13 @@ class FrontEndUI {
 }
 
 class BackendUI {
-    constructor(appointments, covid_terms, clinic_slots, users) {
+    constructor(appointments, covid_terms, clinic_slots, users, page_location) {
 
          // Get all Data Needed and leave equal to global variables
          this.appointments = appointments;
          this.clinic_slots = clinic_slots;
          this.covid_terms = covid_terms[0];
+         this.users = users;
  
          // Switch Statement to identify which page we're on and what methods we need to kick off (more than 3 conditions)
         switch (page_location) {
@@ -820,10 +833,6 @@ class BackendUI {
         })
     }
 
-
-
-    
-
     // __________________________End Of Admin Login Page functions _______________________________
 
 
@@ -835,9 +844,70 @@ class BackendUI {
         // Checking whether admin is logged in or not first
         ValidationHelperManager.isAdminLoggedIn()
 
+        //Allow Admin To logout 
+        ui_helper_manager.logoutAdmin()
+
+        // Deal With Tab Change On Side Of Page
+        this.adminTab = "Appointments"
+        ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
+
+        // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
+        document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
+
+        // Display Data in Table In Relation To Date Set In Picker 
+
+       // Deal With Change Of Date In Date Picker
+        dealWithDateChange()
+
+        // const SelectedDateTime = getDateTime()
+        
+        // dealWithSearch()
+        // getAppointmentDataFromTable()
+        // // dealWithSingleRecordPick()
+        // const print_btn = [...document.querySelectorAll('.print_btn')];
+        // printPage(print_btn)
+        
+
     }
 
+    fillValueOfPickerWithCovidTermDate = () => {
 
+        // Don't Have Year In Covid Terms So Have To get it
+        let year = new Date().getFullYear(),
+        month = GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month),
+        date = this.covid_terms.Date;
+
+        // Use the helper method to distinguish whether number is "4" or "04" which is needed for date formatting
+        month = GeneralHelperMethodManager.addZeroToNumberIfLowerThan10ReturnStringValue(month)
+
+        // Returning Covid Term Date Value to be put in Date Picker
+        return `${year}-${month}-${date}`;
+    }
+
+    fillValueOfPickerWithTodaysDate = () => {
+        return GeneralHelperMethodManager.retrieveTodaysDate()
+    }
+
+    dealWithDateChange  = () => {
+        $(document.querySelector('#date_picker_input')).on('change', e => {
+
+            // 
+            document.querySelector('.main_container_m') ? document.querySelector('.main_container_m').innerHTML = `
+                    <div class="headings">
+                        <h4 class="container_sm">Time(inc.Date)</h4>
+                        <h4 class="container_sm">First Name(s)</h4>
+                        <h4 class="container_sm">Surname(s)</h4>
+                        <h4 class="container_sm">DOB(s)</h4>
+                        <h4 class="container_sm">PPS No(s)</h4>
+                    </div>
+            ` : null
+
+
+            const SelectedDateTime = getDateTime()
+            if(e.target.id === "default_date_picker_input") updateDefaultDate(SelectedDateTime);
+            displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
+        })
+    }
 
     // __________________________End Of Admin Home Page functions _______________________________
 
