@@ -136,11 +136,11 @@ class GeneralHelperMethodManager {
     // Easily adopted to any project 
     static createMonthObjectFromMonthSelected = monthNo => {
         let monthSelected = {
-            "LastDayNum": getLastDayNum(new Date().getFullYear(), Number(monthNo)),
-            "WeekDayNumOfFirstDay": getWeekDayNum(new Date().getFullYear(), Number(monthNo), 1),
-            "WeekDayNameOfFirstDay": nameOfDay(getWeekDayNum(new Date().getFullYear(), Number(monthNo), 1)),
-            "NumOfDays": getNumOfDays(1, getLastDayNum(new Date().getFullYear(), Number(monthNo))),
-            "Name": nameOfMonth(Number(monthNo)),
+            "LastDayNum": GeneralHelperMethodManager.getMonthsLastDayNumByYear(new Date().getFullYear(), Number(monthNo)),
+            "WeekDayNumOfFirstDay": GeneralHelperMethodManager.getWeekDayNumFromDate(new Date().getFullYear(), Number(monthNo), 1),
+            "WeekDayNameOfFirstDay": GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(GeneralHelperMethodManager.getWeekDayNumFromDate(new Date().getFullYear(), Number(monthNo), 1)),
+            "NumOfDays": GeneralHelperMethodManager.getNumOfDaysInTheMonth(1, GeneralHelperMethodManager.getMonthsLastDayNumByYear(new Date().getFullYear(), Number(monthNo))),
+            "Name": GeneralHelperMethodManager.getNameOfTheMonthByNum(Number(monthNo)),
             "Number": monthNo
         }
         return monthSelected
@@ -195,7 +195,7 @@ class GeneralHelperMethodManager {
     }
     static getNumOfDaysInTheMonth = (startDay, endDay) => {
         if (startDay === endDay) return [startDay];
-        return [startDay, ...getNumOfDays(startDay + 1, endDay)];
+        return [startDay, ...GeneralHelperMethodManager.getNumOfDaysInTheMonth(startDay + 1, endDay)];
     }
 }
 
@@ -229,7 +229,7 @@ class FrontEndUI {
         // Get the month selected from page from monthContainers
         this.monthContainers.map(monthContainer => 
             $(monthContainer).click( e => {
-                dealWithClickOnMonth(e.target);
+                this.dealWithClickOnMonth(e.target);
             })
         )
         
@@ -243,7 +243,7 @@ class FrontEndUI {
     }
 
     displayPastMonthsFromCovidTermMonth = () => {
-        let covid_term_month = this.covid_terms[0].Month
+        let covid_term_month = this.covid_terms.Month
         this.monthContainers.filter(monthContainer => monthContainer.dataset.month < GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)).map(monthContainer => monthContainer.classList.add('disabled'))
         document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`) ? document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`).classList.add('monthActive') : null
         // displayPastDays(months, document.querySelector(`.month[data-month="${monthToday}"]`), place)
@@ -253,12 +253,24 @@ class FrontEndUI {
     dealWithClickOnMonth = selectedMonth => {
         
         // Styles the month selected and ones that aren't accordingly
-        this.monthContainers.filter(monthContainer => monthContainer !== selectedMonth).map(monthContainer => monthContainer.classList.add('monthInActive'))
+
+        // Takes off class off all of them first
+        this.monthContainers.map(monthContainer => {
+            monthContainer.classList.remove('monthActive')
+            monthContainer.classList.remove('monthInActive')
+        })
+
+        // Then adds inactive to those that aren't selected
+        this.monthContainers.filter(monthContainer => monthContainer !== selectedMonth).map(monthContainer => {
+            monthContainer.classList.add('monthInActive')
+        })
+
+        // Adds Active to the month selected
         selectedMonth.classList.add('monthActive')
 
         // Get month Selected Info and returns info
-        let monthSelected = getMonthSelected(selectedMonth.dataset.month)
-        appointment_Details["Month"] = monthSelected.Name
+        let monthSelected = GeneralHelperMethodManager.createMonthObjectFromMonthSelected(selectedMonth.dataset.month)
+        this.appointment_Details["Month"] = monthSelected.Name
     }
 
     displayPastDaysFromSelectedMonth = async(startMonth , place) => {
