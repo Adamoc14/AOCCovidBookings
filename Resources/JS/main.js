@@ -1005,12 +1005,14 @@ const getClinicData = async() => {
 
 
 const adminClinicHomeInit = async() => {
-    const clinicData = await getClinicData()
-    await getCovidTerm()
+    
     document.querySelector('#min_age').value = covid_term.Min_Age
     document.querySelector('#min_age').dataset.id = covid_term._id
+
+
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
+    
     let year = new Date().getFullYear();
     let month = numOfmonthStartFromJan(covid_term.Month) + 1
     let date = covid_term.Date;

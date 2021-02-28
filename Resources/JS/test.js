@@ -2,7 +2,7 @@
 class AppointmentManager {
     createAppointment = async appointment_Details => {
         try {
-            const { data: Users_Appointments } = await axios.post(`${local_url}api/v1/appointments`, appointment_Details)
+            const { data: Users_Appointments } = await axios.post(`${url}api/v1/appointments`, appointment_Details)
             window.location = `userView.html?id=${Users_Appointments._id}`
             return appointment
         } catch (error) {
@@ -1144,6 +1144,12 @@ class BackendUI {
         // Deal With Tab Change On Side Of Page
         this.adminTab = "Clinic"
         ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
+
+        // Set the Min Age Textbox to be the Covid Term Min Age
+        document.querySelector('#min_age').value = this.covid_terms.Min_Age
+        document.querySelector('#min_age').dataset.id = this.covid_terms._id
+
+        // Set the Date Time Picker value
 
 
     }
