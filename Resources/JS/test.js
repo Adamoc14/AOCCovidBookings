@@ -151,6 +151,8 @@ class UIHelperMethodManager {
         )) 
     }
 
+
+
     logoutAdmin = () => {
         const logout_btn = document.querySelector('.logout')
         $(logout_btn).click(()=> {
@@ -971,8 +973,13 @@ class BackendUI {
         const print_btn = ui_helper_manager.getPrintBtns();
         ui_helper_manager.printPage(print_btn)
 
-        
-        // await checkDelete()
+
+        // Handling Delete Appointment Individual Buttons Pressed
+        ([...document.querySelectorAll('.delete')].map(delete_btn => 
+            $(delete_btn).click(e => {
+               appointments_manager.deleteAppointment(e.target.dataset.apptid , e.target.dataset.userid , "Backend")
+            })
+        ))
 
         // REVIEW: 
         // await dealWithSingleRecordPick();
@@ -1126,6 +1133,7 @@ class BackendUI {
             document.body.removeChild(a);
         } 
     }
+
         
 
     // __________________________End Of Admin Home Page functions _______________________________
