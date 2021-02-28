@@ -438,24 +438,14 @@ class FrontEndUI {
         // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
         // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
 
-        // this.appointments
-        //     .map(appointment_s => {
-        //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
-        //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-        //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("orange_disabled")
-        // })
-
-        
-
-        for(const clinicDataSingle of this.clinic_slots)
-            if(this.appointment_Details["Month"] == clinicDataSingle.Month) {
-                for (const date of clinicDataSingle.Dates)
+        for(const clinicSlot of this.clinic_slots)
+            if(this.appointment_Details["Month"] == clinicSlot.Month) {
+                for (const date of clinicSlot.Dates)
                     if (this.appointment_Details["DayDate"] == date){
-                        for (const hour of clinicDataSingle.Hours){
+                        for (const hour of clinicSlot.Hours){
                             this.timeSlotContainers
-                                .filter(appt => appt.innerHTML == hour)
+                                .filter(timeslot_container => timeslot_container.innerHTML == hour)
                                 .map(appointment_s => {
-                                    appointment_s.classList.add("original_bg_timeslot")
                                     appointment_s.classList.remove("disabled")
                                     appointment_s.classList.remove("orange_disabled")
                                 })
@@ -463,9 +453,8 @@ class FrontEndUI {
                         // REVIEW: Changed this - number of providers 27/02/2021
                         this.appointments
                             .filter(appointment => appointment.DayDate == date)
-                            .filter(appointment => appointment.Capacity.length >= parseInt(clinicDataSingle.Providers))
+                            .filter(appointment => appointment.Capacity.length >= parseInt(clinicSlot.Providers))
                             .map(appointment_s => {
-                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
                                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
                                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
                             })
