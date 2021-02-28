@@ -1073,9 +1073,13 @@ const checkDateEnd = dates => {
 
 const adminClinicAddInit = async() => {
     const clinicData = await getClinicData(),
+
     timeSlots = makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10),
+
     submit_btn = document.querySelector('.addClinicSlotBtn');
+
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
+    
     dealWithTabs()
     displayPastMonths("Clinic")
     dealWithMonths("Clinic" , clinicData)
@@ -1083,7 +1087,7 @@ const adminClinicAddInit = async() => {
     const timeSlotsContainers = displayClinicTimeslots(timeSlots)
     addClinicTimes(timeSlotsContainers)
     clinicSubmitBtnClick(submit_btn , "Post")
-    // displayMonthAndDates(clinicData)
+    displayMonthAndDates(clinicData)
 }
 
 const checkSlots = clinicData => {

@@ -173,6 +173,31 @@ class UIHelperMethodManager {
 
     dealWithAdminTabsChange = adminTab => {
         $(`.options_container h1:contains("${adminTab}")`)[0].style.background = "#fff"
+        const tabs = [...document.querySelectorAll('.options_container h1')]
+        tabs.map(tab => $(tab).click(e => {
+            if(e.target.innerHTML === "Clinic") window.location = "AdminClinicHome.html"
+            else if(e.target.innerHTML === "Appointments") window.location = "AdminHome.html"
+            tabs.filter(tab => tab != e.target).map(tab => tab.style.background = "")
+            e.target.style.background = "#fff"
+        }))
+    }
+
+    displayClinicTimeslots = timeSlots => {
+        let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
+            timeSlots = timeSlots.map(timeSlot => 
+                `<div class="timeslot_Clinic" data-time="${timeSlot}">${timeSlot}</div>`
+            ).join("")
+            timeSlotContainer.innerHTML = timeSlots
+            const timeSlotContainers = [...document.querySelectorAll('.timeslot_Clinic')]
+            return timeSlotContainers
+    }
+
+    addClinicTimes = timeSlots => {
+        timeSlots.map(timeSlot => {
+            $(timeSlot).click(e => {
+                e.target.classList.toggle('selected')
+            })
+        })
     }
 
     getDayContainersFromCalendar = () => {
@@ -1250,6 +1275,12 @@ class BackendUI {
         // Kicks off dealing with the months , days and timeslots
         this.dealWithMonthsContainers();
 
+        // Make Clinic Time Slot Containers
+        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
+        let timeslot_clinic_containers = ui_helper_manager.displayClinicTimeslots(timeSlots)
+
+        // Add Clinic Times to the Timeslot containers 
+       ui_helper_manager.addClinicTimes(timeslot_clinic_containers)
 
     }
 
