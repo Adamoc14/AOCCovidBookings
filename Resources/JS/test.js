@@ -172,8 +172,7 @@ class GeneralHelperMethodManager {
 
     // Can be used in any project
     static getQueryParamsFromURL = () => {
-        const queryParams = new URLSearchParams(window.location.search)
-        return queryParams
+        return URLSearchParams(window.location.search)
     }
     static getFormDataFromForm = form => {
         let formData = new FormData(form)
@@ -185,7 +184,7 @@ class GeneralHelperMethodManager {
 
     // Easily adopted to any project 
     static createMonthObjectFromMonthSelected = monthNo => {
-        let monthSelected = {
+        return {
             "LastDayNum": GeneralHelperMethodManager.getMonthsLastDayNumByYear(new Date().getFullYear(), Number(monthNo)),
             "WeekDayNumOfFirstDay": GeneralHelperMethodManager.getWeekDayNumFromDate(new Date().getFullYear(), Number(monthNo), 1),
             "WeekDayNameOfFirstDay": GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(GeneralHelperMethodManager.getWeekDayNumFromDate(new Date().getFullYear(), Number(monthNo), 1)),
@@ -193,15 +192,32 @@ class GeneralHelperMethodManager {
             "Name": GeneralHelperMethodManager.getNameOfTheMonthByNum(Number(monthNo)),
             "Number": monthNo
         }
-        return monthSelected
     }
     static createDayObjectFromDaySelected = target => {
-        let daySelected = {
+        return {
             "date": target.innerHTML,
             "day": target.dataset.day
         }
-        return daySelected
     }
+
+    static createDateObjectFromDatePicker = () => {
+        return {
+            Year: document.querySelector('#date_picker_input')?.value?.split("-")[0],
+            Month: document.querySelector('#date_picker_input')?.value?.split("-")[1],
+            MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1),
+            Date: document.querySelector('#date_picker_input')?.value?.split("-")[2]
+        }
+    }
+
+    static filterAppointmentsByDatePickerDetails = datePickerObjectDetails => {
+        return this.appointments.filter(appointment => parseInt(appointment.DayDate) === parseInt(datePickerObjectDetails.Date) && appointment.Month === datePickerObjectDetails.MonthName)
+    }
+
+    static retrieveRunningAppointmentsTotal = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0)
+
+    static retrieveOverallAppointmentsTotal = () => this.appointments.map(appt => appt.Capacity.length).reduce((a, b) => a + b, 0)
+
+    static sortAppointmentsBeingDisplayedByTime = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
 
     // Easily Adapted for any project using Dates, Days and Months
     static getMonthsLastDayNumByYear = (year, month) => {
@@ -854,7 +870,14 @@ class BackendUI {
         // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
         document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
 
+        // Create A Date Object From the Values in the Date Picker
+        let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
+
+        // Filter the Appointments by date Object Values 
+        let filtered_appointments_from_date_picker_values = GeneralHelperMethodManager.filterAppointmentsByDatePickerDetails(date_picker_date_object);
+
         // Display Data in Table In Relation To Date Set In Picker 
+        displayAppointmentsInTable(filtered_appointments_from_date_picker_values);
 
        // Deal With Change Of Date In Date Picker
         dealWithDateChange()
@@ -887,6 +910,44 @@ class BackendUI {
     fillValueOfPickerWithTodaysDate = () => {
         return GeneralHelperMethodManager.retrieveTodaysDate()
     }
+
+    
+
+    displayAppointmentsInTable = async filtered_appointments_from_date_picker_values => {
+
+        // Retrieve Totals For Displaying Overall Number Of Appointments and Running Totals for Appointments On Specific Day
+        const running_total = GeneralHelperMethodManager.retrieveRunningAppointmentsTotal(filtered_appointments_from_date_picker_values),
+            overall_total = GeneralHelperMethodManager.retrieveOverallAppointmentsTotal();
+
+        // Sort Appointments By Time Before Displayed
+        const appointments_sorted_by_time = GeneralHelperMethodManager.sortAppointmentsBeingDisplayedByTime(filtered_appointments_from_date_picker_values),
+        appointmentsHTML = appointments_sorted_by_time.map(appointment => {
+            if(appointment.Capacity.length >= 2) {
+                return  `  
+                    <div class="appointment_details span" data-id="${appointment._id}">
+                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
+                        ${getUserDetails(appointment.Capacity, appointment._id)}
+                    </div>
+                    `
+            } else {
+                return  `  
+                    <div class="appointment_details" data-id="${appointment._id}">
+                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
+                        ${getUserDetails(appointment.Capacity, appointment._id)}
+                    </div>
+                    `
+            }
+        }).join("");
+
+
+        document.querySelector('.main_container_m')?.insertAdjacentHTML('beforeend', appointmentsHTML)
+        document.querySelector('.numberOfUsers') ? document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${running_total}` : false
+        document.querySelector('.numberOfAppointments') ? document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overall_total}` : false
+        checkCapacity(appointments)
+        await checkDelete()
+        // await dealWithSingleRecordPick();
+    }
+
 
     dealWithDateChange  = () => {
         $(document.querySelector('#date_picker_input')).on('change', e => {
