@@ -41,10 +41,9 @@ class CovidTermsManager {
         let { data: covid_terms } = await axios.get(`${heroku_url}api/v1/covid_terms`)
         return covid_terms
     }
-    updateCovidTerms = async (SelectedDateTime) => {
+    updateCovidTerms = async (date_picker_object_value, covid_term) => {
         try {
-            await getCovidTerm()
-            await axios.put(`${heroku_url}api/v1/covid_terms/${covid_term._id}`, { "Min_Age": covid_term.Min_Age, "Month": SelectedDateTime.MonthName, "Date": SelectedDateTime.Date })
+            await axios.put(`${heroku_url}api/v1/covid_terms/${covid_term._id}`, { "Min_Age": covid_term.Min_Age, "Month": date_picker_object_value.MonthName, "Date": date_picker_object_value.Date })
         } catch (error) {
             console.log(error);
         }
@@ -238,6 +237,18 @@ class GeneralHelperMethodManager {
     static retrieveOverallAppointmentsTotal = appointments => appointments.length
 
     static sortAppointmentsBeingDisplayedByTime = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
+
+    static resettingAppointmentsDataTableBackToOnlyHeadings = () => {
+        document.querySelector('.main_container_m') ? document.querySelector('.main_container_m').innerHTML = `
+                    <div class="headings">
+                        <h4 class="container_sm">Time(inc.Date)</h4>
+                        <h4 class="container_sm">First Name(s)</h4>
+                        <h4 class="container_sm">Surname(s)</h4>
+                        <h4 class="container_sm">DOB(s)</h4>
+                        <h4 class="container_sm">PPS No(s)</h4>
+                    </div>
+            ` : null
+    }
 
     // Easily Adapted for any project using Dates, Days and Months
     static getMonthsLastDayNumByYear = (year, month) => {
@@ -890,6 +901,29 @@ class BackendUI {
         // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
         document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
 
+        // Deals With Retrieving Data Picker Values , Filtering Records By Them and Displaying Records In Table
+        this.retrieveFilterDisplayDataFromDataPicker();
+
+       // Deal With Change Of Date In Date Picker
+       $(document.querySelector('#date_picker_input')).on('change', () => {
+            this.dealWithDatePickerChangeAdminHome()
+        })
+
+        // Deal With Search In Search Bar 
+        dealWithSearch()
+        
+        // getAppointmentDataFromTable()
+        // dealWithSingleRecordPick()
+        // const print_btn = [...document.querySelectorAll('.print_btn')];
+        // printPage(print_btn)
+        // await checkDelete()
+        // await dealWithSingleRecordPick();
+
+    }
+
+    retrieveFilterDisplayDataFromDataPicker = () => {
+
+        // TODO: Put This into the update Covid terms date picker function
         // Create A Date Object From the Values in the Date Picker
         let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
 
@@ -898,19 +932,7 @@ class BackendUI {
 
         // Display Data in Table In Relation To Date Set In Picker 
         this.displayAppointmentsInTable(filtered_appointments_from_date_picker_values);
-
-       // Deal With Change Of Date In Date Picker
-        dealWithDateChange()
-
         
-        // dealWithSearch()
-        // getAppointmentDataFromTable()
-        // dealWithSingleRecordPick()
-        // const print_btn = [...document.querySelectorAll('.print_btn')];
-        // printPage(print_btn)
-        // await checkDelete()
-        // await dealWithSingleRecordPick();
-
     }
 
     fillValueOfPickerWithCovidTermDate = () => {
@@ -973,30 +995,12 @@ class BackendUI {
 
     }
 
+    dealWithDatePickerChangeAdminHome  = () => {
+        // Resetting the table back to only the headings 
+        GeneralHelperMethodManager.resettingAppointmentsDataTableBackToOnlyHeadings();
 
-    dealWithDateChange  = () => {
-        $(document.querySelector('#date_picker_input')).on('change', e => {
-
-            // 
-            document.querySelector('.main_container_m') ? document.querySelector('.main_container_m').innerHTML = `
-                    <div class="headings">
-                        <h4 class="container_sm">Time(inc.Date)</h4>
-                        <h4 class="container_sm">First Name(s)</h4>
-                        <h4 class="container_sm">Surname(s)</h4>
-                        <h4 class="container_sm">DOB(s)</h4>
-                        <h4 class="container_sm">PPS No(s)</h4>
-                    </div>
-            ` : null
-
-
-
-            // Create A Date Object From the Values in the Date Picker
-            let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
-
-
-            if(e.target.classList.contains('covid_term_update')) updateDefaultDate(SelectedDateTime);
-            displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
-        })
+        // Deals With Retrieving Data Picker Values , Filtering Records By Them and Displaying Records In Table
+        this.retrieveFilterDisplayDataFromDataPicker();
     }
 
     // __________________________End Of Admin Home Page functions _______________________________
