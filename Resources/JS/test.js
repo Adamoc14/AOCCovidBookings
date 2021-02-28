@@ -233,10 +233,9 @@ class ValidationHelperManager {
                 }
             })
         )
-        ValidationHelperManager.checkDOBOfUser();
     }
 
-    static checkDOBOfUser = () => {
+    static checkDOBOfUser = covid_term => {
         const DOB_Input = document.querySelector('.dob_container input[type=text]');
         $(DOB_Input).focusout(e => {
             new Date().getFullYear() - e.target.value.substring(6,) >= covid_term.Min_Age ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex";
@@ -245,7 +244,7 @@ class ValidationHelperManager {
 
     static isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"
 
-    static validateBookingDetails = () => {
+    static validateBookingDetails = appointment_Details => {
         return appointment_Details["Month"] !== undefined && appointment_Details["DayDate"] !== undefined && appointment_Details["Time"] !== undefined
     }
 }
@@ -254,7 +253,7 @@ class ValidationHelperManager {
 // Two Classes - One To take care of frontend and one for backend methods 
 
 class FrontEndUI {
-    constructor(appointments, covid_terms, clinic_slots) {
+    constructor(appointments, covid_terms, clinic_slots , page_location) {
 
         // Set up Global Object to add details through as we move through form
         this.appointment_Details = {};
@@ -264,11 +263,15 @@ class FrontEndUI {
         this.clinic_slots = clinic_slots;
         this.covid_terms = covid_terms[0];
 
-        // This handles all the methods for the home page
-        this.homePageInit();
+        // If Statement to identify which page we're on and what methods we need to kick off
 
-        // This handles all the methods for the userview page
-        this.userViewPageInit();
+        if(page_location === "home"){
+            this.homePageInit();
+        } else if(page_location === "userview"){
+            this.userViewPageInit();
+        } else {
+            this.editAppointmentPageInit();
+        }
 
     }
 
@@ -280,6 +283,7 @@ class FrontEndUI {
 
         // Validating and checking User Input 
         ValidationHelperManager.checkVaccineAbility();
+        ValidationHelperManager.checkDOBOfUser(this.covid_terms);
 
         // Handling create appointment button click
         this.handleCreateAppointmentBtnClick();
@@ -548,7 +552,7 @@ class FrontEndUI {
             e.preventDefault()
 
             // Checks Everythings in order with the appointment so date , time, month
-            let bookingDetailsValidated = ValidationHelperManager.validateBookingDetails()
+            let bookingDetailsValidated = ValidationHelperManager.validateBookingDetails(this.appointment_Details)
             if (!bookingDetailsValidated) {
                 alert("Please pick a valid month, date and time before progressing")
                 return
@@ -557,14 +561,14 @@ class FrontEndUI {
             // Getting the form Data and filling it to appointment_Details
             let formData = GeneralHelperMethodManager.getFormDataFromForm(form)
 
-            //if (formData.get('card_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
-            // if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
+            //if (formData.get('card_decision') === null) errorMessages.push("Please fill in PPS Number or select the medical card option above")
+            // if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errorMessages.push("Please fill in PPS Number or select the medical card option above")
             //whichCard(formData.get('card_decision'), formData)
             // whichDestination(formData.get('destination_decision'), formData)
-            if (errMessage.length !== 0) {
-                errMessage.filter((error, index) => errMessage.lastIndexOf(error) === index)
+            if (errorMessages.length !== 0) {
+                errorMessages.filter((error, index) => errorMessages.lastIndexOf(error) === index)
                     .map(error => alert(error))
-                errMessage = []
+                errorMessages = []
                 return
             }
 
@@ -593,7 +597,7 @@ class FrontEndUI {
         let modal = this.fillinModalDetails()
         document.querySelector('.appointment_made_modal') ? document.querySelector('.appointment_made_modal').innerHTML = modal : null
         document.querySelector('.appointment_made_modal') ? document.querySelector('.appointment_made_modal').classList.add('displayAppointmentMadeModalBlock') : null
-        cancelModal(document.querySelector('.appointment_made_modal'))
+        this.cancelModal(document.querySelector('.appointment_made_modal'))
     }
 
     fillinModalDetails = () => {
@@ -701,13 +705,17 @@ class FrontEndUI {
         ui_helper_manager.printPage(print_btns);
     }
 
-
-
-
-
-
-
     // __________________________End Of UserView Page functions _______________________________
+
+    // __________________________Start Of Edit Page functions _______________________________
+
+    editAppointmentPageInit = () => {
+        // Kicks off dealing with the months , days and timeslots
+        this.dealWithMonthsContainers();
+    }
+    
+
+    // __________________________End Of Edit Page functions _______________________________
 
 
 }
@@ -726,7 +734,7 @@ class BackendUI {
 
 // Overall Initialization Method
 
-const covidWebAppInit = async user_location => {
+const covidWebAppInit = async (user_location, page_location) => {
     const appointments = await appointments_manager.readAllAppointments(),
         clinic_slots = await clinic_manager.readAllClinicSlots(),
         covid_terms = await covid_terms_manager.readAllCovidTerms();
@@ -734,7 +742,7 @@ const covidWebAppInit = async user_location => {
     // TODO: Need to get the Users in here through the read all Users Endpoint
     const users = [];
 
-    if (user_location === "Client") new FrontEndUI(appointments, covid_terms, clinic_slots);
+    if (user_location === "Client") new FrontEndUI(appointments, covid_terms, clinic_slots, page_location);
     else new BackendUI(appointments, covid_terms, clinic_slots, users);
 }
 
@@ -742,6 +750,7 @@ const covidWebAppInit = async user_location => {
 // Global Variable Declarations, Class and Function Definitions
 const local_url = "http://localhost:8000/",
     heroku_url = "https://whmc-covid-server.herokuapp.com/",
+    errorMessages = [],
     appointments_manager = new AppointmentManager(),
     covid_terms_manager = new CovidTermsManager(),
     user_manager = new UserManager(),
@@ -753,10 +762,16 @@ const local_url = "http://localhost:8000/",
 $(document).ready(() => {
     switch (true) {
         case (/(?:^|\W)index(?:$|\W)/).test(window.location.pathname.toLowerCase()) || (/(?:^|\W)\/(?:$|\W)/).test(window.location.pathname.toLowerCase()):
+            // Web App Initialization
+            covidWebAppInit("Client" , "home")
+            break
         case (/(?:^|\W)edit(?:$|\W)/).test(window.location.pathname.toLowerCase()):
+            // Web App Initialization
+            covidWebAppInit("Client" , "edit")
+            break
         case (/(?:^|\W)userview(?:$|\W)/).test(window.location.pathname.toLowerCase()):
             // Web App Initialization
-            covidWebAppInit("Client")
+            covidWebAppInit("Client", "userview")
             break
         case (/(?:^|\W)adminhome(?:$|\W)/).test(window.location.pathname.toLowerCase()):
         case (/(?:^|\W)adminlogin(?:$|\W)/).test(window.location.pathname.toLowerCase()):
