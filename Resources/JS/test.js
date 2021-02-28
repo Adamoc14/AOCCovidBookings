@@ -116,6 +116,22 @@ class UIHelperMethodManager {
     getMonthContainers = () => {
         return [...document.querySelectorAll('.month')];
     }
+    getTimeSlotContainers = () => {
+        return [...document.querySelectorAll('.timeslot')]
+    }
+    makeTimeslots = (startTime, timeSlots , interval) => {
+        let completed = false
+        timeSlots.push(`${startTime.hours()}:${startTime.minutes()}`)
+        if(!completed){
+            if(startTime.hours() === 19 && startTime.minutes() === 30){
+                completed = true 
+                return [...timeSlots]
+            } else {
+                if (Array.isArray(makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval))) return timeSlots
+                timeSlots.push(makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval ))
+            }
+        }
+    }
 }
 
 class GeneralHelperMethodManager {
@@ -223,7 +239,7 @@ class FrontEndUI {
         // Get the Month Containers
         this.monthContainers = ui_helper_manager.getMonthContainers();
 
-        // Display the past months from a certain month
+        // REVIEW: Display the past months from a certain month
         this.displayPastMonthsFromCovidTermMonth()
 
         // Get the month selected from page from monthContainers
@@ -270,14 +286,22 @@ class FrontEndUI {
         this.monthSelected = GeneralHelperMethodManager.createMonthObjectFromMonthSelected(selectedMonth.dataset.month)
         this.appointment_Details["Month"] = this.monthSelected.Name
 
+        // Move Program Onto the Day Containers and Deal with them 
+        this.dealWithDayContainers();
+
+    }
+
+    dealWithDayContainers = () => {
+
         // Fill Days Into Calendar Using Month Selected Data
         this.fillDaysIntoCalendarUsingMonthSelectedData()
 
-        // if (monthSelected.Name === nameOfMonth(new Date().getMonth())){
-        //     displayDaysIrrelevant(days, new Date().getDate())
-        // } else {
-        //     displayDaysIrrelevant(days)
-        // }
+        // Get the day selected from page from dayContainers
+        this.dayContainers.map(dayContainer => 
+            $(dayContainer).click( e => {
+                this.dealWithClickOnDay(e.target);
+            })
+        )
     }
 
     fillDaysIntoCalendarUsingMonthSelectedData = () => {
@@ -320,13 +344,8 @@ class FrontEndUI {
         // Get Todays Date and disabling dates behind this date
         let dayToday = new Date().getDate();
         if(dayToday !== null) {
-            this.dayContainers.filter(dayContainer => dayContainer.innerHTML < dayToday).map(dayContainer => dayContainer.classList.add('disabled'))
+            this.dayContainers.filter(dayContainer => Number(dayContainer.innerHTML) < dayToday).map(dayContainer => dayContainer.classList.add('disabled'))
         }
-
-        // if (place === "Clinic")addClinicDays(days)
-        // else dealWithDays(days)
-        
-        // displayDaysIrrelevant(days , dayStarted)
     }
 
     displayPastDaysFromCovidTermDate = () => {
@@ -346,6 +365,103 @@ class FrontEndUI {
             dayContainer.classList.add('sundayDisabled')
             dayContainer.classList.add('disabled')
         })
+    }
+
+    dealWithClickOnDay = selectedDay => {
+        // Styles the day selected and ones that aren't accordingly
+
+        // Takes off class off all of them first
+        this.dayContainers.map(dayContainer => {
+            dayContainer.classList.remove('dayActive')
+            dayContainer.classList.remove('dayInActive')
+        })
+
+        // Then adds inactive to those that aren't selected
+        this.dayContainers.filter(dayContainer => dayContainer !== selectedDay).map(dayContainer => {
+            dayContainer.classList.add('dayInActive')
+        })
+
+        // Adds Active to the day that is selected
+        selectedDay.classList.add('dayActive')
+
+        // Get day Selected Object and leaves it as a class variable for use in other methods
+        this.daySelected = GeneralHelperMethodManager.createDayObjectFromDaySelected(selectedMonth)
+        this.appointment_Details["DayName"] = this.daySelected.day
+        this.appointment_Details["DayDate"] = this.daySelected.date
+
+        // Move Program Onto the Time Containers and Deal with them 
+        this.dealWithTimeContainers();
+    }
+
+    dealWithTimeContainers = () => {
+        
+        // Make the Timeslot Containers
+        let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10)
+
+        // Display the Timeslot Containers
+        this.fillInTimeslotContainers(timeSlots)
+
+        // Get the Timeslot Containers and leave equal to a class variable 
+        this.timeSlotContainers = ui_helper_manager.getTimeSlotContainers()
+
+        // Check their times against Clinic Hours and Capacity
+        this.checkTimeslotsAgainstClinicPreferences()
+        // checkTime(new Date().getHours())
+        
+
+        // Deal With TimeSlot Click 
+        
+
+
+    }
+
+    fillInTimeslotContainers = timeSlots => {
+
+        // Make the actual Time Slot Containers 
+        const timeSlotContainers;
+        document.querySelector('.time_slot_container_m') ? document.querySelector('.time_slot_container_m')?.classList.add('displayTimeSlotBlock') : null
+        timeSlotContainers = timeSlots.map(timeSlot => 
+            `<div class="timeslot" data-time="${timeSlot}">${timeSlot}</div>`
+        ).join("")
+        document.querySelector('.time_slot_container') ? document.querySelector('.time_slot_container')?.innerHTML = timeSlotContainers : null
+
+    }
+
+    checkTimeslotsAgainstClinicPreferences = () => {
+        // This just checks if the date picked is within the date slots that the clinic picks
+        // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
+        // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
+        appointments_Saved
+            .map(appointment_s => {
+                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
+                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("orange_disabled")
+        })
+        for(clinicDataSingle of clinic_Data)
+            if(appointment_Details["Month"] == clinicDataSingle.Month) {
+                timeslotsContainers = this.timeSlotContainers
+                for (date of clinicDataSingle.Dates)
+                    if (appointment_Details["DayDate"] == date){
+                        for (hour of clinicDataSingle.Hours){
+                            this.timeSlotContainers
+                                .filter(appt => appt.innerHTML == hour)
+                                .map(appointment_s => {
+                                    appointment_s.classList.add("original_bg_timeslot")
+                                    appointment_s.classList.remove("disabled")
+                                    appointment_s.classList.remove("orange_disabled")
+                                })
+                        }
+                        // REVIEW: Changed this - number of providers 27/02/2021
+                        appointments_Saved
+                            .filter(appointment => appointment.DayDate == date)
+                            .filter(appointment => appointment.Capacity.length >= parseInt(clinicDataSingle.Providers))
+                            .map(appointment_s => {
+                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
+                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
+                            })
+                    } 
+            } 
     }
 
 }
