@@ -133,10 +133,21 @@ class UIHelperMethodManager {
             }
         }
     }
+
     printPage = print_buttons => {
-        print_buttons.map(print_button => $(print_button).click(() => {
-            window.print()
-        })) 
+        print_buttons.map(print_button => 
+            $(print_button).click(() => {
+                window.print()
+            }
+        )) 
+    }
+
+    logoutAdmin = () => {
+        const logout_btn = document.querySelector('.logout')
+        $(logout_btn).click(()=> {
+            sessionStorage.removeItem("Admin");
+            window.location = "AdminLogin.html"
+        })
     }
     getDayContainersFromCalendar = () => {
         return [...document.querySelectorAll('.day')];
@@ -254,6 +265,8 @@ class ValidationHelperManager {
 
     static isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"
 
+    static isAdminLoggedIn = () =>  sessionStorage.getItem('AdminLoggedIn') ? null : window.location = "AdminLogin.html"
+    
     static validateBookingDetails = appointment_Details => {
         return appointment_Details["Month"] !== undefined && appointment_Details["DayDate"] !== undefined && appointment_Details["Time"] !== undefined
     }
@@ -802,10 +815,12 @@ class BackendUI {
                 alert("Your username or password is invalid")
                 return
             }
-            sessionStorage.setItem("Admin", "LoggedIn");
+            sessionStorage.setItem("AdminLoggedIn", true);
             window.location = "adminHome.html"
         })
     }
+
+
 
     
 
@@ -814,6 +829,13 @@ class BackendUI {
 
 
     // __________________________Start Of Admin Home Page functions _______________________________
+
+    adminHomePageInit = () => {
+
+        // Checking whether admin is logged in or not first
+        ValidationHelperManager.isAdminLoggedIn()
+
+    }
 
 
 
