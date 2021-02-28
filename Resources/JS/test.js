@@ -123,6 +123,11 @@ class UIHelperMethodManager {
             }
         }
     }
+    printPage = print_buttons => {
+        print_buttons.map(print_button => $(print_button).click(() => {
+            window.print()
+        })) 
+    }
     getDayContainersFromCalendar = () => {
         return [...document.querySelectorAll('.day')];
     }
@@ -632,13 +637,12 @@ class FrontEndUI {
     // __________________________Start Of UserView Page functions _______________________________
 
     userViewPageInit = () => {
-
-
+        // Display the Single Appointment User View 
+        this.displaySingleAppointmentUserView();
 
     }
 
-    displayUserView = async() => {
-
+    displaySingleAppointmentUserView = async() => {
         // This part up here is just creating the single appointment display container view 
         const apptContainer = document.querySelector('.appointment_display_container_inner'),
         id = GeneralHelperMethodManager.getQueryParamsFromURL().get("id"),
@@ -694,7 +698,7 @@ class FrontEndUI {
 
     handlePrintBtnUserViewClick = () => {
         const print_btns = ui_helper_manager.getPrintBtns();
-        printPage(print_btns)
+        ui_helper_manager.printPage(print_btns);
     }
 
 
