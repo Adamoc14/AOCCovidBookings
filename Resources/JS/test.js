@@ -17,7 +17,7 @@ class AppointmentManager {
         let appt = await axios.get(`${heroku_url}api/v1/appointments/appt/${apptId}`)
         return appt
     }
-    updateAppointment = async (appt_id) => {
+    updateAppointment = async (appt_id, appointment_Details) => {
         try {
             const { data: Users_Appointments } = await axios.put(`${heroku_url}api/v1/appointments/${appt_id}`, appointment_Details)
             window.location = `userView.html?id=${Users_Appointments._id}`
@@ -53,10 +53,19 @@ class CovidTermsManager {
 
 // TODO: Need to set up User Api Endpoints 
 class UserManager {
-    readSingleUserRecord = async userId => {
-        let users = await axios.get(`${heroku_url}api/v1/appointments/details/${userId}`)
+    readAllUsers = async() => {
+        let{data: users} = await axios.get(`${heroku_url}api/v1/users`)
+        return users
+    }
+    readSingleUserById = async userId => {
+        let user = await axios.get(`${heroku_url}api/v1/users/${userId}`)
+        return user
+    }
+    readMultipleUsersByIds = async userIds => {
+        let users = await axios.get(`${heroku_url}api/v1/users/details/${userIds}`)
         return users;
     }
+
 }
 
 class ClinicManager {
@@ -650,8 +659,8 @@ class FrontEndUI {
         // This part up here is just creating the single appointment display container view 
         const apptContainer = document.querySelector('.appointment_display_container_inner'),
         id = GeneralHelperMethodManager.getQueryParamsFromURL().get("id"),
-        single_appointment_by_id = await appointments_manager.readSingleAppointmentById(id)
-        appointmentsData = single_appointment_by_id.Appointments.map(appt =>  
+        {data: single_user_by_id} = await user_manager.readSingleUserById(id),
+        appointmentsData = single_user_by_id.Appointments.map(appt =>  
             `<div class="appointment_container">
                 <div class="first_container">
                     <div class="date_square">
@@ -660,10 +669,10 @@ class FrontEndUI {
                     </div>
                     <div class="user_details_container">
                         <div class="name_container">
-                            <h2>Name: ${single_appointment_by_id.firstName} ${single_appointment_by_id.Surname}</h2>
+                            <h2>Name: ${single_user_by_id.firstName} ${single_user_by_id.Surname}</h2>
                         </div>
                         <div class="dob_container">
-                            <h2>DOB: ${single_appointment_by_id.DOB}</h2>
+                            <h2>DOB: ${single_user_by_id.DOB}</h2>
                         </div>
                     </div>
                 </div>
@@ -677,7 +686,7 @@ class FrontEndUI {
                         </div>
                     </div>
                     <div class="buttons_container">
-                        <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${single_appointment_by_id._id}">Edit</a>
+                        <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${single_user_by_id._id}">Edit</a>
                         <div class="delete_btn action_btn" data-appt="${appt._id}">Cancel</div>
                     </div>
                 </div>
@@ -687,16 +696,16 @@ class FrontEndUI {
         apptContainer?.insertAdjacentHTML('beforeend',appointmentsData)
 
         // Handling the delete page btn click 
-        this.handleDeleteBtnUserViewClick();
+        this.handleDeleteBtnUserViewClick(single_user_by_id);
         
         // Handling the userview page print btn click 
         this.handlePrintBtnUserViewClick();
     }
 
-    handleDeleteBtnUserViewClick = () => {
+    handleDeleteBtnUserViewClick = single_user_by_id => {
         $(document.querySelector('.delete_btn')).click(e => {
             e.preventDefault();
-            appointments_manager.deleteAppointment(e.currentTarget.dataset.appt , single_appointment_by_id._id, "Client")
+            appointments_manager.deleteAppointment(e.currentTarget.dataset.appt , single_user_by_id._id, "Client")
         })
     }
 
@@ -712,8 +721,30 @@ class FrontEndUI {
     editAppointmentPageInit = () => {
         // Kicks off dealing with the months , days and timeslots
         this.dealWithMonthsContainers();
+
+        // Deals with the submitting of the edit page form 
+        this.dealWithFormUpdateEditPage();
     }
-    
+
+    dealWithFormUpdateEditPage = () => {
+        const formUpdate = document.querySelector('.form_Update'),
+            user_id = GeneralHelperMethodManager.getQueryParamsFromURL().get("userId"),
+            appointment_id = GeneralHelperMethodManager.getQueryParamsFromURL().get("id");
+
+        $(formUpdate).submit(e => {
+
+            e.preventDefault()
+
+            let bookingDetailsValidated = ValidationHelperManager.validateBookingDetails(this.appointment_Details)
+            if (!bookingDetailsValidated) {
+                alert("Please pick a valid month, date and time before progressing")
+                return
+            }
+
+            this.appointment_Details["userId"] = user_id
+            appointments_manager.updateAppointment(appointment_id, this.appointment_Details)
+        })
+    }
 
     // __________________________End Of Edit Page functions _______________________________
 
