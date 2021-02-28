@@ -404,6 +404,12 @@ class FrontEndUI {
         // Get the Timeslot Containers and leave equal to a class variable 
         this.timeSlotContainers = ui_helper_manager.getTimeSlotContainers()
 
+        // Making them all orange and disabled first and then will check against the appointments
+        this.timeSlotContainers.map(timeslot_container => {
+            timeslot_container.classList.add('disabled')
+            timeslot_container.classList.add('orange_disabled')
+        })
+
         // Check their times against Clinic Hours and Capacity
         this.checkTimeslotsAgainstClinicPreferences()
         // checkTime(new Date().getHours())
@@ -431,17 +437,21 @@ class FrontEndUI {
         // This just checks if the date picked is within the date slots that the clinic picks
         // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
         // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
-        this.appointments
-            .map(appointment_s => {
-                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
-                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("orange_disabled")
-        })
+
+        // this.appointments
+        //     .map(appointment_s => {
+        //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
+        //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+        //         document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("orange_disabled")
+        // })
+
+        
+
         for(const clinicDataSingle of this.clinic_slots)
             if(this.appointment_Details["Month"] == clinicDataSingle.Month) {
-                for (date of clinicDataSingle.Dates)
+                for (const date of clinicDataSingle.Dates)
                     if (this.appointment_Details["DayDate"] == date){
-                        for (hour of clinicDataSingle.Hours){
+                        for (const hour of clinicDataSingle.Hours){
                             this.timeSlotContainers
                                 .filter(appt => appt.innerHTML == hour)
                                 .map(appointment_s => {
