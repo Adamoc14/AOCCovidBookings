@@ -215,6 +215,29 @@ class GeneralHelperMethodManager {
     }
 }
 
+class ValidationHelperManager {
+    static checkVaccineAbility = () => {
+        const vaccine_deciders = [...document.querySelectorAll('.vaccine_decider')];
+        vaccine_deciders.map(vaccine_decider => 
+            $(vaccine_decider).click(e => {
+                if(e.target.value === "Yes"){
+                    document.querySelector('.blocking_form_modal_outer').style.display = "flex";
+                }
+            })
+        )
+        ValidationHelperManager.checkDOBOfUser();
+    }
+
+    static checkDOBOfUser = () => {
+        const DOB_Input = document.querySelector('.dob_container input[type=text]');
+        $(DOB_Input).focusout(e => {
+            new Date().getFullYear() - e.target.value.substring(6,) >= covid_term.Min_Age ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex"; 
+        })
+    }
+
+    static isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"
+}
+
 
 // Two Classes - One To take care of frontend and one for backend methods 
 
@@ -229,8 +252,11 @@ class FrontEndUI {
         this.clinic_slots = clinic_slots;
         this.covid_terms = covid_terms[0];
 
-
+        // Kicks off dealing with the months , days and timeslots
         this.dealWithMonthsContainers();
+
+        // Validating and checking User Input 
+        ValidationHelperManager.checkVaccineAbility(); 
 
     }
 
@@ -481,7 +507,16 @@ class FrontEndUI {
 
         // Adds Active to the time that is selected
         selectedTime.classList.add('timeSlotActive')
+
+        // Get day Selected Object and leaves it as a class variable for use in other methods
+         this.timeSelected = selectedTime.innerHTML
+         this.appointment_Details["Time"] = this.timeSelected
+        
+        // Move Program on now to Submitting the form and validation
+
     }
+
+
 
 }
 
