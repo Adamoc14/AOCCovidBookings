@@ -7,3 +7,11 @@
     background: aliceblue;
     color: black;
 }
+
+.displayCalendarBlock{
+    display: block;
+}
+
+.sundayDisabled{
+    background: orange;
+}

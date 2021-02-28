@@ -246,8 +246,6 @@ class FrontEndUI {
         let covid_term_month = this.covid_terms.Month
         this.monthContainers.filter(monthContainer => monthContainer.dataset.month < GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)).map(monthContainer => monthContainer.classList.add('disabled'))
         document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`) ? document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`).classList.add('monthActive') : null
-        // displayPastDays(months, document.querySelector(`.month[data-month="${monthToday}"]`), place)
-
     }
 
     dealWithClickOnMonth = selectedMonth => {
@@ -268,22 +266,86 @@ class FrontEndUI {
         // Adds Active to the month that is selected
         selectedMonth.classList.add('monthActive')
 
-        // Get month Selected Info and returns info
-        let monthSelected = GeneralHelperMethodManager.createMonthObjectFromMonthSelected(selectedMonth.dataset.month)
-        this.appointment_Details["Month"] = monthSelected.Name
+        // Get month Selected Object and leaves it as a class variable for use in other methods
+        this.monthSelected = GeneralHelperMethodManager.createMonthObjectFromMonthSelected(selectedMonth.dataset.month)
+        this.appointment_Details["Month"] = this.monthSelected.Name
+
+        // Fill Days Into Calendar Using Month Selected Data
+        this.fillDaysIntoCalendarUsingMonthSelectedData()
+
+        // if (monthSelected.Name === nameOfMonth(new Date().getMonth())){
+        //     displayDaysIrrelevant(days, new Date().getDate())
+        // } else {
+        //     displayDaysIrrelevant(days)
+        // }
     }
 
-    displayPastDaysFromSelectedMonth = async(startMonth , place) => {
-        // Get month Selected Info , adds it to appointment details
+    fillDaysIntoCalendarUsingMonthSelectedData = () => {
         
-    
-        // Display Calendar and Days That are closed
-        let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name),
-            dayStarted = new Date().getDate();
-        if (place === "Clinic")addClinicDays(days)
-        else dealWithDays(days)
+        // Making the actual calendar in these lines
+        document.querySelector('.calendar_container_m') ? document.querySelector('.calendar_container_m')?.classList?.add('displayCalendarBlock') : null
+        let daysOfWeek = `
+                <h3 class= "dayOfWeek">Monday</h3>
+                <h3 class= "dayOfWeek">Tuesday</h3>
+                <h3 class= "dayOfWeek">Wednesday</h3>
+                <h3 class= "dayOfWeek">Thursday</h3>
+                <h3 class= "dayOfWeek">Friday</h3>
+                <h3 class= "dayOfWeek">Saturday</h3>
+                <h3 class= "dayOfWeek">Sunday</h3>
+            `,
+            margin = ``,
+            numberOfDays;
+        if(this.monthSelected.WeekDayNameOfFirstDay !== "Monday") margin = `<div class="margin"></div>`
+        numberOfDays = this.monthSelected.NumOfDays.map(day => {
+            let dayOfWeek = GeneralHelperMethodManager.getWeekDayNumFromDate(new Date().getFullYear(), this.monthSelected.Number, day)
+                dayOfWeek = GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(dayOfWeek);
+            return `<div class="day" data-day= "${dayOfWeek}" data-month="${this.monthSelected.Name}">${day}</div>`
+        }).join("")
+        document.querySelector('.calendar_container') ? document.querySelector('.calendar_container').innerHTML= daysOfWeek + margin + numberOfDays : null
         
-        displayDaysIrrelevant(days , dayStarted)
+        // Get the margin between first day based on name of day it is
+        ui_helper_manager.getSpanAmountByFirstDayOfMonth(this.monthSelected.WeekDayNameOfFirstDay)
+
+        // Get the Day Containers
+        this.dayContainers = ui_helper_manager.getDayContainersFromCalendar();
+
+        // REVIEW: Display Irrelevant Days - Past Days From Certain Date and Sundays
+        this.displayPastDaysFromCovidTermDate()
+
+        
+    }
+
+    displayPastDaysFromDateNow = () => {
+
+        // Get Todays Date and disabling dates behind this date
+        let dayToday = new Date().getDate();
+        if(dayToday !== null) {
+            this.dayContainers.filter(dayContainer => dayContainer.innerHTML < dayToday).map(dayContainer => dayContainer.classList.add('disabled'))
+        }
+
+        // if (place === "Clinic")addClinicDays(days)
+        // else dealWithDays(days)
+        
+        // displayDaysIrrelevant(days , dayStarted)
+    }
+
+    displayPastDaysFromCovidTermDate = () => {
+
+        // NOTE: Number(this.covid_terms.Date).toString())
+        // NOTE: Cool little trick I did here, when dealing with a string that has a 0 in it like the covid_term_date does "04",
+        // NOTE: Turn the String into a number with Number("04") which makes it 4 then back into a String which makes it "4"
+        
+        // Get The Covid Terms Date and disabling dates behind this date
+        if(this.covid_terms.Date !== null) {
+            this.dayContainers.filter(dayContainer => Number(dayContainer.innerHTML) < Number(this.covid_terms.Date)).map(dayContainer => dayContainer.classList.add('disabled'))
+        }
+    }
+
+    disableSundaysFromDaysCalendar = () => {
+        this.dayContainers.filter(dayContainer => dayContainer.dataset.day === "Sunday").map(dayContainer => {
+            dayContainer.classList.add('sundayDisabled')
+            dayContainer.classList.add('disabled')
+        })
     }
 
 }
