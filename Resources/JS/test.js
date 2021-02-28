@@ -134,6 +134,16 @@ class UIHelperMethodManager {
         }
     }
 
+    checkCapacityForTableFormattingProperly = appointments => {
+        appointments.map(appointment => {
+            if(appointment.Capacity.length >= 2){
+                $('.span').css('grid-template-rows', `repeat(${appointment.Capacity.length},1fr)`);
+                [...document.querySelectorAll('.time')]
+                .map(time => $(time).css('grid-row', `span ${time.dataset.capacity}`))
+            }
+        })      
+    }
+
     printPage = print_buttons => {
         print_buttons.map(print_button => 
             $(print_button).click(() => {
@@ -148,6 +158,16 @@ class UIHelperMethodManager {
             sessionStorage.removeItem("Admin");
             window.location = "AdminLogin.html"
         })
+    }
+
+    makeTableRowFromUserDetailsAdminHomePage = (userDetails, appID) => {
+        return userDetails.map(user => 
+        `   <h4 class="container_sm">${user.firstName}</h4>
+            <h4 class="container_sm">${user.Surname}</h4> 
+            <h4 class="container_sm">${user.DOB}</h4>
+            <h4 class="container_sm">${user.PPS_Number}</h4>
+            <h4 class="delete" data-userID="${user._id}" data-apptID="${appID}">X</h4>
+        `).join("")
     }
 
     dealWithAdminTabsChange = adminTab => {
@@ -204,18 +224,18 @@ class GeneralHelperMethodManager {
         return {
             Year: document.querySelector('#date_picker_input')?.value?.split("-")[0],
             Month: document.querySelector('#date_picker_input')?.value?.split("-")[1],
-            MonthName: nameOfMonth(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1),
+            MonthName: GeneralHelperMethodManager.getNameOfTheMonthByNum(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1])),
             Date: document.querySelector('#date_picker_input')?.value?.split("-")[2]
         }
     }
 
-    static filterAppointmentsByDatePickerDetails = datePickerObjectDetails => {
-        return this.appointments.filter(appointment => parseInt(appointment.DayDate) === parseInt(datePickerObjectDetails.Date) && appointment.Month === datePickerObjectDetails.MonthName)
+    static filterAppointmentsByDatePickerDetails = (appointments , datePickerObjectDetails) => {
+        return appointments.filter(appointment => parseInt(appointment.DayDate) === parseInt(datePickerObjectDetails.Date) && appointment.Month === datePickerObjectDetails.MonthName)
     }
 
     static retrieveRunningAppointmentsTotal = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0)
 
-    static retrieveOverallAppointmentsTotal = () => this.appointments.map(appt => appt.Capacity.length).reduce((a, b) => a + b, 0)
+    static retrieveOverallAppointmentsTotal = appointments => appointments.length
 
     static sortAppointmentsBeingDisplayedByTime = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
 
@@ -269,7 +289,7 @@ class GeneralHelperMethodManager {
         return number < 10 ? `0${number}` : `${number}`
     }
 
-    static retrieveTodaysDate = () =>  moment().format(moment.HTML5_FMT.DATETIME_LOCAL).toString()
+    static retrieveTodaysDate = () =>  moment().format(moment.HTML5_FMT.DATE).toString()
 }
 
 class ValidationHelperManager {
@@ -874,22 +894,22 @@ class BackendUI {
         let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
 
         // Filter the Appointments by date Object Values 
-        let filtered_appointments_from_date_picker_values = GeneralHelperMethodManager.filterAppointmentsByDatePickerDetails(date_picker_date_object);
+        let filtered_appointments_from_date_picker_values = GeneralHelperMethodManager.filterAppointmentsByDatePickerDetails(this.appointments, date_picker_date_object);
 
         // Display Data in Table In Relation To Date Set In Picker 
-        displayAppointmentsInTable(filtered_appointments_from_date_picker_values);
+        this.displayAppointmentsInTable(filtered_appointments_from_date_picker_values);
 
        // Deal With Change Of Date In Date Picker
         dealWithDateChange()
 
-        // const SelectedDateTime = getDateTime()
         
         // dealWithSearch()
         // getAppointmentDataFromTable()
-        // // dealWithSingleRecordPick()
+        // dealWithSingleRecordPick()
         // const print_btn = [...document.querySelectorAll('.print_btn')];
         // printPage(print_btn)
-        
+        // await checkDelete()
+        // await dealWithSingleRecordPick();
 
     }
 
@@ -911,13 +931,11 @@ class BackendUI {
         return GeneralHelperMethodManager.retrieveTodaysDate()
     }
 
-    
-
     displayAppointmentsInTable = async filtered_appointments_from_date_picker_values => {
 
         // Retrieve Totals For Displaying Overall Number Of Appointments and Running Totals for Appointments On Specific Day
-        const running_total = GeneralHelperMethodManager.retrieveRunningAppointmentsTotal(filtered_appointments_from_date_picker_values),
-            overall_total = GeneralHelperMethodManager.retrieveOverallAppointmentsTotal();
+        const running_number_of_patients_total = GeneralHelperMethodManager.retrieveRunningAppointmentsTotal(filtered_appointments_from_date_picker_values),
+            overall__number_of_appointments_total = GeneralHelperMethodManager.retrieveOverallAppointmentsTotal(this.appointments);
 
         // Sort Appointments By Time Before Displayed
         const appointments_sorted_by_time = GeneralHelperMethodManager.sortAppointmentsBeingDisplayedByTime(filtered_appointments_from_date_picker_values),
@@ -925,27 +943,34 @@ class BackendUI {
             if(appointment.Capacity.length >= 2) {
                 return  `  
                     <div class="appointment_details span" data-id="${appointment._id}">
-                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
-                        ${getUserDetails(appointment.Capacity, appointment._id)}
+                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${GeneralHelperMethodManager.getNumOfTheMonthByName(appointment.Month)}</little>${appointment.Time}</h3>
+                        ${ui_helper_manager.makeTableRowFromUserDetailsAdminHomePage(appointment.Capacity, appointment._id)}
                     </div>
                     `
             } else {
                 return  `  
                     <div class="appointment_details" data-id="${appointment._id}">
-                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${numOfmonth(appointment.Month)}</little>${appointment.Time}</h3>
-                        ${getUserDetails(appointment.Capacity, appointment._id)}
+                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${GeneralHelperMethodManager.getNumOfTheMonthByName(appointment.Month)}</little>${appointment.Time}</h3>
+                        ${ui_helper_manager.makeTableRowFromUserDetailsAdminHomePage(appointment.Capacity, appointment._id)}
                     </div>
                     `
             }
         }).join("");
 
 
+        /**
+         * Display Our Data Here  
+         * - Overall No Of Appts, 
+         * - Running Total Of Appts For Day Specified, 
+         * - Table With All Appointments for Day Specified
+         */ 
         document.querySelector('.main_container_m')?.insertAdjacentHTML('beforeend', appointmentsHTML)
-        document.querySelector('.numberOfUsers') ? document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${running_total}` : false
-        document.querySelector('.numberOfAppointments') ? document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overall_total}` : false
-        checkCapacity(appointments)
-        await checkDelete()
-        // await dealWithSingleRecordPick();
+        document.querySelector('.numberOfUsers') ? document.querySelector('.numberOfUsers').innerHTML = `Number Of Patients: ${running_number_of_patients_total}` : false
+        document.querySelector('.numberOfAppointments') ? document.querySelector('.numberOfAppointments').innerHTML = `Overall No. Of Appointments: ${overall__number_of_appointments_total}` : false
+        
+        // Checking Capacity of Appointment for Table Formatting
+        ui_helper_manager.checkCapacityForTableFormattingProperly(filtered_appointments_from_date_picker_values)
+
     }
 
 
@@ -964,8 +989,12 @@ class BackendUI {
             ` : null
 
 
-            const SelectedDateTime = getDateTime()
-            if(e.target.id === "default_date_picker_input") updateDefaultDate(SelectedDateTime);
+
+            // Create A Date Object From the Values in the Date Picker
+            let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
+
+
+            if(e.target.classList.contains('covid_term_update')) updateDefaultDate(SelectedDateTime);
             displayData(filterSavedAppointments(appointments_Saved, SelectedDateTime))
         })
     }
