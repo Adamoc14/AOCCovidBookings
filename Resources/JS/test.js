@@ -967,8 +967,10 @@ class BackendUI {
             this.dealWithCSVButtonClickAdminHome();
         })
 
-        // const print_btn = [...document.querySelectorAll('.print_btn')];
-        // printPage(print_btn)
+        // Deal With Print Button Pressed
+        const print_btn = ui_helper_manager.getPrintBtns();
+        ui_helper_manager.printPage(print_btn)
+
         // await checkDelete()
         // await dealWithSingleRecordPick();
 
