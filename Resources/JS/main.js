@@ -292,9 +292,9 @@ const fillinModalDetails = appointment_made_details => {
 }
 
 
-
+// DWT
 const makeRequest = () => {
-    return axios.post(`${url}api/v1/appointments`, appointment_Details)
+    return axios.post(`${local_url}api/v1/appointments`, appointment_Details)
 }
 
 const whichCard = (value , formData) => {
@@ -318,6 +318,7 @@ const whichDestination = (value , formData) => {
     }
 }
 
+// DWT
 const getFormData = form => {
     let formData = new FormData(form)
     return formData
@@ -1224,18 +1225,6 @@ let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
     return timeSlotContainers
 }
 
-// const displayCurrentPickedSlots = (clinicData, timeSlotContainers) => {
-//     for(const clinicDataSingle of clinicData){
-//         clinicDataSingle.Hours.map(hour => {$(`.timeslot_Clinic:contains(${hour})`)[0].style.background = "orange"})
-//         document.querySelector('#providers_input').value = clinicDataSingle.Providers
-//     }
-//     timeSlotContainers.map(timeslot => timeslot.classList.add('disabled'))
-//     document.querySelector('#providers_input').classList.add('disabled')
-    
-// }
-
-
-
 
 
 // Helper Functions
@@ -1252,6 +1241,8 @@ const getWeekDayNum = (year, month, day) => {
     return new Date(year, month, day).getDay()
 }
 
+
+//This is UI 
 const getDayContainers = () => {
     return days = [...document.querySelectorAll('.day')];
 }
@@ -1273,8 +1264,8 @@ const numOfmonth = month => {
         "July": 7,
         "August": 8,
         "September": 9,
-"October": 10,
-"November": 11
+        "October": 10,
+        "November": 11
     }
     return months[month]
 }
@@ -1327,15 +1318,6 @@ const getSpan = firstDay => {
             "Sunday": "span 6"
         };
     $(margin).css('grid-column', days[firstDay])
-}
-
-const roundMinutes = (time_now) => {
-    // const roundDownTo = roundTo => x => Math.floor(x / roundTo) * roundTo;
-    const roundUpTo = roundTo => x => Math.ceil(x / roundTo) * roundTo;
-    const roundUpTo5Minutes = roundUpTo(1000 * 60 * 10);
-
-    const ms = roundUpTo5Minutes(time_now)
-    return `${new Date(ms).getHours()}:${new Date(ms).getMinutes()}`
 }
 
 const isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"

@@ -128,10 +128,6 @@ footer {
     display: none;
 }
 
-.active{
-    display: flex;
-}
-
 .search_box_icon_container {
     padding: .3em 1em;
     background: #f7d0d4;
