@@ -2,7 +2,7 @@
 class AppointmentManager {
     createAppointment = async appointment_Details => {
         try {
-            const { data: Users_Appointments } = await axios.post(`${url}api/v1/appointments`, appointment_Details)
+            const { data: Users_Appointments } = await axios.post(`${heroku_url}api/v1/appointments`, appointment_Details)
             window.location = `userView.html?id=${Users_Appointments._id}`
             return appointment
         } catch (error) {
