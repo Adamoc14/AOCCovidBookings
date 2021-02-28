@@ -240,6 +240,23 @@ class UIHelperMethodManager {
             })
         })
     }
+    getEditingSlot = clinicSingle => {
+        this.getDayContainersFromCalendar()
+        .filter(day => clinicSingle.Month === day.dataset.month)
+        .filter(day => clinicSingle.Dates.includes(day.innerHTML))
+        .map(day => {
+            day.classList.remove('disabled')
+            day.classList.remove('slot_taken')
+            day.classList.toggle('daySelected')
+        })
+    }
+    getEditingTimeslot = clinicSingle => {
+        [...document.querySelectorAll('.timeslot_Clinic')]
+        .filter(slot => clinicSingle.Hours.includes(slot.innerHTML))
+        .map(slot => {
+            slot.classList.toggle('selected')
+        })
+    }
     checkClinicSlots = clinic_slots => {
         for(const clinicSlot of clinic_slots)
         this.getDayContainersFromCalendar()
@@ -1290,30 +1307,7 @@ class BackendUI {
 
     }
 
-    clinicSubmitBtnClick = (submit_btn, method, id) => {
-        $(submit_btn).click(()=> {
-            let provider_value = ui_helper_manager.getProvidersValue(),
-                hours_array = [...document.querySelectorAll('.timeslot_Clinic.selected')].map(timeslot => timeslot.innerHTML),
-                dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML);
-            if (dates_array.length === 0 || hours_array.length === 0) {
-                errorMessages.push("You must select date(s) and hour(s)")
-            } else if(!provider_value){
-                errorMessages.push("You must indicate how many providers are needed")
-            }
-            if(errorMessages.length !== 0){
-                errorMessages.filter((message ,index) => errorMessages.lastIndexOf(message) === index).map(msg => alert(msg)) 
-                return errorMessages = []
-            }
-            let new_clinic_slot = {
-                Month: this.appointment_Details["Month"],
-                Dates: dates_array,
-                Hours: hours_array,
-                Providers: provider_value
-            }   
-            if(method === "Post") clinic_manager.createClinicSlot(new_clinic_slot)
-            else if(method === "Update") clinic_manager.makeClinicUpdate(new_clinic_slot, id)
-        })
-    }
+    
 
     dealWithMonthsContainers = () => {
 
@@ -1481,8 +1475,30 @@ class BackendUI {
 
     }
 
-
-
+    clinicSubmitBtnClick = (submit_btn, method, id) => {
+        $(submit_btn).click(()=> {
+            let provider_value = ui_helper_manager.getProvidersValue(),
+                hours_array = [...document.querySelectorAll('.timeslot_Clinic.selected')].map(timeslot => timeslot.innerHTML),
+                dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML);
+            if (dates_array.length === 0 || hours_array.length === 0) {
+                errorMessages.push("You must select date(s) and hour(s)")
+            } else if(!provider_value){
+                errorMessages.push("You must indicate how many providers are needed")
+            }
+            if(errorMessages.length !== 0){
+                errorMessages.filter((message ,index) => errorMessages.lastIndexOf(message) === index).map(msg => alert(msg)) 
+                return errorMessages = []
+            }
+            let new_clinic_slot = {
+                Month: this.appointment_Details["Month"],
+                Dates: dates_array,
+                Hours: hours_array,
+                Providers: provider_value
+            }   
+            if(method === "Post") clinic_manager.createClinicSlot(new_clinic_slot)
+            else if(method === "Update") clinic_manager.updateClinicSlot(new_clinic_slot, id)
+        })
+    }
 
 
     // __________________________End Of Admin Clinic Add Preferences Page functions _______________________________
@@ -1490,6 +1506,54 @@ class BackendUI {
 
 
     // __________________________Start Of Admin Clinic Update Preferences Page  functions _______________________________
+
+    adminClinicUpdatePreferencesPageInit = async() => {
+         // Checking whether admin is logged in or not first
+         ValidationHelperManager.isAdminLoggedIn()
+
+         //Allow Admin To logout 
+         ui_helper_manager.logoutAdmin()
+ 
+         // Deal With Tab Change On Side Of Page
+         this.adminTab = "Clinic"
+         ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
+
+        // Kicks off dealing with the months , days and timeslots
+        this.dealWithMonthsContainers();
+
+        // Get the ID and corresponding data associated with the clinic slot clicked
+        let id = GeneralHelperMethodManager.getQueryParamsFromURL().get("id"),
+        clinicDataSingle = await clinic_manager.readClinicSlotSingle(id);
+
+
+        // Make Clinic Time Slot Containers
+        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
+        let timeslot_clinic_containers = ui_helper_manager.displayClinicTimeslots(timeSlots)
+        ui_helper_manager.addClinicTimes(timeslot_clinic_containers)
+
+        // Filling in clinic slot's value for the providers in the textbox provided
+        document.querySelector('#providers_input').value = clinicDataSingle.Providers
+
+
+        // submit_btn = document.querySelector('.addClinicSlotBtn');
+        // // displayPastMonths("Clinic")
+    
+        // document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`).style.background = "green"
+        // displayPastDays([...document.querySelectorAll('.month')], document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`), "Clinic")
+        
+        ui_helper_manager.addClinicDays(ui_helper_manager.getDayContainersFromCalendar())
+        ui_helper_manager.checkClinicSlots(this.clinic_slots)
+        if(clinicDataSingle !== undefined ) ui_helper_manager.getEditingSlot(clinicDataSingle)
+        ui_helper_manager.checkClinicSlots(this.clinic_slots)
+        ui_helper_manager.getEditingTimeslot(clinicDataSingle)
+
+
+        
+        
+        this.clinicSubmitBtnClick(document.querySelector('.addClinicSlotBtn'), "Update" , id)
+
+    }
+
 
 
 
@@ -1503,6 +1567,7 @@ const covidWebAppInit = async (user_location, page_location) => {
     const appointments = await appointments_manager.readAllAppointments(),
         clinic_slots = await clinic_manager.readAllClinicSlots(),
         covid_terms = await covid_terms_manager.readAllCovidTerms(),
+        
         // TODO: Need to get the Users in here through the read all Users Endpoint
         // EDIT: Added in these routes - 28/02/2021 12:50
         users = await user_manager.readAllUsers();
@@ -1514,9 +1579,9 @@ const covidWebAppInit = async (user_location, page_location) => {
 
 
 // Global Variable Declarations, Class and Function Definitions
+let errorMessages = [];
 const local_url = "http://localhost:8000/",
     heroku_url = "https://whmc-covid-server.herokuapp.com/",
-    errorMessages = [],
     appointments_manager = new AppointmentManager(),
     covid_terms_manager = new CovidTermsManager(),
     user_manager = new UserManager(),
