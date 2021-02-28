@@ -154,7 +154,7 @@ class UIHelperMethodManager {
     logoutAdmin = () => {
         const logout_btn = document.querySelector('.logout')
         $(logout_btn).click(()=> {
-            sessionStorage.removeItem("Admin");
+            sessionStorage.removeItem("AdminLoggedIn");
             window.location = "AdminLogin.html"
         })
     }
@@ -943,14 +943,19 @@ class BackendUI {
             this.dealWithSearchChange(e.target.value)
         })
         
-        // getAppointmentDataFromTable()
-        // dealWithSingleRecordPick()
+        // Deal With Export To CSV Button Click 
+        $(document.querySelector('.download_csv_btn')).click(e => {
+            this.dealWithCSVButtonClickAdminHome();
+        })
+
         // const print_btn = [...document.querySelectorAll('.print_btn')];
         // printPage(print_btn)
         // await checkDelete()
         // await dealWithSingleRecordPick();
 
     }
+
+    
 
     getDefaultDatePickerAndAppointmentTableRecords = () => {
         // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
@@ -1053,6 +1058,11 @@ class BackendUI {
 
         let matched_records_from_search_value = GeneralHelperMethodManager.checkAppointmentAndUserRecordsInTableAgainst(this.appointments , searchValue)
         matched_records_from_search_value?.length === 0 ? this.getDefaultDatePickerAndAppointmentTableRecords() : this.displayAppointmentsInTable(matched_records_from_search_value)
+    }
+
+    dealWithCSVButtonClickAdminHome = () => {
+        const csvData = objectToCSV(appointments_Data)
+        downloadCSV(csvData)
     }
         
 
