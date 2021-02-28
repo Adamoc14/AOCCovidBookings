@@ -187,6 +187,27 @@ class UIHelperMethodManager {
     getPrintBtns = () => {
         return [...document.querySelectorAll('.print_btn')]
     }
+    displayClinicSlotContainersAdminClinicHome = clinic_slots => {
+        const slot_container = document.querySelector('.clinic_slots_container'),
+        contents = clinic_slots.map(clinic_slot => 
+        `
+            <div class="slot_entry_container">
+                <div class="date_square_container">
+                    <div class="date_square">${clinic_slot.Month.slice(0, 3)}</div>
+                </div>
+                <div class="slot_details_container">
+                    <h2><strong>Hours (Available):</strong> ${clinic_slot.Hours.join(", ")}</h2>
+                    <h2><strong>Vaccinators:</strong> ${clinic_slot.Providers}</h2>
+                    <h2><strong>Dates:</strong> ${clinic_slot.Dates.join(", ")}</h2>
+                </div>
+                <div class="manipulate_slot_buttons_container">
+                    <a class="update_btn action_btn" href="AdminClinicUpdate.html?id=${clinic_slot._id}">Edit</a>
+                    <div class="delete_btn action_btn" data-clinic_id="${clinic_slot._id}">Delete</div>
+                </div>
+            </div>
+        `).join("")
+        slot_container.insertAdjacentHTML('beforeend', contents)
+    }
 }
 
 class GeneralHelperMethodManager {
@@ -999,6 +1020,8 @@ class BackendUI {
     retrieveFilterDisplayDataFromDataPicker = () => {
 
         // TODO: Put This into the update Covid terms date picker function
+        // EDIT: Just put this in - 28 February 21:10
+        
         // Create A Date Object From the Values in the Date Picker
         let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
 
@@ -1149,7 +1172,19 @@ class BackendUI {
         document.querySelector('#min_age').value = this.covid_terms.Min_Age
         document.querySelector('#min_age').dataset.id = this.covid_terms._id
 
-        // Set the Date Time Picker value
+        // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
+        document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
+
+        // Deal with Date Time Picker Change
+
+        // TODO: Put This into the update Covid terms date picker function
+        // Create A Date Object From the Values in the Date Picker
+        let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
+        covid_terms_manager.updateCovidTerms(date_picker_date_object , this.covid_terms);
+
+        // Display The Clinic Slot Containers
+        ui_helper_manager.displayClinicSlotContainersAdminClinicHome(this.clinic_slots);
+
 
 
     }

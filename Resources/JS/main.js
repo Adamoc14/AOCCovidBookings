@@ -1005,7 +1005,7 @@ const getClinicData = async() => {
 
 
 const adminClinicHomeInit = async() => {
-    
+
     document.querySelector('#min_age').value = covid_term.Min_Age
     document.querySelector('#min_age').dataset.id = covid_term._id
 
@@ -1024,8 +1024,10 @@ const adminClinicHomeInit = async() => {
         if(parseInt(date) < 10) date = "0" + date.toString()
     }
     document.querySelector('#default_date_picker_input').value = `${year}-${month}-${date}`;
+
     // setDateTimeLocal(document.querySelector('#default_date_picker_input'))
     dealWithDateChange(document.querySelector('#default_date_picker_input'))
+
     getDateTime()
     displayAllSlots(clinicData)
     const delete_btns = [...document.querySelectorAll('.delete_btn')]
