@@ -971,7 +971,10 @@ class BackendUI {
         const print_btn = ui_helper_manager.getPrintBtns();
         ui_helper_manager.printPage(print_btn)
 
+        
         // await checkDelete()
+
+        // REVIEW: 
         // await dealWithSingleRecordPick();
 
     }
