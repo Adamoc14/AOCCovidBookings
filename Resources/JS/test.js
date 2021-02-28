@@ -330,6 +330,25 @@ class GeneralHelperMethodManager {
     }
 
     static retrieveTodaysDate = () =>  moment().format(moment.HTML5_FMT.DATE).toString()
+
+    static getAttendingPatientsDetailsForCSV = appointments => appointments.map(({ firstName , Surname, DOB}) => [firstName, Surname , DOB ])
+
+    static objectToCSV = temporary_appointments => {
+        let preferences = {
+            filename: 'WHMC_Appointments.csv',
+            data: [],
+            headers: []
+        };
+
+        // Loop over the rows and get values for each of the headers  
+        preferences.data = temporary_appointments.map(appointment => [`${appointment.DayDate} ${appointment.Month}`,`${appointment.Time}` , ...GeneralHelperMethodManager.getAttendingPatientsDetailsForCSV(appointment.Capacity)]);
+
+        // Get the headers  
+        preferences.headers = [...document.querySelectorAll('.container_sm')]?.slice(0,5)?.map(heading => heading?.innerHTML);
+
+        return preferences
+    }
+    
 }
 
 class ValidationHelperManager {
@@ -1004,8 +1023,10 @@ class BackendUI {
             overall__number_of_appointments_total = GeneralHelperMethodManager.retrieveOverallAppointmentsTotal(this.appointments);
 
         // Sort Appointments By Time Before Displayed
-        const appointments_sorted_by_time = GeneralHelperMethodManager.sortAppointmentsBeingDisplayedByTime(filtered_appointments_from_date_picker_values),
-        appointmentsHTML = appointments_sorted_by_time?.map(appointment => {
+        const appointments_sorted_by_time = GeneralHelperMethodManager.sortAppointmentsBeingDisplayedByTime(filtered_appointments_from_date_picker_values);
+        this.temporary_appointments = appointments_sorted_by_time
+
+        const appointmentsHTML = appointments_sorted_by_time?.map(appointment => {
             if(appointment.Capacity.length >= 2) {
                 return  `  
                     <div class="appointment_details span" data-id="${appointment._id}">
@@ -1061,8 +1082,44 @@ class BackendUI {
     }
 
     dealWithCSVButtonClickAdminHome = () => {
-        const csvData = objectToCSV(appointments_Data)
-        downloadCSV(csvData)
+        /**
+         * Exporting To CSV 
+         * Need Columns And Rows
+         * Retrieves the Headers For Columns 
+         * Retrieves the Values for Rows 
+         */
+        const my_csv_preferences = GeneralHelperMethodManager.objectToCSV(this.temporary_appointments)
+
+        // Runs the function to export the CSV
+        this.downloadCSV(my_csv_preferences)
+    }
+
+    downloadCSV = async(preferences, default_filename = 'export.csv')  => {
+
+        // Setting the filename of the CSV file if not default
+        let filename = preferences?.filename || default_filename,
+
+        // Setting out what would be the columns in CSV file or none
+        headers = preferences?.headers || null;
+
+        // Using PaPa Parse to Turn JSON into a CSV String To be made into CSV File
+        let csv;
+        await Papa.unparse({ data: preferences?.data, fields: headers}) !== null  ? csv = await Papa.unparse({ data: preferences?.data, fields: headers}) : csv = null
+        if (csv == null) return;
+
+        // Turning the String into a CSV Blob File so it can be downloaded on button click
+        var blob = new Blob([csv], {type: 'text/csv'});
+
+        // Back Tracking just to support IE and other outdated browsers (Backwards Compatability)
+        if (window.navigator.msSaveOrOpenBlob)  window.navigator.msSaveBlob(blob, args.filename);
+        else {
+            var a = window.document.createElement("a");
+            a.href = window.URL.createObjectURL(blob, {type: "text/plain"});
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();  
+            document.body.removeChild(a);
+        } 
     }
         
 
