@@ -193,7 +193,7 @@ class GeneralHelperMethodManager {
 
     // Can be used in any project
     static getQueryParamsFromURL = () => {
-        return URLSearchParams(window.location.search)
+        return new URLSearchParams(window.location.search)
     }
     static getFormDataFromForm = form => {
         let formData = new FormData(form)
