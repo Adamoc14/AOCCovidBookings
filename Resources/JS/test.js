@@ -1,6 +1,6 @@
 // These Classes take care of my network requests for different models in my web application
 class AppointmentManager {
-    createAppointment = async () => {
+    createAppointment = async appointment_Details => {
         try {
             const { data: Users_Appointments } = await axios.post(`${local_url}api/v1/appointments`, appointment_Details)
             window.location = `userView.html?id=${Users_Appointments._id}`
@@ -599,19 +599,8 @@ class FrontEndUI {
 
     handleConfirmCreateAppointmentBtnClick = () => {
         const actual_create_btn = document.querySelector('.see_all_appointments_btn');
-        let submitted = false
-        $(actual_create_btn).click(e => {
-            /**
-             * Because of await making the call stack perform same thing again
-             * This was making it send two requests and insert two records into the DB
-             * This is a fix for this, 
-             * Look for info or something that should have a value already from the first time
-             */
-            if (submitted) return
-            submitted = true
-    
-            // Calls the method to perform the async function to post my data 
-            makeAppointment()
+        $(actual_create_btn).click(e => {    
+            appointments_manager.createAppointment(this.appointment_Details)
         })
     } 
 
