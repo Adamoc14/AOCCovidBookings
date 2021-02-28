@@ -265,7 +265,7 @@ class FrontEndUI {
             monthContainer.classList.add('monthInActive')
         })
 
-        // Adds Active to the month selected
+        // Adds Active to the month that is selected
         selectedMonth.classList.add('monthActive')
 
         // Get month Selected Info and returns info
