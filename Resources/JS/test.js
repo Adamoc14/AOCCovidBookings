@@ -218,10 +218,10 @@ class GeneralHelperMethodManager {
 class ValidationHelperManager {
     static checkVaccineAbility = () => {
         const vaccine_deciders = [...document.querySelectorAll('.vaccine_decider')];
-        vaccine_deciders.map(vaccine_decider => 
+        vaccine_deciders.map(vaccine_decider =>
             $(vaccine_decider).click(e => {
-                if(e.target.value === "Yes"){
-                    document.querySelector('.blocking_form_modal_outer').style.display = "flex";
+                if (e.target.value === "Yes") {
+                    document.querySelector('.blocking_form_modal_outer')?.classList.add('displayVaccineAbilityBlockerFlex');
                 }
             })
         )
@@ -231,11 +231,15 @@ class ValidationHelperManager {
     static checkDOBOfUser = () => {
         const DOB_Input = document.querySelector('.dob_container input[type=text]');
         $(DOB_Input).focusout(e => {
-            new Date().getFullYear() - e.target.value.substring(6,) >= covid_term.Min_Age ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex"; 
+            new Date().getFullYear() - e.target.value.substring(6,) >= covid_term.Min_Age ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex";
         })
     }
 
     static isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"
+
+    static validateBookingDetails = () => {
+        return appointment_Details["Month"] !== undefined && appointment_Details["DayDate"] !== undefined && appointment_Details["Time"] !== undefined
+    }
 }
 
 
@@ -256,7 +260,10 @@ class FrontEndUI {
         this.dealWithMonthsContainers();
 
         // Validating and checking User Input 
-        ValidationHelperManager.checkVaccineAbility(); 
+        ValidationHelperManager.checkVaccineAbility();
+
+        // Handling create appointment button click
+        this.handleCreateAppointmentBtnClick();
 
     }
 
@@ -509,12 +516,104 @@ class FrontEndUI {
         selectedTime.classList.add('timeSlotActive')
 
         // Get day Selected Object and leaves it as a class variable for use in other methods
-         this.timeSelected = selectedTime.innerHTML
-         this.appointment_Details["Time"] = this.timeSelected
-        
-        // Move Program on now to Submitting the form and validation
+        this.timeSelected = selectedTime.innerHTML
+        this.appointment_Details["Time"] = this.timeSelected
 
     }
+
+    handleCreateAppointmentBtnClick = () => {
+        const form = document.querySelector('form');
+        $(form).submit(e => {
+            e.preventDefault()
+
+            // Checks Everythings in order with the appointment so date , time, month
+            let bookingDetailsValidated = ValidationHelperManager.validateBookingDetails()
+            if (!bookingDetailsValidated) {
+                alert("Please pick a valid month, date and time before progressing")
+                return
+            }
+
+            // Getting the form Data and filling it to appointment_Details
+            let formData = GeneralHelperMethodManager.getFormDataFromForm(form)
+
+            //if (formData.get('card_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
+            // if (formData.get('card_decision') === null || formData.get('destination_decision') === null) errMessage.push("Please fill in PPS Number or select the medical card option above")
+            //whichCard(formData.get('card_decision'), formData)
+            // whichDestination(formData.get('destination_decision'), formData)
+            if (errMessage.length !== 0) {
+                errMessage.filter((error, index) => errMessage.lastIndexOf(error) === index)
+                    .map(error => alert(error))
+                errMessage = []
+                return
+            }
+
+            // Filling the appointment Details with my values
+            this.appointment_Details["firstName"] = formData.get('firstName')
+            this.appointment_Details["Email"] = formData.get('Email')
+            this.appointment_Details["Surname"] = formData.get('Surname')
+            this.appointment_Details["Mobile"] = formData.get('Mobile')
+            this.appointment_Details["DOB"] = formData.get('DOB')
+            this.appointment_Details["Gender"] = formData.get('Gender')
+            this.appointment_Details["Street_Address"] = formData.get('Address_Line_One')
+            this.appointment_Details["City_Address"] = formData.get('Address_Line_Two')
+            this.appointment_Details["County"] = formData.get('County')
+            this.appointment_Details["Alternate_Number"] = formData.get('Alternate_Mobile')
+            this.appointment_Details["Bleeding_Disorder_Or_Anticoagulation"] = formData.get('Bleeding_Disorder_decision')
+
+            // Moving onto show the create appointment pop up
+            this.displayCreateAppointmentPopup()
+
+            // And thus with that actually handling clicking confirm button to create appointment
+            this.handleConfirmCreateAppointmentBtnClick();
+        })
+    }
+
+    displayCreateAppointmentPopup = () => {
+        let modal = this.fillinModalDetails()
+        document.querySelector('.appointment_made_modal') ? document.querySelector('.appointment_made_modal').innerHTML = modal : null
+        document.querySelector('.appointment_made_modal') ? document.querySelector('.appointment_made_modal').classList.add('displayAppointmentMadeModalBlock') : null
+        cancelModal(document.querySelector('.appointment_made_modal'))
+    }
+
+    fillinModalDetails = () => {
+        return `<div class="appointment_made_modal_content">
+                    <h2>Hi ${this.appointment_Details.firstName} ${this.appointment_Details.Surname},</h2>
+                    <h4>You requested an appointment for</h4>
+                    <div class="date_time_container">
+                        <h3><strong>Date :</strong> ${this.appointment_Details.DayName} ${this.appointment_Details.DayDate} ${this.appointment_Details.Month}</h3>
+                        <h3><strong>Time :</strong> ${this.appointment_Details.Time}</h3>
+                    </div>
+                    <div class="btns_container">
+                        <a class="see_all_appointments_btn">Confirm</a>
+                        <a class="cancelApptBtn">Cancel</a>
+                    </div>
+                </div>`
+    }
+
+    cancelModal = modal => {
+        const cancel_btn = document.querySelector('.cancelApptBtn')
+        $(cancel_btn).click(() => {
+            modal.classList.add('noneDisplayAppointmentMadeModal')
+        })
+    }
+
+    handleConfirmCreateAppointmentBtnClick = () => {
+        const actual_create_btn = document.querySelector('.see_all_appointments_btn');
+        let submitted = false
+        $(actual_create_btn).click(e => {
+            /**
+             * Because of await making the call stack perform same thing again
+             * This was making it send two requests and insert two records into the DB
+             * This is a fix for this, 
+             * Look for info or something that should have a value already from the first time
+             */
+            if (submitted) return
+            submitted = true
+    
+            // Calls the method to perform the async function to post my data 
+            makeAppointment()
+        })
+    } 
 
 
 
