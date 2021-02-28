@@ -1142,8 +1142,10 @@ class BackendUI {
         ui_helper_manager.logoutAdmin()
 
         // Deal With Tab Change On Side Of Page
-        this.adminTab = "Appointments"
+        this.adminTab = "Clinic"
         ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
+
+
     }
         
 
