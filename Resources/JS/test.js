@@ -310,8 +310,8 @@ class FrontEndUI {
         this.dayContainers = ui_helper_manager.getDayContainersFromCalendar();
 
         // REVIEW: Display Irrelevant Days - Past Days From Certain Date and Sundays
-        this.displayPastDaysFromCovidTermDate()
-
+        this.displayPastDaysFromCovidTermDate();
+        this.disableSundaysFromDaysCalendar();
         
     }
 

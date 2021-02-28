@@ -15,3 +15,18 @@
 .sundayDisabled{
     background: orange;
 }
+
+.orange_disabled{
+    background: orange;
+    color: black;
+}
+
+.full_disabled{
+    background: red;
+    color: white;
+}
+
+.disabled{
+    pointer-events: none;
+    opacity: 0.7;
+}
