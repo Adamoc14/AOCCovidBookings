@@ -1134,6 +1134,17 @@ class BackendUI {
         } 
     }
 
+    adminClinicHomePageInit = () => {
+        // Checking whether admin is logged in or not first
+        ValidationHelperManager.isAdminLoggedIn()
+
+        //Allow Admin To logout 
+        ui_helper_manager.logoutAdmin()
+
+        // Deal With Tab Change On Side Of Page
+        this.adminTab = "Appointments"
+        ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
+    }
         
 
     // __________________________End Of Admin Home Page functions _______________________________
