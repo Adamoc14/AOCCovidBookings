@@ -410,7 +410,7 @@ class FrontEndUI {
         
 
         // Deal With TimeSlot Click 
-        
+
 
 
     }
@@ -439,7 +439,6 @@ class FrontEndUI {
         })
         for(clinicDataSingle of clinic_Data)
             if(appointment_Details["Month"] == clinicDataSingle.Month) {
-                timeslotsContainers = this.timeSlotContainers
                 for (date of clinicDataSingle.Dates)
                     if (appointment_Details["DayDate"] == date){
                         for (hour of clinicDataSingle.Hours){
