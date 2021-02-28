@@ -127,8 +127,8 @@ class UIHelperMethodManager {
                 completed = true 
                 return [...timeSlots]
             } else {
-                if (Array.isArray(makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval))) return timeSlots
-                timeSlots.push(makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval ))
+                if (Array.isArray(this.makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval))) return timeSlots
+                timeSlots.push(this.makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval ))
             }
         }
     }
@@ -385,7 +385,7 @@ class FrontEndUI {
         selectedDay.classList.add('dayActive')
 
         // Get day Selected Object and leaves it as a class variable for use in other methods
-        this.daySelected = GeneralHelperMethodManager.createDayObjectFromDaySelected(selectedMonth)
+        this.daySelected = GeneralHelperMethodManager.createDayObjectFromDaySelected(selectedDay)
         this.appointment_Details["DayName"] = this.daySelected.day
         this.appointment_Details["DayDate"] = this.daySelected.date
 
@@ -396,7 +396,7 @@ class FrontEndUI {
     dealWithTimeContainers = () => {
         
         // Make the Timeslot Containers
-        let timeSlots = makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10)
+        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10)
 
         // Display the Timeslot Containers
         this.fillInTimeslotContainers(timeSlots)
@@ -418,12 +418,12 @@ class FrontEndUI {
     fillInTimeslotContainers = timeSlots => {
 
         // Make the actual Time Slot Containers 
-        const timeSlotContainers;
+        let timeSlotContainers = null;
         document.querySelector('.time_slot_container_m') ? document.querySelector('.time_slot_container_m')?.classList.add('displayTimeSlotBlock') : null
         timeSlotContainers = timeSlots.map(timeSlot => 
             `<div class="timeslot" data-time="${timeSlot}">${timeSlot}</div>`
         ).join("")
-        document.querySelector('.time_slot_container') ? document.querySelector('.time_slot_container')?.innerHTML = timeSlotContainers : null
+        document.querySelector('.time_slot_container') ? document.querySelector('.time_slot_container').innerHTML = timeSlotContainers : null
 
     }
 
@@ -431,16 +431,16 @@ class FrontEndUI {
         // This just checks if the date picked is within the date slots that the clinic picks
         // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
         // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
-        appointments_Saved
+        this.appointments
             .map(appointment_s => {
                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.remove("original_bg_timeslot")
                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("orange_disabled")
         })
-        for(clinicDataSingle of clinic_Data)
-            if(appointment_Details["Month"] == clinicDataSingle.Month) {
+        for(const clinicDataSingle of this.clinic_slots)
+            if(this.appointment_Details["Month"] == clinicDataSingle.Month) {
                 for (date of clinicDataSingle.Dates)
-                    if (appointment_Details["DayDate"] == date){
+                    if (this.appointment_Details["DayDate"] == date){
                         for (hour of clinicDataSingle.Hours){
                             this.timeSlotContainers
                                 .filter(appt => appt.innerHTML == hour)
@@ -451,7 +451,7 @@ class FrontEndUI {
                                 })
                         }
                         // REVIEW: Changed this - number of providers 27/02/2021
-                        appointments_Saved
+                        this.appointments
                             .filter(appointment => appointment.DayDate == date)
                             .filter(appointment => appointment.Capacity.length >= parseInt(clinicDataSingle.Providers))
                             .map(appointment_s => {
