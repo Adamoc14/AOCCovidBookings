@@ -204,36 +204,66 @@ class GeneralHelperMethodManager {
 
 class FrontEndUI {
     constructor(appointments, covid_terms, clinic_slots) {
+        
+        // Set up Global Object to add details through as we move through form
+        this.appointment_Details = {};
 
         // Get all Data Needed and leave equal to global variables
         this.appointments = appointments;
         this.clinic_slots = clinic_slots;
-        this.covid_terms = covid_terms;
+        this.covid_terms = covid_terms[0];
+
+        
+        this.dealWithMonthsContainers();
+
+    }
+
+    dealWithMonthsContainers = () => {
+
+        // Get the Month Containers
         this.monthContainers = ui_helper_manager.getMonthContainers();
 
+        // Display the past months from a certain month
         this.displayPastMonthsFromCovidTermMonth()
 
+        // Get the month selected from page from monthContainers
+        this.monthContainers.map(monthContainer => 
+            $(monthContainer).click( e => {
+                dealWithClickOnMonth(e.target);
+            })
+        )
+        
     }
 
     displayPastMonthsFromMonthNow = async place => {
         let monthToday = new Date().getMonth()
-        monthContainers.filter(monthContainer => monthContainer.dataset.month < monthToday).map(monthContainer => monthContainer.classList.add('disabled'))
+        this.monthContainers.filter(monthContainer => monthContainer.dataset.month < monthToday).map(monthContainer => monthContainer.classList.add('disabled'))
         document.querySelector(`.month[data-month="${monthToday}"]`) ? document.querySelector(`.month[data-month="${monthToday}"]`).classList.add('monthActive') : null
         displayPastDays(document.querySelector(`.month[data-month="${monthToday}"]`), place)
     }
+
     displayPastMonthsFromCovidTermMonth = () => {
         let covid_term_month = this.covid_terms[0].Month
-        monthContainers.filter(monthContainer => monthContainer.dataset.month < GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)).map(monthContainer => monthContainer.classList.add('disabled'))
+        this.monthContainers.filter(monthContainer => monthContainer.dataset.month < GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)).map(monthContainer => monthContainer.classList.add('disabled'))
         document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`) ? document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`).classList.add('monthActive') : null
         // displayPastDays(months, document.querySelector(`.month[data-month="${monthToday}"]`), place)
 
-        // console.log(this.covid_terms);
-        // debugger
     }
+
+    dealWithClickOnMonth = selectedMonth => {
+        
+        // Styles the month selected and ones that aren't accordingly
+        this.monthContainers.filter(monthContainer => monthContainer !== selectedMonth).map(monthContainer => monthContainer.classList.add('monthInActive'))
+        selectedMonth.classList.add('monthActive')
+
+        // Get month Selected Info and returns info
+        let monthSelected = getMonthSelected(selectedMonth.dataset.month)
+        appointment_Details["Month"] = monthSelected.Name
+    }
+
     displayPastDaysFromSelectedMonth = async(startMonth , place) => {
         // Get month Selected Info , adds it to appointment details
-        let monthSelected = clickMonth(months, startMonth);
-        appointment_Details["Month"] = monthSelected.Name
+        
     
         // Display Calendar and Days That are closed
         let days = fillInCalendar(monthSelected.Number, monthSelected.NumOfDays, monthSelected.WeekDayNameOfFirstDay, monthSelected.Name),
