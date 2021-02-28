@@ -1,11 +1,13 @@
 .monthActive,
-.dayActive{
+.dayActive,
+.timeSlotActive{
     background: green;
     color:white;
 }
 
 .monthInActive , 
-.dayInActive{
+.dayInActive,
+.timeSlotInActive{
     background: aliceblue;
     color: black;
 }

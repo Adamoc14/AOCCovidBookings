@@ -119,16 +119,16 @@ class UIHelperMethodManager {
     getTimeSlotContainers = () => {
         return [...document.querySelectorAll('.timeslot')]
     }
-    makeTimeslots = (startTime, timeSlots , interval) => {
+    makeTimeslots = (startTime, timeSlots, interval) => {
         let completed = false
         timeSlots.push(`${startTime.hours()}:${startTime.minutes()}`)
-        if(!completed){
-            if(startTime.hours() === 19 && startTime.minutes() === 30){
-                completed = true 
+        if (!completed) {
+            if (startTime.hours() === 19 && startTime.minutes() === 30) {
+                completed = true
                 return [...timeSlots]
             } else {
                 if (Array.isArray(this.makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval))) return timeSlots
-                timeSlots.push(this.makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval ))
+                timeSlots.push(this.makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval))
             }
         }
     }
@@ -220,7 +220,7 @@ class GeneralHelperMethodManager {
 
 class FrontEndUI {
     constructor(appointments, covid_terms, clinic_slots) {
-        
+
         // Set up Global Object to add details through as we move through form
         this.appointment_Details = {};
 
@@ -229,7 +229,7 @@ class FrontEndUI {
         this.clinic_slots = clinic_slots;
         this.covid_terms = covid_terms[0];
 
-        
+
         this.dealWithMonthsContainers();
 
     }
@@ -243,12 +243,12 @@ class FrontEndUI {
         this.displayPastMonthsFromCovidTermMonth()
 
         // Get the month selected from page from monthContainers
-        this.monthContainers.map(monthContainer => 
-            $(monthContainer).click( e => {
+        this.monthContainers.map(monthContainer =>
+            $(monthContainer).click(e => {
                 this.dealWithClickOnMonth(e.target);
             })
         )
-        
+
     }
 
     displayPastMonthsFromMonthNow = async place => {
@@ -265,7 +265,7 @@ class FrontEndUI {
     }
 
     dealWithClickOnMonth = selectedMonth => {
-        
+
         // Styles the month selected and ones that aren't accordingly
 
         // Takes off class off all of them first
@@ -297,15 +297,15 @@ class FrontEndUI {
         this.fillDaysIntoCalendarUsingMonthSelectedData()
 
         // Get the day selected from page from dayContainers
-        this.dayContainers.map(dayContainer => 
-            $(dayContainer).click( e => {
+        this.dayContainers.map(dayContainer =>
+            $(dayContainer).click(e => {
                 this.dealWithClickOnDay(e.target);
             })
         )
     }
 
     fillDaysIntoCalendarUsingMonthSelectedData = () => {
-        
+
         // Making the actual calendar in these lines
         document.querySelector('.calendar_container_m') ? document.querySelector('.calendar_container_m')?.classList?.add('displayCalendarBlock') : null
         let daysOfWeek = `
@@ -319,14 +319,14 @@ class FrontEndUI {
             `,
             margin = ``,
             numberOfDays;
-        if(this.monthSelected.WeekDayNameOfFirstDay !== "Monday") margin = `<div class="margin"></div>`
+        if (this.monthSelected.WeekDayNameOfFirstDay !== "Monday") margin = `<div class="margin"></div>`
         numberOfDays = this.monthSelected.NumOfDays.map(day => {
             let dayOfWeek = GeneralHelperMethodManager.getWeekDayNumFromDate(new Date().getFullYear(), this.monthSelected.Number, day)
-                dayOfWeek = GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(dayOfWeek);
+            dayOfWeek = GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(dayOfWeek);
             return `<div class="day" data-day= "${dayOfWeek}" data-month="${this.monthSelected.Name}">${day}</div>`
         }).join("")
-        document.querySelector('.calendar_container') ? document.querySelector('.calendar_container').innerHTML= daysOfWeek + margin + numberOfDays : null
-        
+        document.querySelector('.calendar_container') ? document.querySelector('.calendar_container').innerHTML = daysOfWeek + margin + numberOfDays : null
+
         // Get the margin between first day based on name of day it is
         ui_helper_manager.getSpanAmountByFirstDayOfMonth(this.monthSelected.WeekDayNameOfFirstDay)
 
@@ -336,14 +336,14 @@ class FrontEndUI {
         // REVIEW: Display Irrelevant Days - Past Days From Certain Date and Sundays
         this.displayPastDaysFromCovidTermDate();
         this.disableSundaysFromDaysCalendar();
-        
+
     }
 
     displayPastDaysFromDateNow = () => {
 
         // Get Todays Date and disabling dates behind this date
         let dayToday = new Date().getDate();
-        if(dayToday !== null) {
+        if (dayToday !== null) {
             this.dayContainers.filter(dayContainer => Number(dayContainer.innerHTML) < dayToday).map(dayContainer => dayContainer.classList.add('disabled'))
         }
     }
@@ -353,9 +353,9 @@ class FrontEndUI {
         // NOTE: Number(this.covid_terms.Date).toString())
         // NOTE: Cool little trick I did here, when dealing with a string that has a 0 in it like the covid_term_date does "04",
         // NOTE: Turn the String into a number with Number("04") which makes it 4 then back into a String which makes it "4"
-        
+
         // Get The Covid Terms Date and disabling dates behind this date
-        if(this.covid_terms.Date !== null) {
+        if (this.covid_terms.Date !== null) {
             this.dayContainers.filter(dayContainer => Number(dayContainer.innerHTML) < Number(this.covid_terms.Date)).map(dayContainer => dayContainer.classList.add('disabled'))
         }
     }
@@ -394,9 +394,9 @@ class FrontEndUI {
     }
 
     dealWithTimeContainers = () => {
-        
+
         // Make the Timeslot Containers
-        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9,'h'), [] , 10)
+        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
 
         // Display the Timeslot Containers
         this.fillInTimeslotContainers(timeSlots)
@@ -413,10 +413,13 @@ class FrontEndUI {
         // Check their times against Clinic Hours and Capacity
         this.checkTimeslotsAgainstClinicPreferences()
         // checkTime(new Date().getHours())
-        
 
-        // Deal With TimeSlot Click 
-
+        // Get the Time selected from page from TimeSlotContainers
+        this.timeSlotContainers.map(timeSlotContainer =>
+            $(timeSlotContainer).click(e => {
+                this.dealWithClickOnTime(e.target);
+            })
+        )
 
 
     }
@@ -426,7 +429,7 @@ class FrontEndUI {
         // Make the actual Time Slot Containers 
         let timeSlotContainers = null;
         document.querySelector('.time_slot_container_m') ? document.querySelector('.time_slot_container_m')?.classList.add('displayTimeSlotBlock') : null
-        timeSlotContainers = timeSlots.map(timeSlot => 
+        timeSlotContainers = timeSlots.map(timeSlot =>
             `<div class="timeslot" data-time="${timeSlot}">${timeSlot}</div>`
         ).join("")
         document.querySelector('.time_slot_container') ? document.querySelector('.time_slot_container').innerHTML = timeSlotContainers : null
@@ -438,11 +441,11 @@ class FrontEndUI {
         // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
         // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
 
-        for(const clinicSlot of this.clinic_slots)
-            if(this.appointment_Details["Month"] == clinicSlot.Month) {
+        for (const clinicSlot of this.clinic_slots)
+            if (this.appointment_Details["Month"] == clinicSlot.Month) {
                 for (const date of clinicSlot.Dates)
-                    if (this.appointment_Details["DayDate"] == date){
-                        for (const hour of clinicSlot.Hours){
+                    if (this.appointment_Details["DayDate"] == date) {
+                        for (const hour of clinicSlot.Hours) {
                             this.timeSlotContainers
                                 .filter(timeslot_container => timeslot_container.innerHTML == hour)
                                 .map(appointment_s => {
@@ -458,8 +461,26 @@ class FrontEndUI {
                                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
                                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
                             })
-                    } 
-            } 
+                    }
+            }
+    }
+
+    dealWithClickOnTime = selectedTime => {
+        // Styles the time selected and ones that aren't accordingly
+
+        // Takes off class off all of them first
+        this.timeSlotContainers.map(timeSlotContainer => {
+            timeSlotContainer.classList.remove('timeSlotActive')
+            timeSlotContainer.classList.remove('timeSlotInActive')
+        })
+
+        // Then adds inactive to those that aren't selected
+        this.timeSlotContainers.filter(timeSlotContainer => timeSlotContainer !== selectedTime).map(timeSlotContainer => {
+            timeSlotContainer.classList.add('timeSlotInActive')
+        })
+
+        // Adds Active to the time that is selected
+        selectedTime.classList.add('timeSlotActive')
     }
 
 }
@@ -480,8 +501,8 @@ class BackendUI {
 
 const covidWebAppInit = async user_location => {
     const appointments = await appointments_manager.readAllAppointments(),
-    clinic_slots = await clinic_manager.readAllClinicSlots(),
-    covid_terms = await covid_terms_manager.readAllCovidTerms();
+        clinic_slots = await clinic_manager.readAllClinicSlots(),
+        covid_terms = await covid_terms_manager.readAllCovidTerms();
 
     // TODO: Need to get the Users in here through the read all Users Endpoint
     const users = [];
