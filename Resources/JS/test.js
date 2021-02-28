@@ -110,15 +110,6 @@ class UIHelperMethodManager {
             };
         $(margin).css('grid-column', days[firstDay])
     }
-    getDayContainersFromCalendar = () => {
-        return [...document.querySelectorAll('.day')];
-    }
-    getMonthContainers = () => {
-        return [...document.querySelectorAll('.month')];
-    }
-    getTimeSlotContainers = () => {
-        return [...document.querySelectorAll('.timeslot')]
-    }
     makeTimeslots = (startTime, timeSlots, interval) => {
         let completed = false
         timeSlots.push(`${startTime.hours()}:${startTime.minutes()}`)
@@ -131,6 +122,18 @@ class UIHelperMethodManager {
                 timeSlots.push(this.makeTimeslots(startTime.add(interval, 'm'), timeSlots, interval))
             }
         }
+    }
+    getDayContainersFromCalendar = () => {
+        return [...document.querySelectorAll('.day')];
+    }
+    getMonthContainers = () => {
+        return [...document.querySelectorAll('.month')];
+    }
+    getTimeSlotContainers = () => {
+        return [...document.querySelectorAll('.timeslot')]
+    }
+    getPrintBtns = () => {
+        return [...document.querySelectorAll('.print_btn')]
     }
 }
 
@@ -256,6 +259,17 @@ class FrontEndUI {
         this.clinic_slots = clinic_slots;
         this.covid_terms = covid_terms[0];
 
+        // This handles all the methods for the home page
+        this.homePageInit();
+
+        // This handles all the methods for the userview page
+        this.userViewPageInit();
+
+    }
+
+    // __________________________Start Of Home Page functions _______________________________
+
+    homePageInit = () => {
         // Kicks off dealing with the months , days and timeslots
         this.dealWithMonthsContainers();
 
@@ -265,6 +279,8 @@ class FrontEndUI {
         // Handling create appointment button click
         this.handleCreateAppointmentBtnClick();
 
+        // Handling the Terms and Conditions Button Click 
+        this.handleTermsAndConditionsBtnClick();
     }
 
     dealWithMonthsContainers = () => {
@@ -604,6 +620,90 @@ class FrontEndUI {
         })
     } 
 
+    handleTermsAndConditionsBtnClick = () => {
+        const terms_btn = document.querySelector('.open_terms_btn')
+        $(terms_btn).click(e => {
+            openModal()
+        })
+    }
+
+    // __________________________End Of Home Page functions _______________________________
+
+    // __________________________Start Of UserView Page functions _______________________________
+
+    userViewPageInit = () => {
+
+
+
+    }
+
+    displayUserView = async() => {
+
+        // This part up here is just creating the single appointment display container view 
+        const apptContainer = document.querySelector('.appointment_display_container_inner'),
+        id = GeneralHelperMethodManager.getQueryParamsFromURL().get("id"),
+        single_appointment_by_id = await appointments_manager.readSingleAppointmentById(id)
+        appointmentsData = single_appointment_by_id.Appointments.map(appt =>  
+            `<div class="appointment_container">
+                <div class="first_container">
+                    <div class="date_square">
+                        <h5>${appt.Month}</h5>
+                        ${appt.DayDate}
+                    </div>
+                    <div class="user_details_container">
+                        <div class="name_container">
+                            <h2>Name: ${single_appointment_by_id.firstName} ${single_appointment_by_id.Surname}</h2>
+                        </div>
+                        <div class="dob_container">
+                            <h2>DOB: ${single_appointment_by_id.DOB}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="second_container">
+                    <div class="appointment_details">
+                        <div class="date_container">
+                            <h2>Date: ${appt.DayName} ${appt.DayDate} ${appt.Month}</h2>
+                        </div>
+                        <div class="time_container">
+                            <h2>Time: ${appt.Time}</h2>
+                        </div>
+                    </div>
+                    <div class="buttons_container">
+                        <a class="update_btn action_btn" href="edit.html?id=${appt._id}&userId=${single_appointment_by_id._id}">Edit</a>
+                        <div class="delete_btn action_btn" data-appt="${appt._id}">Cancel</div>
+                    </div>
+                </div>
+            </div>
+            `
+        );
+        apptContainer?.insertAdjacentHTML('beforeend',appointmentsData)
+
+        // Handling the delete page btn click 
+        this.handleDeleteBtnUserViewClick();
+        
+        // Handling the userview page print btn click 
+        this.handlePrintBtnUserViewClick();
+    }
+
+    handleDeleteBtnUserViewClick = () => {
+        $(document.querySelector('.delete_btn')).click(e => {
+            e.preventDefault();
+            appointments_manager.deleteAppointment(e.currentTarget.dataset.appt , single_appointment_by_id._id, "Client")
+        })
+    }
+
+    handlePrintBtnUserViewClick = () => {
+        const print_btns = ui_helper_manager.getPrintBtns();
+        printPage(print_btns)
+    }
+
+
+
+
+
+
+
+    // __________________________End Of UserView Page functions _______________________________
 
 
 }
