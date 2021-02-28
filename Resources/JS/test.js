@@ -69,7 +69,7 @@ class UserManager {
 }
 
 class ClinicManager {
-    createClinicSlot = async (newClinicSlot) => {
+    createClinicSlot = async newClinicSlot => {
         try {
             await axios.post(`${heroku_url}api/v1/clinics`, newClinicSlot)
             window.location = "AdminClinicHome.html"
@@ -249,6 +249,9 @@ class UIHelperMethodManager {
                 day.classList.add('disabled')
                 day.classList.add('slot_taken')
             })
+    }
+    getProvidersValue = () => {
+        return document.querySelector('#providers_input').value !== "" ? document.querySelector('#providers_input').value : document.querySelector('#providers_input').value !== ""
     }
 }
 
@@ -1282,6 +1285,34 @@ class BackendUI {
         // Add Clinic Times to the Timeslot containers 
        ui_helper_manager.addClinicTimes(timeslot_clinic_containers)
 
+       // Deal With Clinic Slot Submit Button
+       this.clinicSubmitBtnClick(document.querySelector('.addClinicSlotBtn'), "Post")
+
+    }
+
+    clinicSubmitBtnClick = (submit_btn, method, id) => {
+        $(submit_btn).click(()=> {
+            let provider_value = ui_helper_manager.getProvidersValue(),
+                hours_array = [...document.querySelectorAll('.timeslot_Clinic.selected')].map(timeslot => timeslot.innerHTML),
+                dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML);
+            if (dates_array.length === 0 || hours_array.length === 0) {
+                errorMessages.push("You must select date(s) and hour(s)")
+            } else if(!provider_value){
+                errorMessages.push("You must indicate how many providers are needed")
+            }
+            if(errorMessages.length !== 0){
+                errorMessages.filter((message ,index) => errorMessages.lastIndexOf(message) === index).map(msg => alert(msg)) 
+                return errorMessages = []
+            }
+            let new_clinic_slot = {
+                Month: this.appointment_Details["Month"],
+                Dates: dates_array,
+                Hours: hours_array,
+                Providers: provider_value
+            }   
+            if(method === "Post") clinic_manager.createClinicSlot(new_clinic_slot)
+            else if(method === "Update") clinic_manager.makeClinicUpdate(new_clinic_slot, id)
+        })
     }
 
     dealWithMonthsContainers = () => {
@@ -1448,104 +1479,9 @@ class BackendUI {
         this.appointment_Details["DayName"] = this.daySelected.day
         this.appointment_Details["DayDate"] = this.daySelected.date
 
-        // Move Program Onto the Time Containers and Deal with them 
-        this.dealWithTimeContainers();
     }
 
-    dealWithTimeContainers = () => {
 
-        // Make the Timeslot Containers
-        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
-
-        // Display the Timeslot Containers
-        this.fillInTimeslotContainers(timeSlots)
-
-        // Get the Timeslot Containers and leave equal to a class variable 
-        this.timeSlotContainers = ui_helper_manager.getTimeSlotContainers()
-
-        // Making them all orange and disabled first and then will check against the appointments
-        this.timeSlotContainers.map(timeslot_container => {
-            timeslot_container.classList.add('disabled')
-            timeslot_container.classList.add('orange_disabled')
-        })
-
-        // Check their times against Clinic Hours and Capacity
-        this.checkTimeslotsAgainstClinicPreferences()
-        // checkTime(new Date().getHours())
-
-        // Get the Time selected from page from TimeSlotContainers
-        this.timeSlotContainers.map(timeSlotContainer =>
-            $(timeSlotContainer).click(e => {
-                this.dealWithClickOnTime(e.target);
-            })
-        )
-
-
-    }
-
-    fillInTimeslotContainers = timeSlots => {
-
-        // Make the actual Time Slot Containers 
-        let timeSlotContainers = null;
-        document.querySelector('.time_slot_container_m') ? document.querySelector('.time_slot_container_m')?.classList.add('displayTimeSlotBlock') : null
-        timeSlotContainers = timeSlots.map(timeSlot =>
-            `<div class="timeslot" data-time="${timeSlot}">${timeSlot}</div>`
-        ).join("")
-        document.querySelector('.time_slot_container') ? document.querySelector('.time_slot_container').innerHTML = timeSlotContainers : null
-
-    }
-
-    checkTimeslotsAgainstClinicPreferences = () => {
-        // This just checks if the date picked is within the date slots that the clinic picks
-        // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
-        // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
-
-        for (const clinicSlot of this.clinic_slots)
-            if (this.appointment_Details["Month"] == clinicSlot.Month) {
-                for (const date of clinicSlot.Dates)
-                    if (this.appointment_Details["DayDate"] == date) {
-                        for (const hour of clinicSlot.Hours) {
-                            this.timeSlotContainers
-                                .filter(timeslot_container => timeslot_container.innerHTML == hour)
-                                .map(appointment_s => {
-                                    appointment_s.classList.remove("disabled")
-                                    appointment_s.classList.remove("orange_disabled")
-                                })
-                        }
-                        // REVIEW: Changed this - number of providers 27/02/2021
-                        this.appointments
-                            .filter(appointment => appointment.DayDate == date)
-                            .filter(appointment => appointment.Capacity.length >= parseInt(clinicSlot.Providers))
-                            .map(appointment_s => {
-                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
-                            })
-                    }
-            }
-    }
-
-    dealWithClickOnTime = selectedTime => {
-        // Styles the time selected and ones that aren't accordingly
-
-        // Takes off class off all of them first
-        this.timeSlotContainers.map(timeSlotContainer => {
-            timeSlotContainer.classList.remove('timeSlotActive')
-            timeSlotContainer.classList.remove('timeSlotInActive')
-        })
-
-        // Then adds inactive to those that aren't selected
-        this.timeSlotContainers.filter(timeSlotContainer => timeSlotContainer !== selectedTime).map(timeSlotContainer => {
-            timeSlotContainer.classList.add('timeSlotInActive')
-        })
-
-        // Adds Active to the time that is selected
-        selectedTime.classList.add('timeSlotActive')
-
-        // Get day Selected Object and leaves it as a class variable for use in other methods
-        this.timeSelected = selectedTime.innerHTML
-        this.appointment_Details["Time"] = this.timeSelected
-
-    }
 
 
 
