@@ -208,6 +208,23 @@ class UIHelperMethodManager {
         `).join("")
         slot_container.insertAdjacentHTML('beforeend', contents)
     }
+    addClinicDays = () => {
+        this.getDayContainersFromCalendar().map(day => {
+            $(day).click(e => {
+                e.target.classList.toggle('daySelected') 
+            })
+        })
+    }
+    checkClinicSlots = clinic_slots => {
+        for(const clinicSlot of clinic_slots)
+        this.getDayContainersFromCalendar()
+            .filter(day => clinicSlot.Month === day.dataset.month)
+            .filter(day =>  clinicSlot.Dates.includes(day.innerHTML))
+            .map(day => {
+                day.classList.add('disabled')
+                day.classList.add('slot_taken')
+            })
+    }
 }
 
 class GeneralHelperMethodManager {
@@ -903,6 +920,9 @@ class BackendUI {
          this.clinic_slots = clinic_slots;
          this.covid_terms = covid_terms[0];
          this.users = users;
+
+         // Set up Global Object to add details through as we move through form
+        this.appointment_Details = {};
  
          // Switch Statement to identify which page we're on and what methods we need to kick off (more than 3 conditions)
         switch (page_location) {
@@ -1021,7 +1041,7 @@ class BackendUI {
 
         // TODO: Put This into the update Covid terms date picker function
         // EDIT: Just put this in - 28 February 21:10
-        
+
         // Create A Date Object From the Values in the Date Picker
         let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
 
@@ -1157,6 +1177,10 @@ class BackendUI {
         } 
     }
 
+    // __________________________End Of Admin Home Page functions _______________________________
+
+    // __________________________Start Of Admin Clinic Home Page functions _______________________________
+
     adminClinicHomePageInit = () => {
         // Checking whether admin is logged in or not first
         ValidationHelperManager.isAdminLoggedIn()
@@ -1168,43 +1192,329 @@ class BackendUI {
         this.adminTab = "Clinic"
         ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
 
-        // Set the Min Age Textbox to be the Covid Term Min Age
-        document.querySelector('#min_age').value = this.covid_terms.Min_Age
-        document.querySelector('#min_age').dataset.id = this.covid_terms._id
-
-        // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
-        document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
-
-        // Deal with Date Time Picker Change
-
-        // TODO: Put This into the update Covid terms date picker function
-        // Create A Date Object From the Values in the Date Picker
-        let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
-        covid_terms_manager.updateCovidTerms(date_picker_date_object , this.covid_terms);
+        // Deal With Covid Terms Min Age and Default Date Admin Clinic Home 
+        this.dealWithCovidTermsUpdateElements();
 
         // Display The Clinic Slot Containers
         ui_helper_manager.displayClinicSlotContainersAdminClinicHome(this.clinic_slots);
 
 
+    }
 
+    dealWithCovidTermsUpdateElements = () => {
+
+         // Set the Min Age Textbox to be the Covid Term Min Age
+         document.querySelector('#min_age').value = this.covid_terms.Min_Age
+         document.querySelector('#min_age').dataset.id = this.covid_terms._id
+ 
+         // Deal With Change Of Input in Min Age TextBox
+         $(document.querySelector('#min_age')).focusout(async e => {
+             // Create A Date Object From the Values in the Date Picker
+             this.covid_terms.Min_Age = e.target.value;
+             let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
+             covid_terms_manager.updateCovidTerms(date_picker_date_object , this.covid_terms);
+         })
+ 
+         // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
+         document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
+ 
+         // Deal with Date Time Picker Change
+         $(document.querySelector('#date_picker_input')).on('change', () => {
+ 
+             // Create A Date Object From the Values in the Date Picker
+             let date_picker_date_object =  GeneralHelperMethodManager.createDateObjectFromDatePicker();
+             covid_terms_manager.updateCovidTerms(date_picker_date_object , this.covid_terms);
+ 
+         })
     }
         
-
-    // __________________________End Of Admin Home Page functions _______________________________
-
-
-
-
-    // __________________________Start Of Admin Clinic Home Page functions _______________________________
-
-
-
     // __________________________End Of Admin Clinic Home  Page functions _______________________________
-
-
+    
 
 
     // __________________________Start Of Admin Clinic Add Preferences Page functions _______________________________
+
+
+
+    adminClinicAddPreferencesPageInit = () => {
+        // Checking whether admin is logged in or not first
+        ValidationHelperManager.isAdminLoggedIn()
+
+        //Allow Admin To logout 
+        ui_helper_manager.logoutAdmin()
+
+        // Deal With Tab Change On Side Of Page
+        this.adminTab = "Clinic"
+        ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
+
+        // Kicks off dealing with the months , days and timeslots
+        this.dealWithMonthsContainers();
+
+
+    }
+
+    dealWithMonthsContainers = () => {
+
+        // Get the Month Containers
+        this.monthContainers = ui_helper_manager.getMonthContainers();
+
+        // REVIEW: Display the past months from a certain month
+        this.displayPastMonthsFromCovidTermMonth()
+
+        // Get the month selected from page from monthContainers
+        this.monthContainers.map(monthContainer =>
+            $(monthContainer).click(e => {
+                this.dealWithClickOnMonth(e.target);
+            })
+        )
+
+
+    }
+
+    displayPastMonthsFromMonthNow = async place => {
+        let monthToday = new Date().getMonth()
+        this.monthContainers.filter(monthContainer => monthContainer.dataset.month < monthToday).map(monthContainer => monthContainer.classList.add('disabled'))
+        document.querySelector(`.month[data-month="${monthToday}"]`) ? document.querySelector(`.month[data-month="${monthToday}"]`).classList.add('monthActive') : null
+        displayPastDays(document.querySelector(`.month[data-month="${monthToday}"]`), place)
+    }
+
+    displayPastMonthsFromCovidTermMonth = () => {
+        let covid_term_month = this.covid_terms.Month
+        this.monthContainers.filter(monthContainer => monthContainer.dataset.month < GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)).map(monthContainer => monthContainer.classList.add('disabled'))
+        document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`) ? document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`).classList.add('monthActive') : null
+    }
+
+    dealWithClickOnMonth = selectedMonth => {
+
+        // Styles the month selected and ones that aren't accordingly
+
+        // Takes off class off all of them first
+        this.monthContainers.map(monthContainer => {
+            monthContainer.classList.remove('monthActive')
+            monthContainer.classList.remove('monthInActive')
+        })
+
+        // Then adds inactive to those that aren't selected
+        this.monthContainers.filter(monthContainer => monthContainer !== selectedMonth).map(monthContainer => {
+            monthContainer.classList.add('monthInActive')
+        })
+
+        // Adds Active to the month that is selected
+        selectedMonth.classList.add('monthActive')
+
+        // Get month Selected Object and leaves it as a class variable for use in other methods
+        this.monthSelected = GeneralHelperMethodManager.createMonthObjectFromMonthSelected(selectedMonth.dataset.month)
+        this.appointment_Details["Month"] = this.monthSelected.Name
+
+        // Move Program Onto the Day Containers and Deal with them 
+        this.dealWithDayContainers();
+
+    }
+
+    dealWithDayContainers = () => {
+
+        // Fill Days Into Calendar Using Month Selected Data
+        this.fillDaysIntoCalendarUsingMonthSelectedData()
+
+        // Get the day selected from page from dayContainers
+        this.dayContainers.map(dayContainer =>
+            $(dayContainer).click(e => {
+                this.dealWithClickOnDay(e.target);
+            })
+        )
+
+        // Adding Clinic Days Onto the Calendar
+        ui_helper_manager.addClinicDays()
+        
+        // Check to see if there's no other slots already
+        ui_helper_manager.checkClinicSlots(this.clinic_slots)
+
+        // if(clinicDataSingle !== undefined ) ui_helper_manager.getEditingSlot(clinicDataSingle)
+    }
+
+    fillDaysIntoCalendarUsingMonthSelectedData = () => {
+
+        // Making the actual calendar in these lines
+        document.querySelector('.calendar_container_m') ? document.querySelector('.calendar_container_m')?.classList?.add('displayCalendarBlock') : null
+        let daysOfWeek = `
+                <h3 class= "dayOfWeek">Monday</h3>
+                <h3 class= "dayOfWeek">Tuesday</h3>
+                <h3 class= "dayOfWeek">Wednesday</h3>
+                <h3 class= "dayOfWeek">Thursday</h3>
+                <h3 class= "dayOfWeek">Friday</h3>
+                <h3 class= "dayOfWeek">Saturday</h3>
+                <h3 class= "dayOfWeek">Sunday</h3>
+            `,
+            margin = ``,
+            numberOfDays;
+        if (this.monthSelected.WeekDayNameOfFirstDay !== "Monday") margin = `<div class="margin"></div>`
+        numberOfDays = this.monthSelected.NumOfDays.map(day => {
+            let dayOfWeek = GeneralHelperMethodManager.getWeekDayNumFromDate(new Date().getFullYear(), this.monthSelected.Number, day)
+            dayOfWeek = GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(dayOfWeek);
+            return `<div class="day" data-day= "${dayOfWeek}" data-month="${this.monthSelected.Name}">${day}</div>`
+        }).join("")
+        document.querySelector('.calendar_container') ? document.querySelector('.calendar_container').innerHTML = daysOfWeek + margin + numberOfDays : null
+
+        // Get the margin between first day based on name of day it is
+        ui_helper_manager.getSpanAmountByFirstDayOfMonth(this.monthSelected.WeekDayNameOfFirstDay)
+
+        // Get the Day Containers
+        this.dayContainers = ui_helper_manager.getDayContainersFromCalendar();
+
+        // REVIEW: Display Irrelevant Days - Past Days From Certain Date and Sundays
+        this.displayPastDaysFromCovidTermDate();
+        this.disableSundaysFromDaysCalendar();
+
+    }
+
+    displayPastDaysFromDateNow = () => {
+
+        // Get Todays Date and disabling dates behind this date
+        let dayToday = new Date().getDate();
+        if (dayToday !== null) {
+            this.dayContainers.filter(dayContainer => Number(dayContainer.innerHTML) < dayToday).map(dayContainer => dayContainer.classList.add('disabled'))
+        }
+    }
+
+    displayPastDaysFromCovidTermDate = () => {
+
+        // NOTE: Number(this.covid_terms.Date).toString())
+        // NOTE: Cool little trick I did here, when dealing with a string that has a 0 in it like the covid_term_date does "04",
+        // NOTE: Turn the String into a number with Number("04") which makes it 4 then back into a String which makes it "4"
+
+        // Get The Covid Terms Date and disabling dates behind this date
+        if (this.covid_terms.Date !== null) {
+            this.dayContainers.filter(dayContainer => Number(dayContainer.innerHTML) < Number(this.covid_terms.Date)).map(dayContainer => dayContainer.classList.add('disabled'))
+        }
+    }
+
+    disableSundaysFromDaysCalendar = () => {
+        this.dayContainers.filter(dayContainer => dayContainer.dataset.day === "Sunday").map(dayContainer => {
+            dayContainer.classList.add('sundayDisabled')
+            dayContainer.classList.add('disabled')
+        })
+    }
+
+    dealWithClickOnDay = selectedDay => {
+        // Styles the day selected and ones that aren't accordingly
+
+        // Takes off class off all of them first
+        this.dayContainers.map(dayContainer => {
+            dayContainer.classList.remove('dayActive')
+            dayContainer.classList.remove('dayInActive')
+        })
+
+        // Then adds inactive to those that aren't selected
+        this.dayContainers.filter(dayContainer => dayContainer !== selectedDay).map(dayContainer => {
+            dayContainer.classList.add('dayInActive')
+        })
+
+        // Adds Active to the day that is selected
+        selectedDay.classList.add('dayActive')
+
+        // Get day Selected Object and leaves it as a class variable for use in other methods
+        this.daySelected = GeneralHelperMethodManager.createDayObjectFromDaySelected(selectedDay)
+        this.appointment_Details["DayName"] = this.daySelected.day
+        this.appointment_Details["DayDate"] = this.daySelected.date
+
+        // Move Program Onto the Time Containers and Deal with them 
+        this.dealWithTimeContainers();
+    }
+
+    dealWithTimeContainers = () => {
+
+        // Make the Timeslot Containers
+        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
+
+        // Display the Timeslot Containers
+        this.fillInTimeslotContainers(timeSlots)
+
+        // Get the Timeslot Containers and leave equal to a class variable 
+        this.timeSlotContainers = ui_helper_manager.getTimeSlotContainers()
+
+        // Making them all orange and disabled first and then will check against the appointments
+        this.timeSlotContainers.map(timeslot_container => {
+            timeslot_container.classList.add('disabled')
+            timeslot_container.classList.add('orange_disabled')
+        })
+
+        // Check their times against Clinic Hours and Capacity
+        this.checkTimeslotsAgainstClinicPreferences()
+        // checkTime(new Date().getHours())
+
+        // Get the Time selected from page from TimeSlotContainers
+        this.timeSlotContainers.map(timeSlotContainer =>
+            $(timeSlotContainer).click(e => {
+                this.dealWithClickOnTime(e.target);
+            })
+        )
+
+
+    }
+
+    fillInTimeslotContainers = timeSlots => {
+
+        // Make the actual Time Slot Containers 
+        let timeSlotContainers = null;
+        document.querySelector('.time_slot_container_m') ? document.querySelector('.time_slot_container_m')?.classList.add('displayTimeSlotBlock') : null
+        timeSlotContainers = timeSlots.map(timeSlot =>
+            `<div class="timeslot" data-time="${timeSlot}">${timeSlot}</div>`
+        ).join("")
+        document.querySelector('.time_slot_container') ? document.querySelector('.time_slot_container').innerHTML = timeSlotContainers : null
+
+    }
+
+    checkTimeslotsAgainstClinicPreferences = () => {
+        // This just checks if the date picked is within the date slots that the clinic picks
+        // 1) If it is - filters the timeslots availability by Capacity of equal or more than the number of providers * 2
+        // 2) Else - filters the timeslots availability by Capacity of equal or more than 2
+
+        for (const clinicSlot of this.clinic_slots)
+            if (this.appointment_Details["Month"] == clinicSlot.Month) {
+                for (const date of clinicSlot.Dates)
+                    if (this.appointment_Details["DayDate"] == date) {
+                        for (const hour of clinicSlot.Hours) {
+                            this.timeSlotContainers
+                                .filter(timeslot_container => timeslot_container.innerHTML == hour)
+                                .map(appointment_s => {
+                                    appointment_s.classList.remove("disabled")
+                                    appointment_s.classList.remove("orange_disabled")
+                                })
+                        }
+                        // REVIEW: Changed this - number of providers 27/02/2021
+                        this.appointments
+                            .filter(appointment => appointment.DayDate == date)
+                            .filter(appointment => appointment.Capacity.length >= parseInt(clinicSlot.Providers))
+                            .map(appointment_s => {
+                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
+                            })
+                    }
+            }
+    }
+
+    dealWithClickOnTime = selectedTime => {
+        // Styles the time selected and ones that aren't accordingly
+
+        // Takes off class off all of them first
+        this.timeSlotContainers.map(timeSlotContainer => {
+            timeSlotContainer.classList.remove('timeSlotActive')
+            timeSlotContainer.classList.remove('timeSlotInActive')
+        })
+
+        // Then adds inactive to those that aren't selected
+        this.timeSlotContainers.filter(timeSlotContainer => timeSlotContainer !== selectedTime).map(timeSlotContainer => {
+            timeSlotContainer.classList.add('timeSlotInActive')
+        })
+
+        // Adds Active to the time that is selected
+        selectedTime.classList.add('timeSlotActive')
+
+        // Get day Selected Object and leaves it as a class variable for use in other methods
+        this.timeSelected = selectedTime.innerHTML
+        this.appointment_Details["Time"] = this.timeSelected
+
+    }
 
 
 
