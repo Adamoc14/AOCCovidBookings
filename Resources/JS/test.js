@@ -223,7 +223,7 @@ class GeneralHelperMethodManager {
         return {
             Year: document.querySelector('#date_picker_input')?.value?.split("-")[0],
             Month: document.querySelector('#date_picker_input')?.value?.split("-")[1],
-            MonthName: GeneralHelperMethodManager.getNameOfTheMonthByNum(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1])),
+            MonthName: GeneralHelperMethodManager.getNameOfTheMonthByNum(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1),
             Date: document.querySelector('#date_picker_input')?.value?.split("-")[2]
         }
     }
@@ -232,17 +232,20 @@ class GeneralHelperMethodManager {
         return appointments.filter(appointment => parseInt(appointment.DayDate) === parseInt(datePickerObjectDetails.Date) && appointment.Month === datePickerObjectDetails.MonthName)
     }
 
-    static retrieveRunningAppointmentsTotal = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0)
+    static retrieveRunningAppointmentsTotal = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values?.map(appt => appt.Capacity.length).reduce((a,b) => a+b , 0)
 
     static retrieveOverallAppointmentsTotal = appointments => appointments.length
 
-    static sortAppointmentsBeingDisplayedByTime = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
+    static sortAppointmentsBeingDisplayedByTime = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values?.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
 
     static trimAndVerifySearchValue = searchValue => searchValue !== null && searchValue !== undefined ? searchValue.trim() && searchValue : null  
     
     static checkAppointmentAndUserRecordsInTableAgainst = (appointments, searchValue) => {
         if(searchValue.length < 1) return []
-       return appointments.filter(appointment => appointment.Time.includes(searchValue) || GeneralHelperMethodManager.loopAndCheckForMatchWithUserRecordsFromAppointmentsInDB(appointment.Capacity , searchValue))
+        else {
+            let matches = appointments.filter(appointment => appointment.Time.includes(searchValue) || GeneralHelperMethodManager.loopAndCheckForMatchWithUserRecordsFromAppointmentsInDB(appointment.Capacity , searchValue))
+            return matches.length  === 0 ? [""] : matches
+        }
     }
     
     static loopAndCheckForMatchWithUserRecordsFromAppointmentsInDB = (users , searchValue) => {
@@ -975,7 +978,7 @@ class BackendUI {
 
         // Don't Have Year In Covid Terms So Have To get it
         let year = new Date().getFullYear(),
-        month = GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month),
+        month = GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month) + 1,
         date = this.covid_terms.Date;
 
         // Use the helper method to distinguish whether number is "4" or "04" which is needed for date formatting
@@ -997,18 +1000,18 @@ class BackendUI {
 
         // Sort Appointments By Time Before Displayed
         const appointments_sorted_by_time = GeneralHelperMethodManager.sortAppointmentsBeingDisplayedByTime(filtered_appointments_from_date_picker_values),
-        appointmentsHTML = appointments_sorted_by_time.map(appointment => {
+        appointmentsHTML = appointments_sorted_by_time?.map(appointment => {
             if(appointment.Capacity.length >= 2) {
                 return  `  
                     <div class="appointment_details span" data-id="${appointment._id}">
-                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${GeneralHelperMethodManager.getNumOfTheMonthByName(appointment.Month)}</little>${appointment.Time}</h3>
+                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${GeneralHelperMethodManager.getNumOfTheMonthByName(appointment.Month) + 1}</little>${appointment.Time}</h3>
                         ${ui_helper_manager.makeTableRowFromUserDetailsAdminHomePage(appointment.Capacity, appointment._id)}
                     </div>
                     `
             } else {
                 return  `  
                     <div class="appointment_details" data-id="${appointment._id}">
-                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${GeneralHelperMethodManager.getNumOfTheMonthByName(appointment.Month)}</little>${appointment.Time}</h3>
+                        <h3 class="time" data-capacity="${appointment.Capacity.length}"><little>${appointment.DayDate} / ${GeneralHelperMethodManager.getNumOfTheMonthByName(appointment.Month) + 1}</little>${appointment.Time}</h3>
                         ${ui_helper_manager.makeTableRowFromUserDetailsAdminHomePage(appointment.Capacity, appointment._id)}
                     </div>
                     `
@@ -1038,7 +1041,7 @@ class BackendUI {
         // Deals With Retrieving Data Picker Values , Filtering Records By Them and Displaying Records In Table
         this.retrieveFilterDisplayDataFromDataPicker();
     }
-    
+
 
     dealWithSearchChange = searchValue => {
 
