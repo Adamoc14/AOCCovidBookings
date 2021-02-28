@@ -52,6 +52,7 @@ class CovidTermsManager {
 }
 
 // TODO: Need to set up User Api Endpoints 
+// EDIT: Added in these routes - 28/02/2021 12:50
 class UserManager {
     readAllUsers = async() => {
         let{data: users} = await axios.get(`${heroku_url}api/v1/users`)
@@ -754,13 +755,96 @@ class FrontEndUI {
 class BackendUI {
     constructor(appointments, covid_terms, clinic_slots, users) {
 
-        // Get all Data Needed and leave equal to global variables
-        this.appointments = appointments;
-        this.clinic_slots = clinic_slots;
-        this.covid_terms = covid_terms;
+         // Get all Data Needed and leave equal to global variables
+         this.appointments = appointments;
+         this.clinic_slots = clinic_slots;
+         this.covid_terms = covid_terms[0];
+ 
+         // Switch Statement to identify which page we're on and what methods we need to kick off (more than 3 conditions)
+        switch (page_location) {
+            case "adminlogin":
+                this.adminLoginPageInit();
+                break;
+            case "adminhome":
+                this.adminHomePageInit();
+                break;
+            case "adminclinichome":
+                this.adminClinicHomePageInit();
+                break;
+            case "adminclinicadd":
+                this.adminClinicAddPreferencesPageInit();
+                break;
+            case "adminclinicupdate":
+                this.adminClinicUpdatePreferencesPageInit();
+                break;
+        }
 
 
     }
+
+    // __________________________Start Of Admin Login Page functions _______________________________
+
+    adminLoginPageInit = () => {
+
+        // Logging in the admin user 
+        this.handleAdminLoginBtnClick();
+    }
+
+    handleAdminLoginBtnClick = () => {
+        const loginForm = document.querySelector('.login_form')
+        $(loginForm).submit(e => {
+            let loginDetails = {
+                Username: $('#username_input').val(),
+                Password: $('#password_input').val()
+            }
+            e.preventDefault()
+            if(!ValidationHelperManager.isValidLogin(loginDetails)) {
+                alert("Your username or password is invalid")
+                return
+            }
+            sessionStorage.setItem("Admin", "LoggedIn");
+            window.location = "adminHome.html"
+        })
+    }
+
+    
+
+    // __________________________End Of Admin Login Page functions _______________________________
+
+
+
+    // __________________________Start Of Admin Home Page functions _______________________________
+
+
+
+    // __________________________End Of Admin Home Page functions _______________________________
+
+
+
+
+    // __________________________Start Of Admin Clinic Home Page functions _______________________________
+
+
+
+    // __________________________End Of Admin Clinic Home  Page functions _______________________________
+
+
+
+
+    // __________________________Start Of Admin Clinic Add Preferences Page functions _______________________________
+
+
+
+    // __________________________End Of Admin Clinic Add Preferences Page functions _______________________________
+
+
+
+    // __________________________Start Of Admin Clinic Update Preferences Page  functions _______________________________
+
+
+
+    // __________________________End Of Admin Clinic Update Preferences Page  functions _______________________________
+    
 }
 
 // Overall Initialization Method
@@ -768,13 +852,14 @@ class BackendUI {
 const covidWebAppInit = async (user_location, page_location) => {
     const appointments = await appointments_manager.readAllAppointments(),
         clinic_slots = await clinic_manager.readAllClinicSlots(),
-        covid_terms = await covid_terms_manager.readAllCovidTerms();
+        covid_terms = await covid_terms_manager.readAllCovidTerms(),
+        // TODO: Need to get the Users in here through the read all Users Endpoint
+        // EDIT: Added in these routes - 28/02/2021 12:50
+        users = await user_manager.readAllUsers();
 
-    // TODO: Need to get the Users in here through the read all Users Endpoint
-    const users = [];
-
+    // This if statement line gets it all kicking off
     if (user_location === "Client") new FrontEndUI(appointments, covid_terms, clinic_slots, page_location);
-    else new BackendUI(appointments, covid_terms, clinic_slots, users);
+    else new BackendUI(appointments, covid_terms, clinic_slots, users, page_location);
 }
 
 
@@ -804,12 +889,25 @@ $(document).ready(() => {
             // Web App Initialization
             covidWebAppInit("Client", "userview")
             break
-        case (/(?:^|\W)adminhome(?:$|\W)/).test(window.location.pathname.toLowerCase()):
         case (/(?:^|\W)adminlogin(?:$|\W)/).test(window.location.pathname.toLowerCase()):
+            // Web App Initialization
+            covidWebAppInit("Backend", "adminlogin")
+            break
+        case (/(?:^|\W)adminhome(?:$|\W)/).test(window.location.pathname.toLowerCase()):
+            // Web App Initialization
+            covidWebAppInit("Backend", "adminhome")
+            break
         case (/(?:^|\W)adminclinichome(?:$|\W)/).test(window.location.pathname.toLowerCase()):
+            // Web App Initialization
+            covidWebAppInit("Backend", "adminclinichome")
+            break
         case (/(?:^|\W)adminclinicadd(?:$|\W)/).test(window.location.pathname.toLowerCase()):
+            // Web App Initialization
+            covidWebAppInit("Backend" , "adminclinicadd")
+            break
         case (/(?:^|\W)adminclinicupdate(?:$|\W)/).test(window.location.pathname.toLowerCase()):
-            covidWebAppInit("Backend")
+            // Web App Initialization
+            covidWebAppInit("Backend" , "adminclinicupdate")
             break
     }
 })
