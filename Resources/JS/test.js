@@ -238,6 +238,32 @@ class GeneralHelperMethodManager {
 
     static sortAppointmentsBeingDisplayedByTime = filtered_appointments_from_date_picker_values => filtered_appointments_from_date_picker_values.sort((now, next) => now.Time.split(":")[0] - next.Time.split(":")[0] || now.Time.split(":")[1] - next.Time.split(":")[1])
 
+    static trimAndVerifySearchValue = searchValue => searchValue !== null && searchValue !== undefined ? searchValue.trim() && searchValue : null  
+    
+    static checkAppointmentAndUserRecordsInTableAgainst = (appointments, searchValue) => {
+        if(searchValue.length < 1) return []
+       return appointments.filter(appointment => appointment.Time.includes(searchValue) || GeneralHelperMethodManager.loopAndCheckForMatchWithUserRecordsFromAppointmentsInDB(appointment.Capacity , searchValue))
+    }
+    
+    static loopAndCheckForMatchWithUserRecordsFromAppointmentsInDB = (users , searchValue) => {
+        let matches = []
+        let keys = ["_id", "firstName", "Surname", "DOB", "PPS_Number"]
+        for (const key of keys) {
+            users = users.filter(user => user[key] !== undefined || user[key] !== null)
+        }
+        users.map(user => 
+            matches.push(
+                user?._id?.includes(searchValue), 
+                user?.firstName?.includes(searchValue), 
+                user?.Surname?.includes(searchValue) , 
+                user?.firstName + user?.Surname === searchValue, 
+                user?.DOB?.includes(searchValue), 
+                user?.PPS_Number?.includes(searchValue)
+            )
+        )
+        return matches.includes(true)               
+    }
+
     static resettingAppointmentsDataTableBackToOnlyHeadings = () => {
         document.querySelector('.main_container_m') ? document.querySelector('.main_container_m').innerHTML = `
                     <div class="headings">
@@ -898,11 +924,11 @@ class BackendUI {
         this.adminTab = "Appointments"
         ui_helper_manager.dealWithAdminTabsChange(this.adminTab);
 
-        // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
-        document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
-
-        // Deals With Retrieving Data Picker Values , Filtering Records By Them and Displaying Records In Table
-        this.retrieveFilterDisplayDataFromDataPicker();
+        // REVIEW: Fill the Date Picker and Appointment Table Records With Default Values 
+        /**
+         * Either Covid Term Date or Date Today
+         */
+        this.getDefaultDatePickerAndAppointmentTableRecords();
 
        // Deal With Change Of Date In Date Picker
        $(document.querySelector('#date_picker_input')).on('change', () => {
@@ -910,7 +936,9 @@ class BackendUI {
         })
 
         // Deal With Search In Search Bar 
-        dealWithSearch()
+        $(document.querySelector('#search_input')).on('input change', e => {
+            this.dealWithSearchChange(e.target.value)
+        })
         
         // getAppointmentDataFromTable()
         // dealWithSingleRecordPick()
@@ -919,6 +947,14 @@ class BackendUI {
         // await checkDelete()
         // await dealWithSingleRecordPick();
 
+    }
+
+    getDefaultDatePickerAndAppointmentTableRecords = () => {
+        // REVIEW: Fill Value of Date Time Picker With A Date - Either Todays Date or Covid Term Date
+        document.querySelector('#date_picker_input').value = this.fillValueOfPickerWithCovidTermDate();
+
+        // Deals With Retrieving Data Picker Values , Filtering Records By Them and Displaying Records In Table
+        this.retrieveFilterDisplayDataFromDataPicker();
     }
 
     retrieveFilterDisplayDataFromDataPicker = () => {
@@ -1002,6 +1038,20 @@ class BackendUI {
         // Deals With Retrieving Data Picker Values , Filtering Records By Them and Displaying Records In Table
         this.retrieveFilterDisplayDataFromDataPicker();
     }
+    
+
+    dealWithSearchChange = searchValue => {
+
+        // Resetting the table back to the Headings
+        GeneralHelperMethodManager.resettingAppointmentsDataTableBackToOnlyHeadings();
+        
+        // Trimming down searchValue and Making sure it's not null
+        searchValue = GeneralHelperMethodManager.trimAndVerifySearchValue(searchValue);
+
+        let matched_records_from_search_value = GeneralHelperMethodManager.checkAppointmentAndUserRecordsInTableAgainst(this.appointments , searchValue)
+        matched_records_from_search_value?.length === 0 ? this.getDefaultDatePickerAndAppointmentTableRecords() : this.displayAppointmentsInTable(matched_records_from_search_value)
+    }
+        
 
     // __________________________End Of Admin Home Page functions _______________________________
 
