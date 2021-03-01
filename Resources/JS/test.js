@@ -1527,33 +1527,22 @@ class BackendUI {
 
         // Filling in clinic slot's value for the providers in the textbox provided
         document.querySelector('#providers_input').value = clinicDataSingle.Providers
-
-
-        // submit_btn = document.querySelector('.addClinicSlotBtn');
-        // // displayPastMonths("Clinic")
     
         // REVIEW: Clicking default buttons for faster booking
         document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
-
-
+        
+        // This is the line to change it back to clicking on month of the clinic slot rather than covid terms
         // document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`).style.background = "green"
-        // displayPastDays([...document.querySelectorAll('.month')], document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`), "Clinic")
-        
+
+        // TODO: Refactor A lot of this code 
         ui_helper_manager.addClinicDays(ui_helper_manager.getDayContainersFromCalendar())
-        ui_helper_manager.checkClinicSlots(this.clinic_slots)
         if(clinicDataSingle !== undefined ) ui_helper_manager.getEditingSlot(clinicDataSingle)
-        ui_helper_manager.checkClinicSlots(this.clinic_slots)
         ui_helper_manager.getEditingTimeslot(clinicDataSingle)
-
-
         
-        
+        // Deal With Clinic Edit Button Click
         this.clinicSubmitBtnClick(document.querySelector('.addClinicSlotBtn'), "Update" , id)
 
     }
-
-
-
 
     // __________________________End Of Admin Clinic Update Preferences Page  functions _______________________________
     
