@@ -496,6 +496,9 @@ class FrontEndUI {
         // Kicks off dealing with the months , days and timeslots
         this.dealWithMonthsContainers();
 
+        // REVIEW: Clicking default buttons for faster booking
+        document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
+
         // Validating and checking User Input 
         ValidationHelperManager.checkVaccineAbility();
         ValidationHelperManager.checkDOBOfUser(this.covid_terms);
@@ -568,6 +571,9 @@ class FrontEndUI {
 
         // Fill Days Into Calendar Using Month Selected Data
         this.fillDaysIntoCalendarUsingMonthSelectedData()
+
+        // REVIEW: Clicking default buttons for faster booking
+        document.querySelector(`.day[data-day="${GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(Number(this.covid_terms.Date).toString())}"]`)?.click()
 
         // Get the day selected from page from dayContainers
         this.dayContainers.map(dayContainer =>
