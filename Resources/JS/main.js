@@ -1078,11 +1078,16 @@ const adminClinicAddInit = async() => {
     submit_btn = document.querySelector('.addClinicSlotBtn');
     $(`.options_container h1:contains("Clinic")`)[0].style.background = "#fff"
     dealWithTabs()
+
+
     displayPastMonths("Clinic")
     dealWithMonths("Clinic" , clinicData)
     checkSlots(clinicData)
+
     const timeSlotsContainers = displayClinicTimeslots(timeSlots)
     addClinicTimes(timeSlotsContainers)
+
+    
     clinicSubmitBtnClick(submit_btn , "Post")
     // displayMonthAndDates(clinicData)
 }

@@ -1247,7 +1247,9 @@ class BackendUI {
         // Display The Clinic Slot Containers
         ui_helper_manager.displayClinicSlotContainersAdminClinicHome(this.clinic_slots);
 
-
+        // Deal With Delete Clinic Slot Button Click 
+        [...document.querySelectorAll('.delete_btn')].map(delete_btn => $(delete_btn).click(e => clinic_manager.deleteClinicSlot(e.target.dataset.clinic_id))) 
+        
     }
 
     dealWithCovidTermsUpdateElements = () => {
@@ -1298,6 +1300,10 @@ class BackendUI {
 
         // Kicks off dealing with the months , days and timeslots
         this.dealWithMonthsContainers();
+
+        // REVIEW: Clicking default buttons for faster booking
+        document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
+        // document.querySelector(`.day[data-day="${GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(Number(this.covid_terms.Date).toString())}"]`)?.click()
 
         // Make Clinic Time Slot Containers
         let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
@@ -1382,9 +1388,6 @@ class BackendUI {
                 this.dealWithClickOnDay(e.target);
             })
         )
-
-        // Adding Clinic Days Onto the Calendar
-        ui_helper_manager.addClinicDays()
         
         // Check to see if there's no other slots already
         ui_helper_manager.checkClinicSlots(this.clinic_slots)
@@ -1456,21 +1459,8 @@ class BackendUI {
     }
 
     dealWithClickOnDay = selectedDay => {
-        // Styles the day selected and ones that aren't accordingly
-
-        // Takes off class off all of them first
-        this.dayContainers.map(dayContainer => {
-            dayContainer.classList.remove('dayActive')
-            dayContainer.classList.remove('dayInActive')
-        })
-
-        // Then adds inactive to those that aren't selected
-        this.dayContainers.filter(dayContainer => dayContainer !== selectedDay).map(dayContainer => {
-            dayContainer.classList.add('dayInActive')
-        })
-
-        // Adds Active to the day that is selected
-        selectedDay.classList.add('dayActive')
+        // Adding Clinic Days Onto the Calendar
+        ui_helper_manager.addClinicDays() 
 
         // Get day Selected Object and leaves it as a class variable for use in other methods
         this.daySelected = GeneralHelperMethodManager.createDayObjectFromDaySelected(selectedDay)
@@ -1542,6 +1532,10 @@ class BackendUI {
         // submit_btn = document.querySelector('.addClinicSlotBtn');
         // // displayPastMonths("Clinic")
     
+        // REVIEW: Clicking default buttons for faster booking
+        document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
+
+        
         // document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`).style.background = "green"
         // displayPastDays([...document.querySelectorAll('.month')], document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`), "Clinic")
         
