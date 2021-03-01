@@ -451,7 +451,7 @@ class ValidationHelperManager {
     static checkDOBOfUser = covid_term => {
         const DOB_Input = document.querySelector('.dob_container input[type=text]');
         $(DOB_Input).focusout(e => {
-            new Date().getFullYear() - e.target.value.substring(6,) >= covid_term.Min_Age ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex";
+            new Date().getFullYear() - e.target.value.substring(6,) > covid_term.Min_Age ? true : document.querySelector('.blocking_form_modal_outer').style.display = "flex";
         })
     }
 
@@ -1535,7 +1535,7 @@ class BackendUI {
         // REVIEW: Clicking default buttons for faster booking
         document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
 
-        
+
         // document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`).style.background = "green"
         // displayPastDays([...document.querySelectorAll('.month')], document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`), "Clinic")
         
