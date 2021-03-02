@@ -1106,7 +1106,7 @@ class BackendUI {
 
         // Don't Have Year In Covid Terms So Have To get it
         let year = new Date().getFullYear(),
-        month = GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month) + 1,
+        month = GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms?.Month) + 1,
         date = this.covid_terms.Date;
 
         // Use the helper method to distinguish whether number is "4" or "04" which is needed for date formatting
