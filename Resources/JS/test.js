@@ -420,7 +420,7 @@ class GeneralHelperMethodManager {
 
     static objectToCSV = temporary_appointments => {
         let preferences = {
-            filename: 'WHMC_Appointments.csv',
+            filename: 'Covid_Appointments.csv',
             data: [],
             headers: []
         };
@@ -455,7 +455,7 @@ class ValidationHelperManager {
         })
     }
 
-    static isValidLogin = details => details.Username === "whmcadmin" && details.Password === "#whmcadmin"
+    static isValidLogin = details => details.Username === "aoccovid" && details.Password === "#aoccovid"
 
     static isAdminLoggedIn = () =>  sessionStorage.getItem('AdminLoggedIn') ? null : window.location = "AdminLogin.html"
     
@@ -1568,7 +1568,7 @@ const covidWebAppInit = async (user_location, page_location) => {
 // Global Variable Declarations, Class and Function Definitions
 let errorMessages = [];
 const local_url = "http://localhost:8000/",
-    heroku_url = "https://whmc-covid-server.herokuapp.com/",
+    heroku_url = "https://aoccovid-server.herokuapp.com/",
     appointments_manager = new AppointmentManager(),
     covid_terms_manager = new CovidTermsManager(),
     user_manager = new UserManager(),
