@@ -53,6 +53,7 @@ aside {
 .numberOfUsers {
     display: flex;
     font-size: 1.7vw;
+    width: 30vw;
 }
 
 .button_options {
@@ -81,7 +82,7 @@ aside {
 }
 
 .top_part_inner img {
-    width: 27vw;
+    width: 13vw;
 }
 
 .search_container {
