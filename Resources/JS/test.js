@@ -1045,28 +1045,28 @@ class BackendUI {
         this.getDefaultDatePickerAndAppointmentTableRecords();
 
        // Deal With Change Of Date In Date Picker
-       $(document.querySelector('#date_picker_input')).on('change', () => {
+       $(document.querySelector('#date_picker_input'))?.on('change', () => {
             this.dealWithDatePickerChangeAdminHome()
         })
 
         // Deal With Search In Search Bar 
-        $(document.querySelector('#search_input')).on('input change', e => {
+        $(document.querySelector('#search_input'))?.on('input change', e => {
             this.dealWithSearchChange(e.target.value)
         })
         
         // Deal With Export To CSV Button Click 
-        $(document.querySelector('.download_csv_btn')).click(e => {
+        $(document.querySelector('.download_csv_btn'))?.click(e => {
             this.dealWithCSVButtonClickAdminHome();
         })
 
         // Deal With Print Button Pressed
-        const print_btn = ui_helper_manager.getPrintBtns();
-        ui_helper_manager.printPage(print_btn)
+        const print_btn = ui_helper_manager?.getPrintBtns();
+        ui_helper_manager?.printPage(print_btn)
 
 
         // Handling Delete Appointment Individual Buttons Pressed
-        ([...document.querySelectorAll('.delete')].map(delete_btn => 
-            $(delete_btn).click(e => {
+        ([...document.querySelectorAll('.delete')]?.map(delete_btn => 
+            $(delete_btn)?.click(e => {
                appointments_manager.deleteAppointment(e.target.dataset.apptid , e.target.dataset.userid , "Backend")
             })
         ))
