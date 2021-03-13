@@ -13,14 +13,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
     <!-- <script src="Resources/JS/main.js"></script> -->
     <script defer src="Resources/JS/test.js"></script>
-    <title>AOC Covid Vaccination | Admin Clinic</title>
+    <title>WHMC Vaccination | Admin Clinic</title>
 </head>
 <body>
     <div class="wrapper">
         <div class="main_container">
             <div class="top_part">
                 <div class="top_part_inner">
-                    <img src="https://aoc-bookings.netlify.app/Resources/Images/AOCLogoF.jpg" alt="">
+                    <img src="./Resources/Images/WHMC.png" alt="">
                     <h3 class="logout">Log Out</h3>
                 </div>
             </div>
@@ -61,15 +61,12 @@
                     </div>
                     <div class="calendar_container container"></div>
                 </div>
-                <div class="clinicTimeslotsContainer">
-                    <h2 class="choose_hours">Pick your hours available below</h2>
-                    <div class="clinicTimeslotsContainerInner"></div>
-                </div>
-                <div class="Providers_container">
-                    <h2>Pick amount of Vaccinators below</h2>
-                    <div class="Providers_container_inner">
-                        <h4>Number Of Vaccinators:</h4>
-                        <input type="text" name="providers_input" id="providers_input" required>
+                <div class="clinic_slots_needed_container_outer">
+                    <div class="clinic_slots_needed_container_inner">
+                        <div class="clinic_slots_needed_container_sm">
+                            <label for="clinics_needed">How many clinic slots do need for this day: </label>
+                            <input type="text" name="clinics_needed" class="clinics_needed_input" required>
+                        </div>
                     </div>
                 </div>
                 <div class="manipulation_buttons_container">

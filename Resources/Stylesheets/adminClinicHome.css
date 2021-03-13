@@ -33,6 +33,10 @@
     margin-top: 3em;
 }
 
+.timeslot_containers_needed{
+    margin-bottom: .5em;
+}
+
 .slot_entry_container {
     display: grid;
     grid-template-columns: 25% 75%;
@@ -47,7 +51,7 @@
     justify-content: flex-end;
     grid-column: span 2;
     align-items: center;
-    margin: 0em 1em;
+    margin: 1em 1em;
 }
 
 .date_square {
@@ -94,10 +98,26 @@
 .slot_details_container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
 .slot_details_container h2 {
     font-weight: 200;
     font-size: 1.8vw;
+}
+
+circle {
+    width: 6vh;
+    height: 6vh;
+    border-radius: 50%;
+    background: orange;
+    display: flex;
+    place-items: center;
+    justify-content: center;
+    margin-bottom: .5em;
+}
+
+.date_circle_container {
+    display: flex;
+    width: 12vw;
+    justify-content: space-around;
 }

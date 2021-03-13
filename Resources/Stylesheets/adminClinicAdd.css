@@ -8,6 +8,29 @@
     margin-bottom: 1em;
 }
 
+.clinic_slots_needed_container_outer {
+    display: none;
+}
+
+/* .clinic_slots_needed_container_inner{
+    padding: 1em 1em;
+} */
+
+.clinic_slots_needed_container_sm {
+    width: 51vw;
+    margin: 0 auto;
+    padding: 2em;
+}
+
+.clinic_slots_needed_container_sm label {
+    margin-bottom: unset;
+}
+
+.clinic_slots_needed_container_sm .clinics_needed_input {
+    width: 4vw;
+    text-align: center;
+}
+
 .manipulation_buttons_container {
     display: flex;
     justify-content: center;
@@ -35,9 +58,7 @@
     color: white;
 }
 
-.selected{
-    background: orange;
-}
+
 
 
 

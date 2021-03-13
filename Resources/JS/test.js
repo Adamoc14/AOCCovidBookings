@@ -1589,7 +1589,7 @@ class BackendUI {
         this.appointment_Details["DayDate"] = this.daySelected.date
 
         // Display Clinic Slots Needed container 
-        document.querySelector('.clinic_slots_needed_container_outer').classList.add('displayClinicSlotNeededGrid');
+        document.querySelector('.clinic_slots_needed_container_outer')?.classList?.add('displayClinicSlotNeededGrid');
     }
 
     dealWithClinicSlotsNeededInputChange = () => {

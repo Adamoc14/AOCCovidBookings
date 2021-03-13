@@ -8,7 +8,6 @@
     font-family: 'Nunito', sans-serif;
     font-weight: 700;
     font-size: 2vw;
-    scroll-behavior: smooth;
 }
 
 li{
@@ -22,6 +21,7 @@ a {
 a:hover {
 	text-decoration: none;
 }
+
 
 img , video{
     object-fit: cover;

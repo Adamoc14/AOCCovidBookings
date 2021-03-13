@@ -1,0 +1,10 @@
+.resetClinicSlotsNeeded {
+    margin-right: 1em;
+    width: 22vw;
+    margin-left: auto;
+    padding: .8em 1em;
+    text-align: center;
+    background: orange;
+    font-size: .8em;
+    cursor: pointer;
+}
