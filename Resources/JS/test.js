@@ -182,6 +182,10 @@ class UIHelperMethodManager {
         }))
     }
 
+    resetClinicSlotsNeededContainer = () => {
+        document.querySelector('.clinic_slots_needed_container_inner').innerHTML = "";
+    }
+
     displayClinicTimeslots = timeSlots => {
         let timeSlotContainer = document.querySelector('.clinicTimeslotsContainerInner')
             timeSlots = timeSlots.map(timeSlot => 
@@ -192,13 +196,63 @@ class UIHelperMethodManager {
             return timeSlotContainers
     }
 
-    addClinicTimes = timeSlots => {
-        timeSlots.map(timeSlot => {
+    retrieveClinicTimeslotsHTML = timeSlots => {
+        timeSlots = timeSlots.map(timeSlot => 
+            `<div class="timeslot_Clinic" data-time="${timeSlot}">${timeSlot}</div>`
+        ).join("")
+        return timeSlots
+    }
+
+    dealWithSelectedClinicTimes = () => {
+        this.getClinicTimeSlotContainers().map(timeSlot => {
             $(timeSlot).click(e => {
-                e.target.classList.toggle('selected')
+                const timeSelectedAlready = ValidationHelperManager.checkIfHourAlreadyPicked(e.target)
+                timeSelectedAlready?.length > 0 ?  errorMessages.push("This hour is already taken") : e.target.classList.toggle('clinicTimeSlotSelected')
+
+                // Check to see if there's any errors like time selected already 
+               ValidationHelperManager.handlingAndAlertingErrors();
+                if (errorMessages.length !== 0) {
+                    errorMessages = []
+                    return
+                }
             })
         })
     }
+
+    makeClinicSlotNeededContainers = clinics_needed => {
+        // Make Clinic Time Slot Containers and get HTML back for them
+        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
+        let timeslot_clinic_containers = ui_helper_manager.retrieveClinicTimeslotsHTML(timeSlots)
+
+        // Loop through from 0 to amount of clinic_slots needed and make timeslot preference containers HTML
+        let clinic_slots_needed_preferences = Array(clinics_needed).fill().map((_,clinic_slot_needed) => {
+            return `
+            <div class="clinicTimeslotAppointmentPreferences" data-slot="${clinic_slot_needed}">
+                <div class="clinicTimeslotsContainer">
+                    <h1>Clinic Slot ${clinic_slot_needed + 1}: </h1>
+                    <h2 class="choose_hours">Pick your hours available below</h2>
+                    <div class="clinicTimeslotsContainerInner">
+                        ${timeslot_clinic_containers}
+                    </div>
+                </div>
+                <div class="Providers_container">
+                    <h2>Pick amount of Vaccinators below</h2>
+                    <div class="Providers_container_inner">
+                        <h4>Number Of Vaccinators:</h4>
+                        <input type="text" name="providers_input" id="providers_input" data-slot="${clinic_slot_needed}" required>
+                    </div>
+                </div>
+            </div>
+            `
+        }).join("")
+
+        // Add array of timeslot needed containers inputs to the page
+        document.querySelector('.clinic_slots_needed_container_inner').innerHTML = `
+            ${clinic_slots_needed_preferences}
+        `;
+
+    }
+
 
     getDayContainersFromCalendar = () => {
         return [...document.querySelectorAll('.day')];
@@ -209,30 +263,47 @@ class UIHelperMethodManager {
     getTimeSlotContainers = () => {
         return [...document.querySelectorAll('.timeslot')]
     }
+    getClinicTimeSlotContainers = () => {
+        return [...document.querySelectorAll('.timeslot_Clinic')]
+    }
     getPrintBtns = () => {
         return [...document.querySelectorAll('.print_btn')]
     }
     displayClinicSlotContainersAdminClinicHome = clinic_slots => {
-        const slot_container = document.querySelector('.clinic_slots_container'),
+        const slot_container = 
+        document.querySelector('.clinic_slots_container'),
         contents = clinic_slots.map(clinic_slot => 
         `
             <div class="slot_entry_container">
                 <div class="date_square_container">
-                    <div class="date_square">${clinic_slot.Month.slice(0, 3)}</div>
+                    <div class="date_square">${clinic_slot?.Month?.slice(0, 3)}</div>
                 </div>
+
                 <div class="slot_details_container">
-                    <h2><strong>Hours (Available):</strong> ${clinic_slot.Hours.join(", ")}</h2>
-                    <h2><strong>Vaccinators:</strong> ${clinic_slot.Providers}</h2>
-                    <h2><strong>Dates:</strong> ${clinic_slot.Dates.join(", ")}</h2>
+                    <h2><strong>Dates:</strong></h2> 
+                    <div class="date_circle_container">${clinic_slot?.Dates?.map(date => `<circle>${date}</circle>`).join("")}</div>
+                    ${clinic_slot?.Timeslots?.map((timeslot, index) => this.retrieveValuesHTMLFromClinicSlotsTimeslots(timeslot, index)).join("")}
+                    
                 </div>
                 <div class="manipulate_slot_buttons_container">
-                    <a class="update_btn action_btn" href="AdminClinicUpdate.html?id=${clinic_slot._id}">Edit</a>
-                    <div class="delete_btn action_btn" data-clinic_id="${clinic_slot._id}">Delete</div>
+                    <a class="update_btn action_btn" href="AdminClinicUpdate.html?id=${clinic_slot?._id}">Edit</a>
+                    <div class="delete_btn action_btn" data-clinic_id="${clinic_slot?._id}">Delete</div>
                 </div>
             </div>
         `).join("")
         slot_container.insertAdjacentHTML('beforeend', contents)
     }
+
+    retrieveValuesHTMLFromClinicSlotsTimeslots = (timeslot, index) => {
+        return `
+            <div class="timeslot_containers_needed">
+             <h2><u> Clinic Slot ${index + 1}</u></h2>
+             <h2><strong>Hours (Available):</strong> ${timeslot?.Hours?.join(", ")}</h2>
+             <h2><strong>Vaccinators:</strong> ${timeslot?.Providers}</h2>
+             </div>
+        `
+    }
+
     addClinicDays = () => {
         this.getDayContainersFromCalendar().map(day => {
             $(day).click(e => {
@@ -240,7 +311,7 @@ class UIHelperMethodManager {
             })
         })
     }
-    getEditingSlot = clinicSingle => {
+    openEditingTimeslotForUpdatePage = clinicSingle => {
         this.getDayContainersFromCalendar()
         .filter(day => clinicSingle.Month === day.dataset.month)
         .filter(day => clinicSingle.Dates.includes(day.innerHTML))
@@ -266,9 +337,6 @@ class UIHelperMethodManager {
                 day.classList.add('disabled')
                 day.classList.add('slot_taken')
             })
-    }
-    getProvidersValue = () => {
-        return document.querySelector('#providers_input').value !== "" ? document.querySelector('#providers_input').value : document.querySelector('#providers_input').value !== ""
     }
 }
 
@@ -310,6 +378,13 @@ class GeneralHelperMethodManager {
             Month: document.querySelector('#date_picker_input')?.value?.split("-")[1],
             MonthName: GeneralHelperMethodManager.getNameOfTheMonthByNum(parseInt(document.querySelector('#date_picker_input')?.value?.split("-")[1]) - 1),
             Date: document.querySelector('#date_picker_input')?.value?.split("-")[2]
+        }
+    }
+
+    static createTimeSlotPreferenceObject = clinic_slot => {
+        return {
+            "Hours": [...document.querySelectorAll('.timeslot_Clinic.clinicTimeSlotSelected')].filter(hour => hour.parentNode.parentNode.parentNode.dataset.slot === `${clinic_slot}`).map(hour => hour.innerHTML),
+            "Providers": [...document.querySelectorAll('#providers_input')].filter(input => input.dataset.slot === `${clinic_slot}`).map(input => input.value).join(""),
         }
     }
 
@@ -420,7 +495,7 @@ class GeneralHelperMethodManager {
 
     static objectToCSV = temporary_appointments => {
         let preferences = {
-            filename: 'Covid_Appointments.csv',
+            filename: 'AOC_Appointments.csv',
             data: [],
             headers: []
         };
@@ -455,12 +530,41 @@ class ValidationHelperManager {
         })
     }
 
+    static checkValidityAndShowErrorMessagesForForm = form =>{
+        form?.reportValidity()
+        var first = $(form).find(':invalid').first()
+        $('html, body').animate({
+            scrollTop: $(first[0]).offset().top - 200
+        }, 1000); 
+    }
+
     static isValidLogin = details => details.Username === "aoccovid" && details.Password === "#aoccovid"
 
     static isAdminLoggedIn = () =>  sessionStorage.getItem('AdminLoggedIn') ? null : window.location = "AdminLogin.html"
     
     static validateBookingDetails = appointment_Details => {
         return appointment_Details["Month"] !== undefined && appointment_Details["DayDate"] !== undefined && appointment_Details["Time"] !== undefined
+    }
+
+    static checkDatesValues = () => {
+        return [...document.querySelectorAll('.day.daySelected')].map(day => day.innerHTML).length  === 0 ?  errorMessages.push("You must select date(s) for your clinic slot(s)") : null
+    }
+
+    static checkHoursAndProvidersValues = () => {
+        return [...document.querySelectorAll('.timeslot_Clinic.clinicTimeSlotSelected')]?.length === 0 || [...document.querySelectorAll('#providers_input')].filter(provider_input => provider_input?.value).length === 0 ?  errorMessages.push("You must select hour(s) and provider(s) for your clinic slot(s)") : null
+    }
+
+    static handlingAndAlertingErrors = () => {
+        if(errorMessages.length !== 0){
+            errorMessages.filter((message ,index) => errorMessages.lastIndexOf(message) === index).map(msg => alert(msg)) 
+            return errorMessages
+        }
+    }
+
+    static checkIfHourAlreadyPicked = target => {
+        return ui_helper_manager.getClinicTimeSlotContainers()
+                    .filter(timeslot_container => timeslot_container.classList.contains("clinicTimeSlotSelected"))
+                    .filter(timeslot_container => timeslot_container.innerHTML === target.innerHTML)
     }
 }
 
@@ -538,7 +642,6 @@ class FrontEndUI {
     displayPastMonthsFromCovidTermMonth = () => {
         let covid_term_month = this.covid_terms.Month
         this.monthContainers.filter(monthContainer => monthContainer.dataset.month < GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)).map(monthContainer => monthContainer.classList.add('disabled'))
-        document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`) ? document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`).classList.add('monthActive') : null
     }
 
     dealWithClickOnMonth = selectedMonth => {
@@ -666,6 +769,7 @@ class FrontEndUI {
         this.appointment_Details["DayName"] = this.daySelected.day
         this.appointment_Details["DayDate"] = this.daySelected.date
 
+
         // Move Program Onto the Time Containers and Deal with them 
         this.dealWithTimeContainers();
     }
@@ -722,22 +826,29 @@ class FrontEndUI {
             if (this.appointment_Details["Month"] == clinicSlot.Month) {
                 for (const date of clinicSlot.Dates)
                     if (this.appointment_Details["DayDate"] == date) {
-                        for (const hour of clinicSlot.Hours) {
-                            this.timeSlotContainers
-                                .filter(timeslot_container => timeslot_container.innerHTML == hour)
+                        for(const timeslot of clinicSlot.Timeslots){
+                            for (const hour of timeslot.Hours) {
+                                $(`.timeslot:contains(${hour})`)[0].classList.remove("disabled")
+                                $(`.timeslot:contains(${hour})`)[0].classList.remove("orange_disabled")
+                            }
+                            this.appointments
+                                .filter(appointment => appointment.DayDate == date)
+                                .filter(appointment => timeslot.Hours.includes(appointment.Time))
+                                .filter(appointment => appointment.Capacity.length >= parseInt(timeslot.Providers))
                                 .map(appointment_s => {
-                                    appointment_s.classList.remove("disabled")
-                                    appointment_s.classList.remove("orange_disabled")
+                                    document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+                                    document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
                                 })
                         }
-                        // REVIEW: Changed this - number of providers 27/02/2021
-                        this.appointments
-                            .filter(appointment => appointment.DayDate == date)
-                            .filter(appointment => appointment.Capacity.length >= parseInt(clinicSlot.Providers))
-                            .map(appointment_s => {
-                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
-                                document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
-                            })
+                        
+//                         // REVIEW: Changed this - number of providers 27/02/2021
+//                         this.appointments
+//                             .filter(appointment => appointment.DayDate == date)
+//                             .filter(appointment => appointment.Capacity.length >= parseInt(clinicSlot.Providers))
+//                             .map(appointment_s => {
+//                                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("disabled")
+//                                 document.querySelector(`.timeslot[data-time="${appointment_s.Time}"]`).classList.add("full_disabled")
+//                             })
                     }
             }
     }
@@ -766,10 +877,21 @@ class FrontEndUI {
     }
 
     handleCreateAppointmentBtnClick = () => {
-        const form = document.querySelector('form');
-        $(form).submit(e => {
-            e.preventDefault()
 
+        // Getting the buttons and the form in variables
+        const form = document.querySelector('form');
+        let createBtn = document.querySelector('#create_appointment_btn')
+
+        // Showing the error messages and moving the page back up to the error on button click
+        $(createBtn)?.click(e => {
+            ValidationHelperManager?.checkValidityAndShowErrorMessagesForForm(form)
+        })
+        
+        $(form).submit(e => {
+            
+            // Preventing Default Form Behaviour
+            e.preventDefault()
+            
             // Checks Everythings in order with the appointment so date , time, month
             let bookingDetailsValidated = ValidationHelperManager.validateBookingDetails(this.appointment_Details)
             if (!bookingDetailsValidated) {
@@ -1060,16 +1182,16 @@ class BackendUI {
         })
 
         // Deal With Print Button Pressed
-        const print_btn = ui_helper_manager?.getPrintBtns();
-        ui_helper_manager?.printPage(print_btn)
+        const print_btn = ui_helper_manager.getPrintBtns();
+        ui_helper_manager.printPage(print_btn);
 
 
         // Handling Delete Appointment Individual Buttons Pressed
-        ([...document.querySelectorAll('.delete')]?.map(delete_btn => 
-            $(delete_btn)?.click(e => {
+        [...document.querySelectorAll('.delete')].map(delete_btn => 
+            $(delete_btn).click(e => {
                appointments_manager.deleteAppointment(e.target.dataset.apptid , e.target.dataset.userid , "Backend")
             })
-        ))
+        )
 
         // REVIEW: 
         // await dealWithSingleRecordPick();
@@ -1170,6 +1292,13 @@ class BackendUI {
 
         // Deals With Retrieving Data Picker Values , Filtering Records By Them and Displaying Records In Table
         this.retrieveFilterDisplayDataFromDataPicker();
+
+        // Handling Delete Appointment Individual Buttons Pressed
+        [...document.querySelectorAll('.delete')].map(delete_btn => 
+            $(delete_btn).click(e => {
+               appointments_manager.deleteAppointment(e.target.dataset.apptid , e.target.dataset.userid , "Backend")
+            })
+        )
     }
 
 
@@ -1305,12 +1434,7 @@ class BackendUI {
         document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
         // document.querySelector(`.day[data-day="${GeneralHelperMethodManager.getNameOfFirstDayOfTheMonth(Number(this.covid_terms.Date).toString())}"]`)?.click()
 
-        // Make Clinic Time Slot Containers
-        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
-        let timeslot_clinic_containers = ui_helper_manager.displayClinicTimeslots(timeSlots)
-
-        // Add Clinic Times to the Timeslot containers 
-       ui_helper_manager.addClinicTimes(timeslot_clinic_containers)
+       this.dealWithClinicSlotsNeededInputChange(); 
 
        // Deal With Clinic Slot Submit Button
        this.clinicSubmitBtnClick(document.querySelector('.addClinicSlotBtn'), "Post")
@@ -1318,7 +1442,6 @@ class BackendUI {
     }
 
     
-
     dealWithMonthsContainers = () => {
 
         // Get the Month Containers
@@ -1347,7 +1470,6 @@ class BackendUI {
     displayPastMonthsFromCovidTermMonth = () => {
         let covid_term_month = this.covid_terms.Month
         this.monthContainers.filter(monthContainer => monthContainer.dataset.month < GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)).map(monthContainer => monthContainer.classList.add('disabled'))
-        document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`) ? document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(covid_term_month)}"]`).classList.add('monthActive') : null
     }
 
     dealWithClickOnMonth = selectedMonth => {
@@ -1392,7 +1514,6 @@ class BackendUI {
         // Check to see if there's no other slots already
         ui_helper_manager.checkClinicSlots(this.clinic_slots)
 
-        // if(clinicDataSingle !== undefined ) ui_helper_manager.getEditingSlot(clinicDataSingle)
     }
 
     fillDaysIntoCalendarUsingMonthSelectedData = () => {
@@ -1467,28 +1588,59 @@ class BackendUI {
         this.appointment_Details["DayName"] = this.daySelected.day
         this.appointment_Details["DayDate"] = this.daySelected.date
 
+        // Display Clinic Slots Needed container 
+        document.querySelector('.clinic_slots_needed_container_outer').classList.add('displayClinicSlotNeededGrid');
     }
+
+    dealWithClinicSlotsNeededInputChange = () => {
+        //TODO: Add In Part To ask for clinic slots needed for that day and hours for each one
+
+        // Deal with Submit of amount of clinic Slots Containers Needed for that day
+        $(document.querySelector('.clinics_needed_input'))?.on('change', e => {
+            
+           // Retreiving the number of slots needed for that day 
+           this.clinics_needed = Number(e.target?.value)
+
+           // Resetting the contianer to be equal to nothing
+           ui_helper_manager.resetClinicSlotsNeededContainer()
+
+           // Make the Clinic Slots Preferences for the aforementioned amount of slots needed
+           ui_helper_manager.makeClinicSlotNeededContainers(this.clinics_needed)
+
+           // Deal With What happens when a timeslot clinic hour is clicked 
+           ui_helper_manager.dealWithSelectedClinicTimes()
+
+       })       
+   }
 
     clinicSubmitBtnClick = (submit_btn, method, id) => {
         $(submit_btn).click(()=> {
-            let provider_value = ui_helper_manager.getProvidersValue(),
-                hours_array = [...document.querySelectorAll('.timeslot_Clinic.selected')].map(timeslot => timeslot.innerHTML),
-                dates_array = [...document.querySelectorAll('.day.daySelected')].map(date => date.innerHTML);
-            if (dates_array.length === 0 || hours_array.length === 0) {
-                errorMessages.push("You must select date(s) and hour(s)")
-            } else if(!provider_value){
-                errorMessages.push("You must indicate how many providers are needed")
+
+            // Error Handling, Checking All Inputs have values
+            ValidationHelperManager.checkDatesValues();
+            ValidationHelperManager.checkHoursAndProvidersValues();
+
+            // Alert Errors and stop The Form Submit if errors
+            ValidationHelperManager.handlingAndAlertingErrors();
+            if (errorMessages.length !== 0) {
+                errorMessages = []
+                return
             }
-            if(errorMessages.length !== 0){
-                errorMessages.filter((message ,index) => errorMessages.lastIndexOf(message) === index).map(msg => alert(msg)) 
-                return errorMessages = []
-            }
+
+            this.clinic_slots_dates = [...document.querySelectorAll('.day.daySelected')].map(day => day.innerHTML)
+            this.timeslots_preferences = [];
+            Array(this.clinics_needed).fill().map((_,clinic_slot_needed) => {
+                this.timeslots_preferences[`${clinic_slot_needed}`] = GeneralHelperMethodManager.createTimeSlotPreferenceObject(clinic_slot_needed)
+            });
+
+
             let new_clinic_slot = {
                 Month: this.appointment_Details["Month"],
-                Dates: dates_array,
-                Hours: hours_array,
-                Providers: provider_value
+                Dates: this.clinic_slots_dates,
+                Timeslots: this.timeslots_preferences
             }   
+
+
             if(method === "Post") clinic_manager.createClinicSlot(new_clinic_slot)
             else if(method === "Update") clinic_manager.updateClinicSlot(new_clinic_slot, id)
         })
@@ -1502,6 +1654,7 @@ class BackendUI {
     // __________________________Start Of Admin Clinic Update Preferences Page  functions _______________________________
 
     adminClinicUpdatePreferencesPageInit = async() => {
+        
          // Checking whether admin is logged in or not first
          ValidationHelperManager.isAdminLoggedIn()
 
@@ -1515,29 +1668,60 @@ class BackendUI {
         // Kicks off dealing with the months , days and timeslots
         this.dealWithMonthsContainers();
 
+
         // Get the ID and corresponding data associated with the clinic slot clicked
-        let id = GeneralHelperMethodManager.getQueryParamsFromURL().get("id"),
-        clinicDataSingle = await clinic_manager.readClinicSlotSingle(id);
+        let id = GeneralHelperMethodManager.getQueryParamsFromURL().get("id");
+        this.clinicDataSingle = await clinic_manager.readClinicSlotSingle(id);
 
-
-        // Make Clinic Time Slot Containers
-        let timeSlots = ui_helper_manager.makeTimeslots(moment().startOf('day').add(9, 'h'), [], 10)
-        let timeslot_clinic_containers = ui_helper_manager.displayClinicTimeslots(timeSlots)
-        ui_helper_manager.addClinicTimes(timeslot_clinic_containers)
-
-        // Filling in clinic slot's value for the providers in the textbox provided
-        document.querySelector('#providers_input').value = clinicDataSingle.Providers
-    
-        // REVIEW: Clicking default buttons for faster booking
-        document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
+         // REVIEW: Clicking default buttons for faster booking
+         document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(this.covid_terms.Month)}"]`).click()
         
-        // This is the line to change it back to clicking on month of the clinic slot rather than covid terms
-        // document.querySelector(`.month[data-month="${numOfmonth(clinicDataSingle.Month) - 1}"]`).style.background = "green"
+         // This is the line to change it back to clicking on month of the clinic slot rather than covid terms
+         // document.querySelector(`.month[data-month="${GeneralHelperMethodManager.getNumOfTheMonthByName(clinicDataSingle.Month)}"]`).click()
 
-        // TODO: Refactor A lot of this code 
-        ui_helper_manager.addClinicDays(ui_helper_manager.getDayContainersFromCalendar())
-        if(clinicDataSingle !== undefined ) ui_helper_manager.getEditingSlot(clinicDataSingle)
-        ui_helper_manager.getEditingTimeslot(clinicDataSingle)
+
+         // Opening the Date the Timeslot Picked is for
+         ui_helper_manager.openEditingTimeslotForUpdatePage(this.clinicDataSingle);
+
+        // Clicking default buttons which are the timeslot picked 
+        document.querySelector('.day.daySelected').click()
+ 
+ 
+         //TODO: Add In Part To ask for clinic slots needed for that day and hours for each one
+         this.dealWithClinicSlotsNeededInputChange()
+         
+        // Changing the clinics slots needed to default value 
+        document.querySelector('.clinics_needed_input').value = this.clinicDataSingle?.Timeslots.length
+        $(document.querySelector('.clinics_needed_input')).change()
+
+
+        // Changing the clinic slot preferences to their default values
+        for(const clinic_data_timeslot of this.clinicDataSingle?.Timeslots)
+            [...document.querySelectorAll('.clinicTimeslotAppointmentPreferences')]
+                .filter(timeslot_preference => timeslot_preference.dataset.slot === this.clinicDataSingle?.Timeslots.indexOf(clinic_data_timeslot).toString())
+                .map(timeslot_preference => {
+                    $(timeslot_preference).find('#providers_input')[0] ? $(timeslot_preference).find('#providers_input')[0].value = clinic_data_timeslot?.Providers : null,
+                    [...$(timeslot_preference).find('.timeslot_Clinic')]
+                        .filter(timeslot_clinic_slot =>  clinic_data_timeslot.Hours.includes(timeslot_clinic_slot.innerHTML))
+                        .map(timeslot_hour => timeslot_hour.classList.add('clinicTimeSlotSelected'))
+                });
+
+        // Deal With Resetting Timeslots Needed Containers Button Click
+        $('.resetClinicSlotsNeeded').click(() => {
+
+            // Resetting the container to be equal to nothing
+            document.querySelector('.clinic_slots_needed_container_inner').innerHTML = 
+            `
+            <div class="clinic_slots_needed_container_sm">
+                <label for="clinics_needed">How many clinic slots do need for this day: </label>
+                <input type="text" name="clinics_needed" class="clinics_needed_input" required>
+            </div>
+            `
+
+             // Need to retreive the new timeslot needed input changer so that can work as before then
+             this.dealWithClinicSlotsNeededInputChange()
+             
+        })
         
         // Deal With Clinic Edit Button Click
         this.clinicSubmitBtnClick(document.querySelector('.addClinicSlotBtn'), "Update" , id)
