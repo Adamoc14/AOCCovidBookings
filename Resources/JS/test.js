@@ -537,7 +537,7 @@ class GeneralHelperMethodManager {
 
     static objectToCSV(temporary_appointments){
         let preferences = {
-            filename: 'WHMC_Appointments.csv',
+            filename: 'AOC_Appointments.csv',
             data: [],
             headers: []
         };
