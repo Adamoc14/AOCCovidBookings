@@ -491,11 +491,53 @@ class GeneralHelperMethodManager {
 
     static retrieveTodaysDate = () =>  moment().format(moment.HTML5_FMT.DATE).toString()
 
-    static getAttendingPatientsDetailsForCSV = appointments => appointments.map(({ firstName , Surname, DOB}) => [firstName, Surname , DOB ])
+    // static getAttendingPatientsDetailsForCSV = appointments => appointments.map(({ firstName , Surname, DOB}) => [firstName, Surname , DOB ])
 
-    static objectToCSV = temporary_appointments => {
+    // static objectToCSV = temporary_appointments => {
+    //     let preferences = {
+    //         filename: 'AOC_Appointments.csv',
+    //         data: [],
+    //         headers: []
+    //     };
+
+    //     // Loop over the rows and get values for each of the headers  
+    //     preferences.data = temporary_appointments.map(appointment => [`${appointment.DayDate} ${appointment.Month}`,`${appointment.Time}` , ...GeneralHelperMethodManager.getAttendingPatientsDetailsForCSV(appointment.Capacity)]);
+
+    //     // Get the headers  
+    //     preferences.headers = [...document.querySelectorAll('.container_sm')]?.slice(0,5)?.map(heading => heading?.innerHTML);
+
+    //     return preferences
+    // }
+
+    static getAttendingPatientsDetailsForCSV(appointments) { 
+        return appointments.map(({ firstName , Surname, DOB}) => [GeneralHelperMethodManager.getRandomPatientId(),firstName, Surname , DOB ])
+    }
+
+    static randomIntFromInterval(min, max) { // min and max included 
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    static getRandomPatientId(){
+        let options = 'ABCDEF123456',
+        uniqueId = [...GeneralHelperMethodManager.getRandomLettersFromAlphabet()];
+        for(let i = 0; i < 6; i++){
+            uniqueId.push(options[GeneralHelperMethodManager.randomIntFromInterval(0,options.length - 1)])
+        }
+        return uniqueId.join("")
+    }
+
+    static getRandomLettersFromAlphabet(){
+        let letters = 'ABCDEFGHIJKLMONPQRSTUVWXYZ',
+        unique_letters_array = [];
+        for(let i = 0; i < 2; i++){
+            unique_letters_array.push(letters[GeneralHelperMethodManager.randomIntFromInterval(0,letters.length - 1)])
+        }
+        return unique_letters_array
+    }
+
+    static objectToCSV(temporary_appointments){
         let preferences = {
-            filename: 'AOC_Appointments.csv',
+            filename: 'WHMC_Appointments.csv',
             data: [],
             headers: []
         };
@@ -504,10 +546,12 @@ class GeneralHelperMethodManager {
         preferences.data = temporary_appointments.map(appointment => [`${appointment.DayDate} ${appointment.Month}`,`${appointment.Time}` , ...GeneralHelperMethodManager.getAttendingPatientsDetailsForCSV(appointment.Capacity)]);
 
         // Get the headers  
-        preferences.headers = [...document.querySelectorAll('.container_sm')]?.slice(0,5)?.map(heading => heading?.innerHTML);
+        // preferences.headers = [...document.querySelectorAll('.container_sm')]?.slice(0,5)?.map(heading => heading?.innerHTML);
+        preferences.headers = ["Date", "Time", "Patients"]
 
         return preferences
     }
+    
     
 }
 
@@ -1329,11 +1373,55 @@ class BackendUI {
 
     downloadCSV = async(preferences, default_filename = 'export.csv')  => {
 
+        // // Setting the filename of the CSV file if not default
+        // let filename = preferences?.filename || default_filename,
+
+        // // Setting out what would be the columns in CSV file or none
+        // headers = preferences?.headers || null;
+
         // Setting the filename of the CSV file if not default
         let filename = preferences?.filename || default_filename,
 
         // Setting out what would be the columns in CSV file or none
-        headers = preferences?.headers || null;
+        headers = preferences?.headers || null,
+
+        // Finding out the number of columns needed for the CSV file 
+        headers_total = preferences?.data?.reduce((currentHeaderLength , appt) => 
+         appt.length > currentHeaderLength ? currentHeaderLength = appt.length : currentHeaderLength
+        , 0),
+
+        // Find out how much headers are in there already 
+        headers_needed = headers_total > headers?.length  ? headers_total - headers?.length :  headers?.length - headers_total,
+
+        // Make a new array with headers needed 
+        headers_needed_array = Array(headers_needed).fill("");
+
+        // Join the two arrays
+        headers = [...headers,...headers_needed_array]
+
+        // Seperating the two tables with the ids going one way and data going other 
+        let first_table_data = [],
+        each_appt = [],
+        each_code = [],
+        second_table_data = [["Patient Id" , "First Name" , "Surname" , "DOB"]];
+        for(const appt of preferences?.data){
+            appt.map(patient_values => {
+                each_code = "";
+                if(!Array.isArray(patient_values)){
+                    each_appt.push(patient_values)
+                    return
+                }
+                second_table_data.push(patient_values)
+                each_code = patient_values[0]
+                // each_code.push(patient_values[0])
+                each_appt.push(each_code)
+            })
+            first_table_data.push(each_appt)
+           each_appt = [];
+        }
+
+        // NOTE: Testing out whether you can have two tables from csv string
+        preferences.data = [...first_table_data , ...second_table_data];
 
         // Using PaPa Parse to Turn JSON into a CSV String To be made into CSV File
         let csv;
